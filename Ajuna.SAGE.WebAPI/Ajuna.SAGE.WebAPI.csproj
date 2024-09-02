@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Test" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Ajuna.SAGE.Game.HeroJam\Ajuna.SAGE.Game.HeroJam.csproj" />
+	  <ProjectReference Include="..\Ajuna.SAGE.Game\Ajuna.SAGE.Game.csproj" />
+	  <ProjectReference Include="..\Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj" />
+	</ItemGroup>
+
+</Project>
