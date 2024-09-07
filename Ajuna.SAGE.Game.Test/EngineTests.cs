@@ -25,7 +25,13 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_AddTransition_And_Transition_Valid()
         {
-            var player = new Player(new byte[] { 1 });
+            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
+            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            byte collectionId = 1;
+            uint score = 50;
+            uint genesis = 0;
+
+            var player = new Player(Utils.HexToBytes(playerId));
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -43,7 +49,7 @@ namespace Ajuna.SAGE.Generic.Tests
 
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50)
+                new(Utils.HexToBytes(assetId), collectionId, score, genesis)
             };
 
             // Act
@@ -61,7 +67,13 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_DuplicateAssets_ThrowsException()
         {
-            var player = new Player(new byte[] { 1 });
+            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
+            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            byte collectionId = 1;
+            uint score = 50;
+            uint genesis = 0;
+
+            var player = new Player(Utils.HexToBytes(playerId));
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -69,9 +81,9 @@ namespace Ajuna.SAGE.Generic.Tests
 
             TransitionFunction<ActionRule> function = (r, w, h, b) => w.Select(wrappedAsset => wrappedAsset.Asset);
 
-            _engine.AddTransition(identifier, new[] { rules }, function);
+            _engine.AddTransition(identifier, [rules], function);
 
-            var duplicateAsset = new Asset(new byte[] { 1 }, 1, 50);
+            var duplicateAsset = new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis);
             var assets = new Asset[] { duplicateAsset, duplicateAsset };
 
             // Act & Assert
@@ -81,13 +93,19 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_UnsupportedIdentifier_ThrowsException()
         {
-            var player = new Player(new byte[] { 1 });
+            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
+            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            byte collectionId = 1;
+            uint score = 50;
+            uint genesis = 0;
+
+            var player = new Player(Utils.HexToBytes(playerId));
 
             // Arrange
             var unsupportedIdentifier = new ActionIdentifier((ActionType)99, (ActionSubType)99);
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50)
+                new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis)
             };
 
             // Act & Assert
@@ -97,7 +115,13 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_InvalidAssetCount_ReturnsFalse()
         {
-            var player = new Player(new byte[] { 1 });
+            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
+            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            byte collectionId = 1;
+            uint score = 50;
+            uint genesis = 0;
+
+            var player = new Player(Utils.HexToBytes(playerId));
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -120,12 +144,12 @@ namespace Ajuna.SAGE.Generic.Tests
 
                     return false;
                 })
-                .AddTransition(identifier, new[] { rule }, function)
+                .AddTransition(identifier, [rule], function)
                 .Build();
 
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50)
+                new(Utils.HexToBytes(assetId), collectionId, score, genesis)
             };
 
             // Act

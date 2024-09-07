@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace Ajuna.SAGE.Generic
 {
@@ -158,6 +159,17 @@ namespace Ajuna.SAGE.Generic
                 .GroupBy(x => x.Index / chunkSize)
                 .Select(x => x.Select(v => v.Value).ToList())
                 .ToList();
+        }
+
+        /// <summary>
+        /// Generate a random id
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] GenerateRandomId()
+        {
+            var id = new byte[32];
+            RandomNumberGenerator.Fill(id);
+            return id;
         }
     }
 }

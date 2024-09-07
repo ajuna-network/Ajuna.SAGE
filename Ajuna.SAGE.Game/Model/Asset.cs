@@ -67,8 +67,9 @@
         /// <param name="id"></param>
         /// <param name="collectionId"></param>
         /// <param name="score"></param>
-        public Asset(byte[] id, byte collectionId, uint score)
-            : this(id, collectionId, score, new byte[Constants.DNA_SIZE])
+        /// <param name="genesis"></param>
+        public Asset(byte[] id, byte collectionId, uint score, uint genesis)
+            : this(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
         /// <summary>
@@ -77,9 +78,10 @@
         /// <param name="id"></param>
         /// <param name="collectionId"></param>
         /// <param name="score"></param>
+        /// <param name="genesis"></param>
         /// <param name="hexData"></param>
-        public Asset(byte[] id, byte collectionId, uint score, string hexData)
-            : this(id, collectionId, score, Utils.HexToBytes(hexData))
+        public Asset(byte[] id, byte collectionId, uint score, uint genesis, string hexData)
+            : this(id, collectionId, score, genesis, Utils.HexToBytes(hexData))
         { }
 
         /// <summary>
@@ -88,12 +90,14 @@
         /// <param name="id"></param>
         /// <param name="collectionId"></param>
         /// <param name="score"></param>
+        /// <param name="genesis"></param>
         /// <param name="data"></param>
-        public Asset(byte[] id, byte collectionId, uint score, byte[] data)
+        public Asset(byte[] id, byte collectionId, uint score, uint genesis, byte[] data)
         {
             Id = id;
             CollectionId = collectionId;
             Score = score;
+            Genesis = genesis;
             Data = data;
         }
 
@@ -105,7 +109,7 @@
         /// <returns></returns>
         public static Asset Empty(byte[] id, byte collectionId)
         {
-            Asset avatar = new(id, collectionId, 0);
+            Asset avatar = new(id, collectionId, 0, 0);
             return avatar;
         }
 

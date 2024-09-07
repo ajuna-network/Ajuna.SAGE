@@ -4,6 +4,7 @@
     {
         Sleep = 0,
         Work = 1,
+        Create = 2,
     }
 
     public enum ActionTime : byte
@@ -35,7 +36,8 @@
         GE = 4,
         LE = 5,
         NE = 6,
-        Index = 7
+        Index = 7,
+        MatchType = 8
     }
 
     public enum AssetType
@@ -52,7 +54,8 @@
     public enum StateType
     {
         None = 0,
-        Sleep = 0,
-        Work = 0,
+        Sleep = 1,
+        Idle = 2,
+        Work = 3,
     }
 }

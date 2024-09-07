@@ -40,9 +40,11 @@ namespace Ajuna.SAGE.Generic.Tests
                 .AddTransition(identifier, new[] { rules }, function)
                 .Build();
 
+
+
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50)
+                new Asset(new byte[] { 1 }, 1, 50, 0)
             };
 
             // Act
@@ -91,7 +93,7 @@ namespace Ajuna.SAGE.Generic.Tests
 
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50)
+                new([1], 1, 50, 0)
             };
 
             // Act

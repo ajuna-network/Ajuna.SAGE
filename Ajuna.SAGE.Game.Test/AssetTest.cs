@@ -12,13 +12,14 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithByteArrayDna()
         {
             // Arrange
-            byte[] id = new byte[] { 1, 2, 3, 4 };
+            byte[] id = [1, 2, 3, 4];
             byte collectionId = 1;
             uint score = 100;
-            byte[] dna = new byte[] { 5, 6, 7, 8 };
+            uint genesis = 0;
+            byte[] dna = [5, 6, 7, 8];
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, dna);
+            Asset asset = new Asset(id, collectionId, score, genesis, dna);
 
             // Assert
             Assert.Multiple(() =>
@@ -34,13 +35,14 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithHexStringDna()
         {
             // Arrange
-            byte[] id = new byte[] { 1, 2, 3, 4 };
+            byte[] id = [1, 2, 3, 4];
             byte collectionId = 1;
             uint score = 100;
+            uint genesis = 0;
             string hexStringDna = "05060708";
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, hexStringDna);
+            Asset asset = new Asset(id, collectionId, score, genesis, hexStringDna);
 
             // Assert
             Assert.That(asset.Data, Is.EqualTo(Utils.HexToBytes(hexStringDna)), "The DNA should match the value converted from the hex string.");
@@ -50,12 +52,13 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithDefaults()
         {
             // Arrange
-            byte[] id = new byte[] { 1, 2, 3, 4 };
+            byte[] id = [1, 2, 3, 4];
             byte collectionId = 1;
             uint score = 100;
+            uint genesis = 0;
 
             // Act
-            Asset asset = new Asset(id, collectionId, score);
+            Asset asset = new Asset(id, collectionId, score, genesis);
 
             // Assert
             Assert.Multiple(() =>
@@ -71,7 +74,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_Asset_Empty()
         {
             // Arrange
-            byte[] id = new byte[] { 1, 2, 3, 4 };
+            byte[] id = [1, 2, 3, 4];
             byte collectionId = 1;
 
             // Act
@@ -90,14 +93,18 @@ namespace Ajuna.SAGE.Tests
         [Test]
         public void Test_Asset_Equals()
         {
-            // Arrange
-            byte[] id1 = new byte[] { 1, 2, 3, 4 };
-            byte[] id2 = new byte[] { 1, 2, 3, 4 };
-            byte[] id3 = new byte[] { 4, 3, 2, 1 };
+            byte collectionId = 1;
+            uint score = 100;
+            uint genesis = 0;
 
-            Asset asset1 = new Asset(id1, 1, 100);
-            Asset asset2 = new Asset(id2, 1, 100);
-            Asset asset3 = new Asset(id3, 1, 100);
+            // Arrange
+            byte[] id1 = [1, 2, 3, 4];
+            byte[] id2 = [1, 2, 3, 4];
+            byte[] id3 = [4, 3, 2, 1];
+
+            Asset asset1 = new Asset(id1, collectionId, score, genesis);
+            Asset asset2 = new Asset(id2, collectionId, score, genesis);
+            Asset asset3 = new Asset(id3, collectionId, score, genesis);
 
             // Act & Assert
             Assert.Multiple(() =>

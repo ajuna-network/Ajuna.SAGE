@@ -182,6 +182,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                     Utils.HexToBytes(card.Id),
                     card.CollectionId,
                     card.Score,
+                    card.Genesis,
                     card.Dna));
             }
 
@@ -222,6 +223,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             var asset = new Asset(Utils.HexToBytes(inDbCard.Id),
                                 inDbCard.CollectionId,
                                 inDbCard.Score,
+                                inDbCard.Genesis,
                                 inDbCard.Dna);
 
             var wrappedAsset = new WrappedAsset(asset);

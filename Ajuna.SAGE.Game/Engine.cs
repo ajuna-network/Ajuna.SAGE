@@ -51,7 +51,7 @@ namespace Ajuna.SAGE.Generic
         /// <param name="avatars"></param>
         /// <param name="blockNumber"></param>
         /// <returns></returns>
-        public bool Transition(Player executor, TIdentifier identifier, Asset[] avatars, out Asset[] result)
+        public bool Transition(Player executor, TIdentifier identifier, Asset[]? avatars, out Asset[] result)
         {
             return Transition(executor, identifier, avatars, _blockchainInfo.GenerateRandomHash(), _blockchainInfo.CurrentBlockNumber, out result);
         }
@@ -65,8 +65,11 @@ namespace Ajuna.SAGE.Generic
         /// <param name="blockNumber"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        internal bool Transition(IPlayer executor, TIdentifier identifier, Asset[] assets, byte[] randomHash, uint blockNumber, out Asset[] result)
+        internal bool Transition(IPlayer executor, TIdentifier identifier, Asset[]? assets, byte[] randomHash, uint blockNumber, out Asset[] result)
         {
+            // initialize to avoid null checks
+            assets ??= [];
+
             // duplicate check
             if (assets.Distinct().Count() != assets.Length)
             {
@@ -85,7 +88,7 @@ namespace Ajuna.SAGE.Generic
 
             if (!rules.All(rule => _verifyFunction(executor, rule, assets, blockNumber)))
             {
-                result = Array.Empty<Asset>();
+                result = [];
                 return false;
             }
 

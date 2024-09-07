@@ -102,8 +102,12 @@ namespace Ajuna.SAGE.Game.HeroJam
 
                     case (byte)HeroRuleType.SameExist:
                         {
-                            // TODO: Implement this rule
-                            return false;
+                            if (player.Assets == null || player.Assets.Count == 0)
+                            {
+                                return true;
+                            }
+
+                            return player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
                         }
 
                     default:
@@ -120,6 +124,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         {
             var result = new List<(HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>)>
             {
+                GetCreateHero(),
                 GetSleepTransitionSet(ActionTime.FullDay),
                 GetSleepTransitionSet(ActionTime.HalfDay),
                 GetSleepTransitionSet(ActionTime.Hour),
@@ -128,6 +133,11 @@ namespace Ajuna.SAGE.Game.HeroJam
             return result;
         }
 
+        /// <summary>
+        /// Get the transition set for the sleep action
+        /// </summary>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
         private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetSleepTransitionSet(ActionTime actionTime)
         {
             var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
@@ -143,6 +153,32 @@ namespace Ajuna.SAGE.Game.HeroJam
             {
                 var asset = w.First().Asset;
                 asset.Score += 10;
+                return [asset];
+            };
+
+            return (identifier, rules, function);
+        }
+
+        /// <summary>
+        /// Get the transition set for the create hero action
+        /// </summary>
+        /// <returns></returns>
+        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetCreateHero()
+        {
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero);
+            byte matchType = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
+            HeroJamRule[] rules = [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 0),
+                new HeroJamRule(HeroRuleType.SameExist, HeroRuleOp.MatchType, matchType),
+            ];
+
+            TransitionFunction<HeroJamRule> function = (r, w, h, b) =>
+            {
+                var asset = new HeroJamAssetBuilder(null, HeroJamConstant.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                    .SetEnergy(100)
+                    .SetStateType(StateType.Idle)
+                    .SetStateChangeBlockNumber(0)
+                    .Build();
                 return [asset];
             };
 
