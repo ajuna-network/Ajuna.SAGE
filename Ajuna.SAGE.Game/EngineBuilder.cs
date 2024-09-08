@@ -13,7 +13,7 @@ namespace Ajuna.SAGE.Generic
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)> _transitions;
 
-        private Func<IPlayer, TRules, Asset[], uint, bool> _verifyFunction;
+        private Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
 
         /// <summary>
         /// Engine Builder
@@ -43,7 +43,7 @@ namespace Ajuna.SAGE.Generic
         /// </summary>
         /// <param name="verifyFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, Asset[], uint, bool> verifyFunction)
+        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, IAsset[], uint, bool> verifyFunction)
         {
             _verifyFunction = verifyFunction;
             return this;

@@ -40,20 +40,20 @@ namespace Ajuna.SAGE.Generic.Tests
 
             TransitionFunction<ActionRule> function = (r, w, h, b) =>
             {
-                var asset = w.First().Asset;
+                var asset = w.First();
                 asset.Score += 10;
-                return new List<Asset> { asset };
+                return new List<IAsset> { asset };
             };
 
             _engine.AddTransition(identifier, new[] { rules }, function);
 
-            var assets = new Asset[]
+            var assets = new IAsset[]
             {
-                new(Utils.HexToBytes(assetId), collectionId, score, genesis)
+                new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis)
             };
 
             // Act
-            var flag = _engine.Transition(player, identifier, assets, out Asset[] result);
+            var flag = _engine.Transition(player, identifier, assets, out IAsset[] result);
 
             // Assert
             Assert.Multiple(() =>
@@ -79,7 +79,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, w, h, b) => w.Select(wrappedAsset => wrappedAsset.Asset);
+            TransitionFunction<ActionRule> function = (r, w, h, b) => w.Select(a => a);
 
             _engine.AddTransition(identifier, [rules], function);
 
@@ -87,7 +87,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var assets = new Asset[] { duplicateAsset, duplicateAsset };
 
             // Act & Assert
-            Assert.Throws<NotSupportedException>(() => _engine.Transition(player, identifier, assets, out Asset[] result), "Trying to Forge duplicates.");
+            Assert.Throws<NotSupportedException>(() => _engine.Transition(player, identifier, assets, out IAsset[] result), "Trying to Forge duplicates.");
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace Ajuna.SAGE.Generic.Tests
             };
 
             // Act & Assert
-            Assert.Throws<NotSupportedException>(() => _engine.Transition(player, unsupportedIdentifier, assets, out Asset[] result), "Unsupported Transition for Identifier.");
+            Assert.Throws<NotSupportedException>(() => _engine.Transition(player, unsupportedIdentifier, assets, out IAsset[] result), "Unsupported Transition for Identifier.");
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rule = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 2);
 
-            TransitionFunction<ActionRule> function = (r, w, h, b) => w.Select(wrappedAsset => wrappedAsset.Asset);
+            TransitionFunction<ActionRule> function = (r, w, h, b) => w.Select(a => a);
 
             var blockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
             blockchainInfoProvider.Setup(b => b.GenerateRandomHash()).Returns(new byte[] { 0x00 });
@@ -153,7 +153,7 @@ namespace Ajuna.SAGE.Generic.Tests
             };
 
             // Act
-            bool success = engine.Transition(player, identifier, assets, out Asset[] result);
+            bool success = engine.Transition(player, identifier, assets, out IAsset[] result);
 
             // Assert
             Assert.That(success, Is.False, "Expected Transition to return false due to insufficient assets.");

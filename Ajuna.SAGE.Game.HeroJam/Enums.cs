@@ -10,9 +10,9 @@
     public enum ActionTime : byte
     {
         None = 0,
-        Hour = 1,
-        HalfDay = 2,
-        FullDay = 3
+        Short = 1,
+        Medium = 2,
+        Long = 3
     }
 
 

@@ -60,5 +60,41 @@
         {
            return Assets != null && Assets.Any(a => a.Equals(asset));
         }
+
+        /// <summary>
+        /// Transition
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        public void Transition(IAsset[]? input, IAsset[]? output)
+        {
+            Assets ??= [];
+
+            input ??= [];
+            output ??= [];
+
+            // Remove assets present in input but not in output
+            foreach (var asset in input)
+            {
+                if (!output.Any(a => a.Equals(asset)))
+                {
+                    Assets.Remove(asset);
+                }
+            }
+
+            // Add or update assets present in output but not in the current assets
+            foreach (var asset in output)
+            {
+                var existingAsset = Assets.FirstOrDefault(a => a.Equals(asset));
+                if (existingAsset == null)
+                {
+                    Assets.Add(asset);
+                }
+                else
+                {
+                    // TODO: check if we need to updated somethign here
+                }
+            }
+        }
     }
 }

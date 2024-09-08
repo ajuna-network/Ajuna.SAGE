@@ -10,6 +10,12 @@ namespace Ajuna.SAGE.Game.HeroJam
         public HeroJamAsset(byte[] id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis) { }
 
+        public HeroJamAsset(IAsset asset) 
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis)
+        {
+            Data = asset.Data;
+        }
+
         public AssetType AssetType
         {
             get => (AssetType)Data.Read(0, ByteType.High);
@@ -30,8 +36,14 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         public StateType StateType
         {
-            get => (StateType)Data.Read(27, ByteType.Full);
-            set => Data.Set(27, ByteType.Full, (byte)value);
+            get => (StateType)Data.Read(26, ByteType.Full);
+            set => Data.Set(26, ByteType.Full, (byte)value);
+        }
+
+        public byte StateValue
+        {
+            get => Data.Read(27, ByteType.Full);
+            set => Data.Set(27, ByteType.Full, value);
         }
 
         public uint StateChangeBlockNumber

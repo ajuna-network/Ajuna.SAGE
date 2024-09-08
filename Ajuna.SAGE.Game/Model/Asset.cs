@@ -4,7 +4,7 @@
     /// <summary>
     /// Asset interface
     /// </summary>
-    public interface IAsset
+    public interface IAsset : IEquatable<IAsset>
     {
         /// <summary>
         /// Identifier
@@ -47,7 +47,7 @@
     /// <summary>
     /// Asset class
     /// </summary>
-    public class Asset : IAsset, IEquatable<Asset>
+    public class Asset : IAsset
     {
         public byte[] Id { get; set; }
 
@@ -114,7 +114,7 @@
         }
 
         /// <inheritdoc/>
-        public bool Equals(Asset? other)
+        public bool Equals(IAsset? other)
         {
             if (other == null)
             {

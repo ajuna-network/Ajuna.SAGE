@@ -29,7 +29,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         ///
         /// </summary>
         /// <returns></returns>
-        private static Func<IPlayer, HeroJamRule, Asset[], uint, bool> GetVerifyFunction()
+        private static Func<IPlayer, HeroJamRule, IAsset[], uint, bool> GetVerifyFunction()
         {
             return (player, rule, assets, blocknumber) =>
             {
@@ -37,7 +37,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 {
                     case (byte)HeroRuleType.AssetCount:
                         {
-                            switch(rule.RuleOp)
+                            switch (rule.RuleOp)
                             {
                                 case (byte)HeroRuleOp.EQ:
                                     return assets.Length == BitConverter.ToUInt32(rule.RuleValue);
@@ -73,6 +73,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                             {
                                 return false;
                             }
+
                             return player.IsOwnerOf(assets[assetIndex]);
                         }
 
@@ -80,8 +81,24 @@ namespace Ajuna.SAGE.Game.HeroJam
                         {
                             return assets.All(a =>
                             {
-                                var heroJameAsset = a as HeroJamAsset;
-                                return heroJameAsset != null && heroJameAsset.AssetType == (AssetType)BitConverter.ToUInt32(rule.RuleValue);
+                                HeroJamAsset? heroJameAsset = a as HeroJamAsset;
+                                var expectedAssetType = (AssetType)BitConverter.ToUInt32(rule.RuleValue);
+                                return heroJameAsset != null && heroJameAsset.AssetType == expectedAssetType;
+                            });
+                        }
+
+                    case (byte)HeroRuleType.AllStateType:
+                        {
+                            return assets.All(a =>
+                            {
+                                HeroJamAsset? heroJameAsset = a as HeroJamAsset;
+                                var expectedStateType = (StateType)BitConverter.ToUInt32(rule.RuleValue);
+                                return rule.RuleOp switch
+                                {
+                                    (byte)HeroRuleOp.EQ => heroJameAsset != null && heroJameAsset.StateType == expectedStateType,
+                                    (byte)HeroRuleOp.NE => heroJameAsset != null && heroJameAsset.StateType != expectedStateType,
+                                    _ => throw new NotSupportedException($"Unsupported RuleOp {rule.RuleOp} for RuleType {rule.RuleType}!"),
+                                };
                             });
                         }
 
@@ -96,8 +113,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                             {
                                 return false;
                             }
-                            var heroJamAsset = assets[assetIndex] as HeroJamAsset;
-                            return heroJamAsset != null && heroJamAsset.StateChangeBlockNumber < blocknumber;
+                            return assets[assetIndex] is HeroJamAsset heroJamAsset && heroJamAsset.StateChangeBlockNumber < blocknumber;
                         }
 
                     case (byte)HeroRuleType.SameExist:
@@ -111,7 +127,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                         }
 
                     default:
-                        return false;
+                        throw new NotSupportedException($"Unsupported RuleType {rule.RuleType}!");
                 }
             };
         }
@@ -125,38 +141,12 @@ namespace Ajuna.SAGE.Game.HeroJam
             var result = new List<(HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>)>
             {
                 GetCreateHero(),
-                GetSleepTransitionSet(ActionTime.FullDay),
-                GetSleepTransitionSet(ActionTime.HalfDay),
-                GetSleepTransitionSet(ActionTime.Hour),
+                GetSleepTransitionSet(ActionTime.Short),
+                GetSleepTransitionSet(ActionTime.Medium),
+                GetSleepTransitionSet(ActionTime.Long),
             };
 
             return result;
-        }
-
-        /// <summary>
-        /// Get the transition set for the sleep action
-        /// </summary>
-        /// <param name="actionTime"></param>
-        /// <returns></returns>
-        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetSleepTransitionSet(ActionTime actionTime)
-        {
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
-            HeroJamRule[] rules = [
-                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
-                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
-                new HeroJamRule(HeroRuleType.AllAssetType, HeroRuleOp.EQ, (uint)AssetType.Hero),
-                new HeroJamRule(HeroRuleType.AllStateType, HeroRuleOp.NE, (uint)StateType.Sleep),
-                new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
-            ];
-
-            TransitionFunction<HeroJamRule> function = (r, w, h, b) =>
-            {
-                var asset = w.First().Asset;
-                asset.Score += 10;
-                return [asset];
-            };
-
-            return (identifier, rules, function);
         }
 
         /// <summary>
@@ -172,7 +162,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.SameExist, HeroRuleOp.MatchType, matchType),
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, w, h, b) =>
+            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
             {
                 var asset = new HeroJamAssetBuilder(null, HeroJamConstant.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetEnergy(100)
@@ -183,6 +173,49 @@ namespace Ajuna.SAGE.Game.HeroJam
             };
 
             return (identifier, rules, function);
+        }
+
+        /// <summary>
+        /// Get the transition set for the sleep action
+        /// </summary>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetSleepTransitionSet(ActionTime actionTime)
+        {
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
+            HeroJamRule[] rules = [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
+                new HeroJamRule(HeroRuleType.AllAssetType, HeroRuleOp.EQ, (uint)AssetType.Hero),
+                new HeroJamRule(HeroRuleType.AllStateType, HeroRuleOp.EQ, (uint)StateType.Idle),
+                new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
+            ];
+
+            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
+            {
+                //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
+                var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
+                {
+                    StateType = StateType.Sleep,
+                    StateValue = (byte)actionTime,
+                    StateChangeBlockNumber = b + GetBlockTimeFrom(actionTime)
+                };
+
+                return [heroJamAsset];
+            };
+
+            return (identifier, rules, function);
+        }
+
+        private static uint GetBlockTimeFrom(ActionTime actionTime)
+        {
+            return actionTime switch
+            {
+                ActionTime.Short => 1 * HeroJamConstant.Hour,
+                ActionTime.Medium => 6 * HeroJamConstant.Hour,
+                ActionTime.Long => 12 * HeroJamConstant.Hour,
+                _ => throw new NotSupportedException($"Unsupported ActionTime {actionTime}!"),
+            };
         }
     }
 }

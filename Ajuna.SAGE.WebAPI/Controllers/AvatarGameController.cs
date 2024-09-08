@@ -188,7 +188,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
 
             var player = new Player(BitConverter.GetBytes(inDbPlayer.Id));
 
-            var flag = _engine.Transition(player, identifier, assets.ToArray(), out Asset[] result);
+            var flag = _engine.Transition(player, identifier, assets.ToArray(), out Generic.Model.IAsset[] result);
 
             inCards.ForEach(p => inDbPlayer.Cards.Remove(p));
 
@@ -226,9 +226,9 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                                 inDbCard.Genesis,
                                 inDbCard.Dna);
 
-            var wrappedAsset = new WrappedAsset(asset);
+            var heroJamAsset = asset as HeroJamAsset;
 
-            return new JsonResult(Ok(wrappedAsset));
+            return new JsonResult(Ok(heroJamAsset));
         }
 
         private uint CurrentBlockNumber(DateTime genesis)

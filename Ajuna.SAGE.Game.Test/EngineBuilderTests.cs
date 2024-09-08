@@ -30,9 +30,9 @@ namespace Ajuna.SAGE.Generic.Tests
 
             TransitionFunction<ActionRule> function = (r, w, h, b) =>
             {
-                var asset = w.First().Asset;
+                var asset = w.First();
                 asset.Score += 10;
-                return new List<Asset> { asset };
+                return new List<IAsset> { asset };
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
@@ -48,7 +48,7 @@ namespace Ajuna.SAGE.Generic.Tests
             };
 
             // Act
-            var transitionFlag = engine.Transition(player, identifier, assets, out Asset[] transitionResult);
+            var transitionFlag = engine.Transition(player, identifier, assets, out IAsset[] transitionResult);
 
             // Assert
             Assert.Multiple(() =>
@@ -73,16 +73,16 @@ namespace Ajuna.SAGE.Generic.Tests
 
             TransitionFunction<ActionRule> function1 = (r, w, h, b) =>
             {
-                var asset = w.First().Asset;
+                var asset = w.First();
                 asset.Score += 10;
-                return new List<Asset> { asset };
+                return new List<IAsset> { asset };
             };
 
             TransitionFunction<ActionRule> function2 = (r, w, h, b) =>
             {
-                var asset = w.First().Asset;
+                var asset = w.First();
                 asset.Score += 20;
-                return new List<Asset> { asset };
+                return new List<IAsset> { asset };
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
@@ -97,12 +97,12 @@ namespace Ajuna.SAGE.Generic.Tests
             };
 
             // Act
-            var transitionFlag1 = engine.Transition(player, identifier1, assets, out Asset[] transitionResult);
+            var transitionFlag1 = engine.Transition(player, identifier1, assets, out IAsset[] transitionResult);
 
             Assert.That(transitionFlag1, Is.True);
             Assert.That(transitionResult.First().Score, Is.EqualTo(60), "The resulting asset's score should be 60 after the first transition.");
 
-            var transitionFlag2 = engine.Transition(player, identifier2, assets, out Asset[] transitionResult2);
+            var transitionFlag2 = engine.Transition(player, identifier2, assets, out IAsset[] transitionResult2);
 
             Assert.That(transitionFlag2, Is.True);
             Assert.That(transitionResult2.First().Score, Is.EqualTo(80), "The resulting asset's score should be 80 after the second transition.");

@@ -14,18 +14,18 @@ namespace Ajuna.SAGE.Game.Algo
         /// <param name="rarityLevel"></param>
         /// <param name="randomHash"></param>
         /// <returns></returns>
-        public static WrappedAsset ProgressAsset(MatchRules rules, IEnumerable<WrappedAsset> all, byte[] randomHash, uint blockNumber)
+        public static IAsset ProgressAsset(MatchRules rules, IEnumerable<IAsset> all, byte[] randomHash, uint blockNumber)
         {
-            WrappedAsset leader = all.First();
-            IEnumerable<WrappedAsset> sacrifices = all.Skip(1);
+            IAsset leader = all.First();
+            IEnumerable<IAsset> sacrifices = all.Skip(1);
 
             int match = 0;
             int nofit = 0;
             List<int> matchingScore = new();
 
-            foreach (WrappedAsset? sacrifice in sacrifices)
+            foreach (IAsset? sacrifice in sacrifices)
             {
-                if (IsMatching(rules, leader.ProgressArray, sacrifice.ProgressArray, out MatchResult matchResult))
+                if (IsMatching(rules, leader.Data, sacrifice.Data, out MatchResult matchResult))
                 {
                     matchingScore.AddRange(matchResult.MatchIndex);
                     match++;
@@ -48,7 +48,7 @@ namespace Ajuna.SAGE.Game.Algo
                 // TODO: add star clock here fo the periods ....
                 int pMatch = rules.ProgProbPerc + match * matchProb;
 
-                byte[] progressArray = leader.ProgressArray;
+                byte[] progressArray = leader.Data;
                 // executes all rolls that we calculated at max the distinct amount of variations
                 for (int i = 0; i < rolls; i++)
                 {
@@ -73,11 +73,11 @@ namespace Ajuna.SAGE.Game.Algo
                 }
 
                 // write it back to the leader
-                leader.ProgressArray = progressArray;
+                leader.Data = progressArray;
             }
 
             // always accumulate soulpoints into the result
-            leader.Asset.Score = (uint)all.Sum(p => p.Asset.Score);
+            leader.Score = (uint)all.Sum(p => p.Score);
 
             return leader;
         }

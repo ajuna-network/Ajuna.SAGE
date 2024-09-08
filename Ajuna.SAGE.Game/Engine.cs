@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Ajuna.SAGE.Generic
 {
-    public delegate IEnumerable<Asset> TransitionFunction<TRules>(TRules[] rules, IEnumerable<WrappedAsset> wrappedAssets, byte[] randomHash, uint blockNumber)
+    public delegate IEnumerable<IAsset> TransitionFunction<TRules>(TRules[] rules, IEnumerable<IAsset> assets, byte[] randomHash, uint blockNumber)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -14,7 +14,7 @@ namespace Ajuna.SAGE.Generic
     {
         private readonly IBlockchainInfoProvider _blockchainInfo;
 
-        private readonly Func<IPlayer, TRules, Asset[], uint, bool> _verifyFunction;
+        private readonly Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)> _transitions;
 
@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Generic
         /// Game
         /// </summary>
         /// <param name="seed"></param>
-        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, Asset[], uint, bool> verifyFunction)
+        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, IAsset[], uint, bool> verifyFunction)
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
@@ -51,7 +51,7 @@ namespace Ajuna.SAGE.Generic
         /// <param name="avatars"></param>
         /// <param name="blockNumber"></param>
         /// <returns></returns>
-        public bool Transition(Player executor, TIdentifier identifier, Asset[]? avatars, out Asset[] result)
+        public bool Transition(Player executor, TIdentifier identifier, IAsset[]? avatars, out IAsset[] result)
         {
             return Transition(executor, identifier, avatars, _blockchainInfo.GenerateRandomHash(), _blockchainInfo.CurrentBlockNumber, out result);
         }
@@ -65,7 +65,7 @@ namespace Ajuna.SAGE.Generic
         /// <param name="blockNumber"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        internal bool Transition(IPlayer executor, TIdentifier identifier, Asset[]? assets, byte[] randomHash, uint blockNumber, out Asset[] result)
+        internal bool Transition(IPlayer executor, TIdentifier identifier, IAsset[]? assets, byte[] randomHash, uint blockNumber, out IAsset[] result)
         {
             // initialize to avoid null checks
             assets ??= [];
@@ -75,8 +75,6 @@ namespace Ajuna.SAGE.Generic
             {
                 throw new NotSupportedException("Trying to Forge duplicates.");
             }
-
-            IEnumerable<WrappedAsset> wrappedAssets = assets.Select(p => new WrappedAsset(p));
 
             if (!_transitions.TryGetValue(identifier, out (TRules[] rules, TransitionFunction<TRules> function) tuple))
             {
@@ -92,10 +90,10 @@ namespace Ajuna.SAGE.Generic
                 return false;
             }
 
-            var list = new List<Asset>();
+            var list = new List<IAsset>();
 
             // execute function
-            list.AddRange(function(rules, wrappedAssets, randomHash, blockNumber));
+            list.AddRange(function(rules, assets, randomHash, blockNumber));
 
             result = list.ToArray();
 
