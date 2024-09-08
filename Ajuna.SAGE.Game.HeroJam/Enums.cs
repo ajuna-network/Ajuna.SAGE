@@ -2,19 +2,27 @@
 {
     public enum HeroAction : byte
     {
-        Sleep = 0,
-        Work = 1,
-        Create = 2,
+        //None = 0,
+        Create = 1,
+        Sleep = 2,
+        Work = 3,
+        Travel = 4,
+        Claim = 5,
     }
 
     public enum ActionTime : byte
     {
-        None = 0,
+        //None = 0,
         Short = 1,
         Medium = 2,
         Long = 3
     }
 
+    public enum WorkType : byte
+    {
+        //None = 0,
+        Hunt = 1,
+    }
 
     public enum HeroRuleType : byte
     {

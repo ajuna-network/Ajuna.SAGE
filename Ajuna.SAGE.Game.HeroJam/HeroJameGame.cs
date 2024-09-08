@@ -207,6 +207,45 @@ namespace Ajuna.SAGE.Game.HeroJam
             return (identifier, rules, function);
         }
 
+        /// <summary>
+        /// Get the transition set for the work action
+        /// </summary>
+        /// <param name="workType"></param>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetWorkTransitionSet(WorkType workType, ActionTime actionTime)
+        {
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
+            HeroJamRule[] rules = [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
+                new HeroJamRule(HeroRuleType.AllAssetType, HeroRuleOp.EQ, (uint)AssetType.Hero),
+                new HeroJamRule(HeroRuleType.AllStateType, HeroRuleOp.EQ, (uint)StateType.Idle),
+                new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
+            ];
+
+            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
+            {
+                //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
+                var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
+                {
+                    StateType = StateType.Work,
+                    StateValue = (byte)workType,
+                    StateChangeBlockNumber = b + GetBlockTimeFrom(actionTime)
+                };
+
+                return [heroJamAsset];
+            };
+
+            return (identifier, rules, function);
+        }
+
+        /// <summary>
+        /// Get the block time from the action time
+        /// </summary>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
         private static uint GetBlockTimeFrom(ActionTime actionTime)
         {
             return actionTime switch
