@@ -22,6 +22,25 @@
     {
         //None = 0,
         Hunt = 1,
+        Gather = 2,
+        Build = 3,
+        Travel = 4,
+        Train = 5,
+        Fight = 6,
+        Rest = 7,
+    }
+
+    public enum ZoneType : byte
+    {
+        //None = 0,
+        Homebase = 1,
+        Village = 2,
+        Forest = 3,
+        Plains = 4,
+        Mountain = 5,
+        Cave = 6,
+        Desert = 7,
+        Dungeon = 8,
     }
 
     public enum HeroRuleType : byte
