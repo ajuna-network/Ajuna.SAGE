@@ -2,7 +2,7 @@
 {
     public enum HeroAction : byte
     {
-        //None = 0,
+        None = 0,
         Create = 1,
         Sleep = 2,
         Work = 3,
@@ -12,7 +12,7 @@
 
     public enum ActionTime : byte
     {
-        //None = 0,
+        None = 0,
         Short = 1,
         Medium = 2,
         Long = 3
@@ -20,7 +20,7 @@
 
     public enum WorkType : byte
     {
-        //None = 0,
+        None = 0,
         Hunt = 1,
         Gather = 2,
         Build = 3,
@@ -32,7 +32,7 @@
 
     public enum ZoneType : byte
     {
-        //None = 0,
+        None = 0,
         Homebase = 1,
         Village = 2,
         Forest = 3,

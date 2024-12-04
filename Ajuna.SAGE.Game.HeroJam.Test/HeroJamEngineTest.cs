@@ -42,7 +42,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // transition succeded
             Assert.That(transitionResult, Is.True);
 
-            // Do palyer transition
+            // Do player transition
             _player.Transition(inputAssets, outputAssets);
 
             // Verify that the hero was created

@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Generic.Model;
 
 namespace Ajuna.SAGE.Generic
 {
@@ -11,7 +12,7 @@ namespace Ajuna.SAGE.Generic
     {
         private readonly IBlockchainInfoProvider _blockchainInfoProvider;
 
-        private readonly Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)> _transitions;
+        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? Fee, TransitionFunction<TRules> Function)> _transitions;
 
         private Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
 
@@ -22,7 +23,7 @@ namespace Ajuna.SAGE.Generic
         public EngineBuilder(IBlockchainInfoProvider blockchainInfoProvider)
         {
             _blockchainInfoProvider = blockchainInfoProvider;
-            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)>();
+            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
         }
 
         /// <summary>
@@ -32,9 +33,9 @@ namespace Ajuna.SAGE.Generic
         /// <param name="idType2"></param>
         /// <param name="transitionFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> AddTransition(TIdentifier identifier, TRules[] rules, TransitionFunction<TRules> transitionFunction)
+        public EngineBuilder<TIdentifier, TRules> AddTransition(TIdentifier identifier, TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> transitionFunction)
         {
-            _transitions[identifier] = (rules, transitionFunction);
+            _transitions[identifier] = (rules, fee, transitionFunction);
             return this;
         }
 
@@ -68,7 +69,7 @@ namespace Ajuna.SAGE.Generic
             // Add all the configured transitions
             foreach (var transition in _transitions)
             {
-                engine.AddTransition(transition.Key, transition.Value.Rules, transition.Value.Function);
+                engine.AddTransition(transition.Key, transition.Value.Rules, transition.Value.Fee, transition.Value.Function);
             }
 
             return engine;

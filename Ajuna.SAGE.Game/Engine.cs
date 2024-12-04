@@ -1,11 +1,12 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Generic.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Generic.Tests")]
 
 namespace Ajuna.SAGE.Generic
 {
-    public delegate IEnumerable<IAsset> TransitionFunction<TRules>(TRules[] rules, IEnumerable<IAsset> assets, byte[] randomHash, uint blockNumber)
+    public delegate IEnumerable<IAsset> TransitionFunction<TRules>(TRules[] rules, ITransitioFee? fee, IEnumerable<IAsset> assets, byte[] randomHash, uint blockNumber)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -16,7 +17,7 @@ namespace Ajuna.SAGE.Generic
 
         private readonly Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
 
-        private readonly Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)> _transitions;
+        private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
         /// <summary>
         /// Game
@@ -26,7 +27,7 @@ namespace Ajuna.SAGE.Generic
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
-            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, TransitionFunction<TRules> Function)>();
+            _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
         }
 
         /// <summary>
@@ -40,9 +41,9 @@ namespace Ajuna.SAGE.Generic
         /// <param name="idType1"></param>
         /// <param name="idType2"></param>
         /// <param name="transitionFunction"></param>
-        public void AddTransition(TIdentifier identifier, TRules[] rules, TransitionFunction<TRules> function)
+        public void AddTransition(TIdentifier identifier, TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> function)
         {
-            _transitions[identifier] = (rules, function);
+            _transitions[identifier] = (rules, fee, function);
         }
 
         /// <summary>
@@ -76,13 +77,14 @@ namespace Ajuna.SAGE.Generic
                 throw new NotSupportedException("Trying to Forge duplicates.");
             }
 
-            if (!_transitions.TryGetValue(identifier, out (TRules[] rules, TransitionFunction<TRules> function) tuple))
+            if (!_transitions.TryGetValue(identifier, out (TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> function) tuple))
             {
                 throw new NotSupportedException($"Unsupported Transition for Identifier ({identifier.TransitionType}, {identifier.TransitionSubType}).");
             }
 
-            var rules = tuple.rules;
-            var function = tuple.function;
+            TRules[] rules = tuple.rules;
+            ITransitioFee? fee = tuple.fee;
+            TransitionFunction<TRules> function = tuple.function;
 
             if (!rules.All(rule => _verifyFunction(executor, rule, assets, blockNumber)))
             {
@@ -90,12 +92,15 @@ namespace Ajuna.SAGE.Generic
                 return false;
             }
 
-            var list = new List<IAsset>();
+            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber);
 
-            // execute function
-            list.AddRange(function(rules, assets, randomHash, blockNumber));
+            if (functionResult == null)
+            {
+                result = [];
+                return false;
+            }
 
-            result = list.ToArray();
+            result = [.. functionResult];
 
             return true;
         }

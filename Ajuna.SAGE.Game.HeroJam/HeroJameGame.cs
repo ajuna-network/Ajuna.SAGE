@@ -19,7 +19,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             var rulesAndTransitions = GetRulesAndTranstionSets();
             foreach (var (identifier, rules, transition) in rulesAndTransitions)
             {
-                engineBuilder.AddTransition(identifier, rules, transition);
+                engineBuilder.AddTransition(identifier, rules, default, transition);
             }
 
             return engineBuilder.Build();
@@ -162,7 +162,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.SameExist, HeroRuleOp.MatchType, matchType),
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
                 var asset = new HeroJamAssetBuilder(null, HeroJamConstant.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetEnergy(100)
@@ -191,7 +191,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
                 //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
                 var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
@@ -224,7 +224,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, a, h, b) =>
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
                 //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
                 var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
