@@ -17,7 +17,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Initialize objects that are shared across all tests
             _blockchainInfoProvider = new BlockchainInfoProvider(1234);
             _engine = HeroJameGame.Create(_blockchainInfoProvider);
-            _player = new Player(Utils.GenerateRandomId());
+            _player = new Player(Utils.GenerateRandomId(), 100);
         }
 
         [Test]
@@ -31,6 +31,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_CreateHero_Transition()
         {
             Assert.That(_player.Assets?.Count, Is.EqualTo(0));
+            // initial balance
+            Assert.That(_player.Balance.Value, Is.EqualTo(100));
 
             // Set identifier for CreateHero
             var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero);
@@ -61,6 +63,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(heroAsset.StateChangeBlockNumber, Is.EqualTo(0));
 
             Assert.That(_player.Assets?.Count, Is.EqualTo(1));
+            // balance after create hero
+            Assert.That(_player.Balance.Value, Is.EqualTo(90));
         }
 
         [Test]

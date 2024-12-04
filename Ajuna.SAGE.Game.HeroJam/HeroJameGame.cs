@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Generic;
+﻿using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Generic;
 using Ajuna.SAGE.Generic.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam
@@ -17,9 +18,9 @@ namespace Ajuna.SAGE.Game.HeroJam
             engineBuilder.SetVerifyFunction(GetVerifyFunction());
 
             var rulesAndTransitions = GetRulesAndTranstionSets();
-            foreach (var (identifier, rules, transition) in rulesAndTransitions)
+            foreach (var (identifier, rules, fee, transition) in rulesAndTransitions)
             {
-                engineBuilder.AddTransition(identifier, rules, default, transition);
+                engineBuilder.AddTransition(identifier, rules, fee, transition);
             }
 
             return engineBuilder.Build();
@@ -136,9 +137,9 @@ namespace Ajuna.SAGE.Game.HeroJam
         ///
         /// </summary>
         /// <returns></returns>
-        private static IEnumerable<(HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>)> GetRulesAndTranstionSets()
+        private static IEnumerable<(HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>)> GetRulesAndTranstionSets()
         {
-            var result = new List<(HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>)>
+            var result = new List<(HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>)>
             {
                 GetCreateHero(),
                 GetSleepTransitionSet(ActionTime.Short),
@@ -153,7 +154,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         /// Get the transition set for the create hero action
         /// </summary>
         /// <returns></returns>
-        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetCreateHero()
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetCreateHero()
         {
             var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero);
             byte matchType = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
@@ -162,6 +163,8 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.SameExist, HeroRuleOp.MatchType, matchType),
             ];
 
+            ITransitioFee fee = new TransitioFee(10);
+
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
                 var asset = new HeroJamAssetBuilder(null, HeroJamConstant.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
@@ -169,10 +172,13 @@ namespace Ajuna.SAGE.Game.HeroJam
                     .SetStateType(StateType.Idle)
                     .SetStateChangeBlockNumber(0)
                     .Build();
+
+                asset.Balance.Deposit(fee.Fee);
+
                 return [asset];
             };
 
-            return (identifier, rules, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -180,7 +186,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         /// </summary>
         /// <param name="actionTime"></param>
         /// <returns></returns>
-        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetSleepTransitionSet(ActionTime actionTime)
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetSleepTransitionSet(ActionTime actionTime)
         {
             var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
             HeroJamRule[] rules = [
@@ -204,7 +210,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 return [heroJamAsset];
             };
 
-            return (identifier, rules, function);
+            return (identifier, rules, default, function);
         }
 
         /// <summary>
@@ -213,7 +219,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         /// <param name="workType"></param>
         /// <param name="actionTime"></param>
         /// <returns></returns>
-        private static (HeroJamIdentifier, HeroJamRule[], TransitionFunction<HeroJamRule>) GetWorkTransitionSet(WorkType workType, ActionTime actionTime)
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetWorkTransitionSet(WorkType workType, ActionTime actionTime)
         {
             var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)actionTime);
             HeroJamRule[] rules = [
@@ -237,7 +243,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 return [heroJamAsset];
             };
 
-            return (identifier, rules, function);
+            return (identifier, rules, default, function);
         }
 
         /// <summary>

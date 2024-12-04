@@ -94,7 +94,7 @@ namespace Ajuna.SAGE.Generic
             }
 
             // check if the executor has enough balance to pay the fee
-            if (fee != null && !executor.Balance.Withdraw(fee.Fee))
+            if (fee != null && fee.Fee > 0 && !executor.Balance.Withdraw(fee.Fee))
             {
                 result = [];
                 return false;

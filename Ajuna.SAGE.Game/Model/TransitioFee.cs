@@ -8,5 +8,10 @@
     public class TransitioFee : ITransitioFee
     {
         public uint Fee { get; private set; }
+
+        public TransitioFee(uint fee)
+        {
+            Fee = fee;
+        }
     }
 }

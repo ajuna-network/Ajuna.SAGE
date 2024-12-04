@@ -25,6 +25,19 @@ namespace Ajuna.SAGE.Game.Model
     {
         public uint Value { get ; private set; }
 
+        /// <summary>
+        /// Balance constructor
+        /// </summary>
+        public Balance() : this(0) { }
+
+        /// <summary>
+        /// Balance constructor
+        /// </summary>
+        public Balance(uint value)
+        {
+            Value = value;
+        }
+
         public void Deposit(uint amount)
         {
             Value += amount;

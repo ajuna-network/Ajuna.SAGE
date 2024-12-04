@@ -45,11 +45,11 @@ namespace Ajuna.SAGE.Generic.Model
         /// Player constructor
         /// </summary>
         /// <param name="id"></param>
-        public Player(byte[] id)
+        public Player(byte[] id, uint balance = 0)
         {
             Id = id;
             Assets = [];
-            Balance = new Balance();
+            Balance = new Balance(balance);
         }
 
         /// <inheritdoc/>
