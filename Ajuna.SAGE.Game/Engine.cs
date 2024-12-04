@@ -86,21 +86,24 @@ namespace Ajuna.SAGE.Generic
             ITransitioFee? fee = tuple.fee;
             TransitionFunction<TRules> function = tuple.function;
 
+            // check if the executor has the assets and the rules are all okay
             if (!rules.All(rule => _verifyFunction(executor, rule, assets, blockNumber)))
             {
                 result = [];
                 return false;
             }
 
-            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber);
-
-            if (functionResult == null)
+            // check if the executor has enough balance to pay the fee
+            if (fee != null && !executor.Balance.Withdraw(fee.Fee))
             {
                 result = [];
                 return false;
             }
 
-            result = [.. functionResult];
+            // execute the transition function
+            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber);
+
+            result = functionResult != null ? [..functionResult] : [];
 
             return true;
         }

@@ -1,4 +1,6 @@
-﻿namespace Ajuna.SAGE.Generic.Model
+﻿using Ajuna.SAGE.Game.Model;
+
+namespace Ajuna.SAGE.Generic.Model
 {
 
     /// <summary>
@@ -32,6 +34,11 @@
         byte[] Data { get; set; }
 
         /// <summary>
+        /// Balance
+        /// </summary>
+        IBalance Balance { get; }
+
+        /// <summary>
         /// Match type for same type as
         /// </summary>
         byte[] MatchType { get; }
@@ -53,13 +60,13 @@
 
         public byte CollectionId { get; }
 
-        public bool Unique { get; set; }
-
         public uint Score { get; set; }
 
         public uint Genesis { get; set; }
 
         public byte[] Data { get; set; }
+
+        public IBalance Balance { get; }
 
         /// <summary>
         /// Asset constructor
@@ -99,6 +106,7 @@
             Score = score;
             Genesis = genesis;
             Data = data;
+            Balance = new Balance();
         }
 
         /// <summary>

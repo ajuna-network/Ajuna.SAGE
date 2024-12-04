@@ -1,4 +1,6 @@
-﻿namespace Ajuna.SAGE.Generic.Model
+﻿using Ajuna.SAGE.Game.Model;
+
+namespace Ajuna.SAGE.Generic.Model
 {
     /// <summary>
     /// Player interface
@@ -21,6 +23,8 @@
         /// <param name="asset"></param>
         /// <returns></returns>
         bool IsOwnerOf(IAsset asset);
+
+        IBalance Balance { get; }
     }
 
     /// <summary>
@@ -34,6 +38,9 @@
         /// <inheritdoc/>
         public ICollection<IAsset>? Assets { get; set; }
 
+        /// <inheritdoc/>
+        public IBalance Balance { get; }
+
         /// <summary>
         /// Player constructor
         /// </summary>
@@ -42,6 +49,7 @@
         {
             Id = id;
             Assets = [];
+            Balance = new Balance();
         }
 
         /// <inheritdoc/>
