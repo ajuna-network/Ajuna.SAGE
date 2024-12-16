@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
-using Ajuna.SAGE.WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Yaml;
+using Serilog;
 
 namespace Ajuna.SAGE.WebAPI
 {
@@ -9,12 +10,22 @@ namespace Ajuna.SAGE.WebAPI
     {
         public static void Main(string[] args)
         {
+            // configure serilog
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo
+                .Console()
+                .CreateLogger();
+
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Set up configuration with YAML file
+            builder.Configuration
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddYamlFile("config.yml", optional: false, reloadOnChange: true);
 
             builder.Services.AddDbContext<ApiContext>
-                (opt => opt.UseInMemoryDatabase("AvatarDb"));
+                (opt => opt.UseInMemoryDatabase("SageDB"));
 
 
             builder.Services
@@ -26,27 +37,16 @@ namespace Ajuna.SAGE.WebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddDefaultPolicy(
-            //        policy =>
-            //        {
-            //            policy.AllowAnyOrigin()
-            //                .AllowAnyHeader()
-            //                .AllowAnyMethod();
-            //        });
-            //});
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

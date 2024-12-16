@@ -1,10 +1,12 @@
-﻿namespace Ajuna.SAGE.Model
+﻿using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Generic.Model;
+
+namespace Ajuna.SAGE.Model
 {
     public class DbPlayer
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public ICollection<DbAsset> Cards { get; set; }
+        public ulong Id { get; set; }
+        public List<DbAsset> Assets { get; set; }
+        public uint BalanceValue { get; set; }
     }
 }

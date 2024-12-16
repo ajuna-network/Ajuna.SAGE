@@ -1,42 +1,48 @@
 ﻿using Ajuna.SAGE.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ajuna.SAGE.WebAPI.Data
+public class ApiContext : DbContext
 {
-    public class ApiContext : DbContext
+    public DbSet<DbConfig> Configs { get; set; }
+    public DbSet<DbPlayer> Players { get; set; }
+    public DbSet<DbAsset> Assets { get; set; }
+
+    public ApiContext(DbContextOptions<ApiContext> options)
+        : base(options) { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<DbConfig> Configs { get; set; }
-        public DbSet<DbPlayer> Players { get; set; }
-        public DbSet<DbAsset> Assets { get; set; }
+        // DbConfig configuration
+        modelBuilder.Entity<DbConfig>()
+            .HasKey(c => c.Id);
 
-        public ApiContext(DbContextOptions<ApiContext> options)
-            : base(options) { }
+        // DbPlayer configuration
+        modelBuilder.Entity<DbPlayer>()
+            .HasKey(p => p.Id);
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // DbConfig configuration
-            modelBuilder.Entity<DbConfig>()
-                .HasKey(c => c.Id);
+        modelBuilder.Entity<DbPlayer>()
+            .Property(p => p.BalanceValue)
+            .IsRequired();
 
-            // DbPlayer configuration
-            modelBuilder.Entity<DbPlayer>()
-                .HasKey(p => p.Id);
+        modelBuilder.Entity<DbPlayer>()
+            .HasMany(p => p.Assets)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<DbPlayer>()
-                .HasMany(p => p.Cards)
-                .WithOne(a => a.Player)
-                .HasForeignKey(a => a.PlayerId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // DbAsset configuration
+        modelBuilder.Entity<DbAsset>()
+            .HasKey(a => a.Id);
 
-            // DbAsset configuration
-            modelBuilder.Entity<DbAsset>()
-                .HasKey(a => a.Id);
+        modelBuilder.Entity<DbAsset>()
+            .Property(a => a.Data) 
+            .IsRequired();
 
-            modelBuilder.Entity<DbAsset>()
-                .Property(a => a.Dna);
+        modelBuilder.Entity<DbAsset>()
+            .Property(a => a.CollectionId)
+            .IsRequired();
 
-            modelBuilder.Entity<DbAsset>()
-                .Ignore(a => a.Player);
-        }
+        modelBuilder.Entity<DbAsset>()
+            .Property(a => a.BalanceValue)
+            .IsRequired();
     }
 }

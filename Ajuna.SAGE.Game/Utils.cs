@@ -165,11 +165,11 @@ namespace Ajuna.SAGE.Generic
         /// Generate a random id
         /// </summary>
         /// <returns></returns>
-        public static byte[] GenerateRandomId()
+        public static ulong GenerateRandomId()
         {
-            var id = new byte[32];
+            var id = new byte[8];
             RandomNumberGenerator.Fill(id);
-            return id;
+            return BitConverter.ToUInt64(id);
         }
     }
 }

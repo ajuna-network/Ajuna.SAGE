@@ -6,12 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Serilog" Version="3.1.1" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Yaml" Version="2.0.0-preview2" />
+		<PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Test" />
@@ -21,6 +25,12 @@
 	  <ProjectReference Include="..\Ajuna.SAGE.Game.HeroJam\Ajuna.SAGE.Game.HeroJam.csproj" />
 	  <ProjectReference Include="..\Ajuna.SAGE.Game\Ajuna.SAGE.Game.csproj" />
 	  <ProjectReference Include="..\Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="config.yml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

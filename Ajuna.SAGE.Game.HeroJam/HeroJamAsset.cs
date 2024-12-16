@@ -8,14 +8,13 @@ namespace Ajuna.SAGE.Game.HeroJam
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
         // X....X.. ........ ........ ....XXXX
-        public HeroJamAsset(byte[] id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis) { }
+        public HeroJamAsset(ulong id, byte collectionId, uint score, uint genesis)
+            : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        { }
 
         public HeroJamAsset(IAsset asset) 
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis)
-        {
-            Data = asset.Data;
-        }
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
+        { }
 
         // [0]000000 00111111 11112222 22222233
         // [0]234567 89012345 67890123 45678901

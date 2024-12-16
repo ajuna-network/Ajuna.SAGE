@@ -12,7 +12,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithByteArrayDna()
         {
             // Arrange
-            byte[] id = [1, 2, 3, 4];
+            ulong id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
@@ -35,14 +35,14 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithHexStringDna()
         {
             // Arrange
-            byte[] id = [1, 2, 3, 4];
+            ulong id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
             string hexStringDna = "05060708";
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, genesis, hexStringDna);
+            Asset asset = new Asset(id, collectionId, score, genesis, Utils.HexToBytes(hexStringDna));
 
             // Assert
             Assert.That(asset.Data, Is.EqualTo(Utils.HexToBytes(hexStringDna)), "The DNA should match the value converted from the hex string.");
@@ -52,13 +52,13 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithDefaults()
         {
             // Arrange
-            byte[] id = [1, 2, 3, 4];
+            ulong id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, genesis);
+            Asset asset = new Asset(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE]);
 
             // Assert
             Assert.Multiple(() =>
@@ -74,7 +74,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_Asset_Empty()
         {
             // Arrange
-            byte[] id = [1, 2, 3, 4];
+            ulong id = 1234;
             byte collectionId = 1;
 
             // Act
@@ -86,7 +86,7 @@ namespace Ajuna.SAGE.Tests
                 Assert.That(emptyAsset.Id, Is.EqualTo(id), "The ID should match the provided value.");
                 Assert.That(emptyAsset.CollectionId, Is.EqualTo(collectionId), "The SetId should match the provided value.");
                 Assert.That(emptyAsset.Score, Is.EqualTo(0), "The Score should be initialized to 0.");
-                Assert.That(emptyAsset.Data, Is.EqualTo(new byte[Constants.DNA_SIZE]), "The DNA should be initialized to the default size.");
+                Assert.That(emptyAsset.Data, Is.Null, "The DNA should be initialized to null on an empty object.");
             });
         }
 
@@ -98,13 +98,13 @@ namespace Ajuna.SAGE.Tests
             uint genesis = 0;
 
             // Arrange
-            byte[] id1 = [1, 2, 3, 4];
-            byte[] id2 = [1, 2, 3, 4];
-            byte[] id3 = [4, 3, 2, 1];
+            ulong id1 = 1234;
+            ulong id2 = 1234;
+            ulong id3 = 4321;
 
-            Asset asset1 = new Asset(id1, collectionId, score, genesis);
-            Asset asset2 = new Asset(id2, collectionId, score, genesis);
-            Asset asset3 = new Asset(id3, collectionId, score, genesis);
+            Asset asset1 = new Asset(id1, collectionId, score, genesis, []);
+            Asset asset2 = new Asset(id2, collectionId, score, genesis, []);
+            Asset asset3 = new Asset(id3, collectionId, score, genesis, []);
 
             // Act & Assert
             Assert.Multiple(() =>

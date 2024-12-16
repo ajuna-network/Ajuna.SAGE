@@ -2,7 +2,7 @@
 {
     public class DbConfig
     {
-        public int Id { get; set; }
+        public ulong Id { get; set; }
         public DateTime Genesis { get; set; }
     }
 }

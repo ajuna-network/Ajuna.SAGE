@@ -25,13 +25,14 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_AddTransition_And_Transition_Valid()
         {
-            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
-            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            string playerIdHex = "0xb4e21f9a7c3d5e8f";
+            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var player = new Player(Utils.HexToBytes(playerId));
+            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var player = new Player(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -47,9 +48,10 @@ namespace Ajuna.SAGE.Generic.Tests
 
             _engine.AddTransition(identifier, new[] { rules }, default, function);
 
+            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
             var assets = new IAsset[]
             {
-                new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis)
+                new Asset(assetId, collectionId, score, genesis, [])
             };
 
             // Act
@@ -67,13 +69,14 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_DuplicateAssets_ThrowsException()
         {
-            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
-            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            string playerIdHex = "0xb4e21f9a7c3d5e8f";
+            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var player = new Player(Utils.HexToBytes(playerId));
+            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var player = new Player(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -83,7 +86,8 @@ namespace Ajuna.SAGE.Generic.Tests
 
             _engine.AddTransition(identifier, [rules], default, function);
 
-            var duplicateAsset = new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis);
+            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
+            var duplicateAsset = new Asset(assetId, collectionId, score, genesis, []);
             var assets = new Asset[] { duplicateAsset, duplicateAsset };
 
             // Act & Assert
@@ -93,19 +97,21 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_UnsupportedIdentifier_ThrowsException()
         {
-            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
-            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            string playerIdHex = "0xb4e21f9a7c3d5e8f";
+            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var player = new Player(Utils.HexToBytes(playerId));
+            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var player = new Player(playerId);
 
             // Arrange
             var unsupportedIdentifier = new ActionIdentifier((ActionType)99, (ActionSubType)99);
+            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
-                new Asset(Utils.HexToBytes(assetId), collectionId, score, genesis)
+                new Asset(assetId, collectionId, score, genesis,[])
             };
 
             // Act & Assert
@@ -115,13 +121,14 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_Transition_InvalidAssetCount_ReturnsFalse()
         {
-            string playerId = "0xb4e21f9a7c3d5e8f4a0b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f";
-            string assetId = "0x3e4a6f8d9c0f1b2e4a6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a";
+            string playerIdHex = "0xb4e21f9a7c3d5e8f";
+            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var player = new Player(Utils.HexToBytes(playerId));
+            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var player = new Player(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -147,9 +154,10 @@ namespace Ajuna.SAGE.Generic.Tests
                 .AddTransition(identifier, [rule], default, function)
                 .Build();
 
+            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
-                new(Utils.HexToBytes(assetId), collectionId, score, genesis)
+                new(assetId, collectionId, score, genesis, [])
             };
 
             // Act

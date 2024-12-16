@@ -1,31 +1,8 @@
 ﻿using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Model;
 
 namespace Ajuna.SAGE.Generic.Model
 {
-    /// <summary>
-    /// Player interface
-    /// </summary>
-    public interface IPlayer
-    {
-        /// <summary>
-        /// Id of the player
-        /// </summary>
-        byte[] Id { get; set; }
-
-        /// <summary>
-        /// Assets of the player
-        /// </summary>
-        ICollection<IAsset>? Assets { get; set; }
-
-        /// <summary>
-        /// Is owner of asset
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <returns></returns>
-        bool IsOwnerOf(IAsset asset);
-
-        IBalance Balance { get; }
-    }
 
     /// <summary>
     /// Player class
@@ -33,7 +10,7 @@ namespace Ajuna.SAGE.Generic.Model
     public class Player : IPlayer, IEquatable<Player>
     {
         /// <inheritdoc/>
-        public byte[] Id { get; set; }
+        public ulong Id { get; set; }
 
         /// <inheritdoc/>
         public ICollection<IAsset>? Assets { get; set; }
@@ -45,7 +22,7 @@ namespace Ajuna.SAGE.Generic.Model
         /// Player constructor
         /// </summary>
         /// <param name="id"></param>
-        public Player(byte[] id, uint balance = 0)
+        public Player(ulong id, uint balance = 0)
         {
             Id = id;
             Assets = [];
@@ -60,13 +37,13 @@ namespace Ajuna.SAGE.Generic.Model
                 return false;
             }
 
-            return Id.SequenceEqual(other.Id);
+            return Id == other.Id;
         }
 
         /// <inheritdoc/>
         public bool IsOwnerOf(IAsset asset)
         {
-           return Assets != null && Assets.Any(a => a.Equals(asset));
+            return Assets != null && Assets.Any(a => a.Equals(asset));
         }
 
         /// <summary>
@@ -104,5 +81,18 @@ namespace Ajuna.SAGE.Generic.Model
                 }
             }
         }
+
+        /// <summary>
+        /// Map to domain
+        /// </summary>
+        /// <param name="dbPlayer"></param>
+        /// <returns></returns>
+        public static Player MapToDomain(DbPlayer dbPlayer) => 
+            new Player(dbPlayer.Id, dbPlayer.BalanceValue)
+            {
+                Assets = dbPlayer.Assets?
+                    .Select(DbAsset => Asset.MapToDomain(DbAsset))
+                    .ToList<IAsset>()
+            };
     }
 }

@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_EngineBuilder_CreatesEngineWithTransitions()
         {
-            var player = new Player(new byte[] { 1 });
+            var player = new Player(1);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -44,7 +44,7 @@ namespace Ajuna.SAGE.Generic.Tests
 
             var assets = new Asset[]
             {
-                new Asset(new byte[] { 1 }, 1, 50, 0)
+                new Asset(1, 1, 50, 0, [])
             };
 
             // Act
@@ -62,7 +62,7 @@ namespace Ajuna.SAGE.Generic.Tests
         [Test]
         public void Test_EngineBuilder_CanAddMultipleTransitions()
         {
-            var player = new Player(new byte[] { 1 });
+            var player = new Player(1);
 
             // Arrange
             var identifier1 = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -93,7 +93,7 @@ namespace Ajuna.SAGE.Generic.Tests
 
             var assets = new Asset[]
             {
-                new([1], 1, 50, 0)
+                new(1, 1, 50, 0, [])
             };
 
             // Act

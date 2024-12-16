@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 {
     public class HeroJamAssetBuilder
     {
-        private byte[] _id;
+        private ulong _id;
         private readonly byte _collectionId;
         private readonly AssetType _assetType;
         private readonly AssetSubType _assetSubType;
@@ -18,7 +18,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         private StateType _stateType = StateType.None;
         private uint _stateChangeBlockNumber = 0;
 
-        public HeroJamAssetBuilder(byte[]? id, byte collectionId, AssetType assetType, AssetSubType assetSubType)
+        public HeroJamAssetBuilder(ulong? id, byte collectionId, AssetType assetType, AssetSubType assetSubType)
         {
             _id = id ?? GenerateRandomId();
             _collectionId = collectionId;
@@ -29,19 +29,16 @@ namespace Ajuna.SAGE.Game.HeroJam
         public HeroJamAssetBuilder(byte collectionId, AssetType assetType, AssetSubType assetSubType)
             : this(null, collectionId, assetType, assetSubType) { }
 
-        private byte[] GenerateRandomId()
+        private ulong GenerateRandomId()
         {
-            var id = new byte[32];
+            var id = new byte[8];
             RandomNumberGenerator.Fill(id);
-            return id;
+
+            return BitConverter.ToUInt64(id, 0);
         }
 
-        public HeroJamAssetBuilder SetId(byte[] id)
+        public HeroJamAssetBuilder SetId(ulong id)
         {
-            if (id.Length != 32)
-            {
-                throw new ArgumentException("ID must be 32 bytes long", nameof(id));
-            }
             _id = id;
             return this;
         }
