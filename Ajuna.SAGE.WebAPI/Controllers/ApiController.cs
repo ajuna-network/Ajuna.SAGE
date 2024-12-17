@@ -44,7 +44,9 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                 return NotFound("No genesis block found!");
             }
 
-            return Ok(CurrentBlockNumber(config.Genesis));
+            _engine.BlockchainInfoProvider.CurrentBlockNumber = CurrentBlockNumber(config.Genesis);
+
+            return Ok(_engine.BlockchainInfoProvider.CurrentBlockNumber);
         }
 
         [HttpPost("CreatePlayer")]
@@ -97,6 +99,9 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             {
                 return NotFound("DbConfig doesn't exist!");
             }
+
+            // set the current block number
+            _engine.BlockchainInfoProvider.CurrentBlockNumber = CurrentBlockNumber(config.Genesis);
 
             var inDbPlayer = _context.Players
                 .Include(p => p.Assets)

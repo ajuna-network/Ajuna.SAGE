@@ -168,6 +168,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
                 var asset = new HeroJamAssetBuilder(null, HeroJamConstant.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                    .SetGeneses(b)
                     .SetEnergy(100)
                     .SetStateType(StateType.Idle)
                     .SetStateChangeBlockNumber(0)

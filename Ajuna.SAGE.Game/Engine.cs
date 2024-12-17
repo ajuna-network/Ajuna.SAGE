@@ -14,6 +14,7 @@ namespace Ajuna.SAGE.Generic
          where TRules : ITransitionRule
     {
         private readonly IBlockchainInfoProvider _blockchainInfo;
+        public IBlockchainInfoProvider BlockchainInfoProvider => _blockchainInfo;
 
         private readonly Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
 
@@ -107,5 +108,6 @@ namespace Ajuna.SAGE.Generic
 
             return true;
         }
+
     }
 }

@@ -12,7 +12,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         private readonly AssetSubType _assetSubType;
 
         private uint _score = 0;
-        private readonly uint _genesis;
+        private uint _genesis;
 
         private byte _energy = 0;
         private StateType _stateType = StateType.None;
@@ -40,6 +40,12 @@ namespace Ajuna.SAGE.Game.HeroJam
         public HeroJamAssetBuilder SetId(ulong id)
         {
             _id = id;
+            return this;
+        }
+
+        public HeroJamAssetBuilder SetGeneses(uint genesis)
+        {
+            _genesis = genesis;
             return this;
         }
 
@@ -73,6 +79,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             {
                 AssetType = _assetType,
                 AssetSubType = _assetSubType,
+                Genesis = _genesis,
                 Energy = _energy,
                 StateType = _stateType,
                 StateChangeBlockNumber = _stateChangeBlockNumber

@@ -4,7 +4,7 @@ namespace Ajuna.SAGE.Generic
     public interface IBlockchainInfoProvider
     {
         byte[] GenerateRandomHash();
-        uint CurrentBlockNumber { get; }
+        uint CurrentBlockNumber { get; set; }
         void IncrementBlockNumber();
     }
 
