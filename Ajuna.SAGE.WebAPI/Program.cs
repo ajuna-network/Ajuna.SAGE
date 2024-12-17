@@ -1,4 +1,8 @@
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
+using Ajuna.SAGE.Game.HeroJam;
+using Ajuna.SAGE.Generic;
+using Ajuna.SAGE.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Yaml;
@@ -27,6 +31,13 @@ namespace Ajuna.SAGE.WebAPI
             builder.Services.AddDbContext<ApiContext>
                 (opt => opt.UseInMemoryDatabase("SageDB"));
 
+            // Register the engine
+            builder.Services.AddSingleton(sp =>
+            {
+                var randomSeed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+                var blockchainProvider = new BlockchainInfoProvider(randomSeed);
+                return HeroJameGame.Create(blockchainProvider);
+            });
 
             builder.Services
                 .AddControllers()
@@ -39,10 +50,35 @@ namespace Ajuna.SAGE.WebAPI
 
             var app = builder.Build();
 
+            // Seed initial data
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+
+                // Add a default config if none exists
+                if (!context.Configs.Any())
+                {
+                    context.Configs.Add(new DbConfig { Genesis = DateTime.Now });
+                }
+
+                // Add a default player if none exists
+                if (!context.Players.Any())
+                {
+                    context.Players.Add(new DbPlayer
+                    {
+                        Id = 1,
+                        BalanceValue = 1000,
+                        Assets = new List<DbAsset>()
+                    });
+                }
+
+                context.SaveChanges();
+            }
+
             // Configure the HTTP request pipeline.
             //if (app.Environment.IsDevelopment())
             //{
-                app.UseSwagger();
+            app.UseSwagger();
                 app.UseSwaggerUI();
             //}
 

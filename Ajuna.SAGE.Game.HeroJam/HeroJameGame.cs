@@ -232,12 +232,61 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-                //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
                 var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
                 {
                     StateType = StateType.Work,
                     StateValue = (byte)workType,
                     StateChangeBlockNumber = b + GetBlockTimeFrom(actionTime)
+                };
+
+                return [heroJamAsset];
+            };
+
+            return (identifier, rules, default, function);
+        }
+
+        /// <summary>
+        /// Get the transition set for the sleep action
+        /// </summary>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetIdleTransitionSet()
+        {
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Idle, (byte)0);
+            HeroJamRule[] rules = [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
+                new HeroJamRule(HeroRuleType.AllAssetType, HeroRuleOp.EQ, (uint)AssetType.Hero),
+                new HeroJamRule(HeroRuleType.AllStateType, HeroRuleOp.NE, (uint)StateType.Idle),
+                new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
+            ];
+
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
+            {
+                var hero = (HeroJamAsset)a.ElementAt(0);
+
+                switch (hero.StateType)
+                {
+                    case StateType.Sleep:
+                        {
+                            // Calculate energy recouperation
+                        }
+                        break;
+
+                    case StateType.Work:
+                        {
+                            // Calculate energy consumption
+                            // Calcualte reward
+                        }
+                        break;
+                }
+
+                //var heroJamAsset = a.ElementAt(0) as HeroJamAsset;
+                var heroJamAsset = new HeroJamAsset(a.ElementAt(0))
+                {
+                    StateType = StateType.Idle,
+                    StateValue = (byte)0,
+                    StateChangeBlockNumber = 0
                 };
 
                 return [heroJamAsset];

@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -53,10 +54,12 @@ namespace Ajuna.SAGE.WebAPI.Test
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created), "Status code should be Created");
 
-            var createdPlayer = await response.Content.ReadFromJsonAsync<YourPlayerDtoOrDbPlayerClass>();
-            Assert.That(createdPlayer, Is.Not.Null, "Created player should not be null");
-            Assert.That(createdPlayer.Id, Is.EqualTo(1UL), "Player Id should match the requested Id");
-            Assert.That(createdPlayer.BalanceValue, Is.EqualTo(100), "Player balance should match the requested balance");
+            var content = await response.Content.ReadAsStringAsync();
+            var createdPlayer = JObject.Parse(content);
+
+            Assert.That(createdPlayer, Is.Not.Null);
+            Assert.That((ulong)createdPlayer["id"], Is.EqualTo(1UL));
+            Assert.That((int)createdPlayer["balanceValue"], Is.EqualTo(100));
         }
 
         [Test]
@@ -72,11 +75,4 @@ namespace Ajuna.SAGE.WebAPI.Test
         }
     }
 
-    // Replace with your actual player model
-    public class YourPlayerDtoOrDbPlayerClass
-    {
-        public ulong Id { get; set; }
-        public int BalanceValue { get; set; }
-        // Add other properties as needed
-    }
 }

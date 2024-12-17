@@ -14,7 +14,7 @@ namespace Ajuna.SAGE.Model
 
         public static DbAsset MapToDb(IAsset asset) => new()
         {
-            Id = asset.Id,
+            //Id = asset.Id,
             CollectionId = asset.CollectionId,
             Score = asset.Score,
             Genesis = asset.Genesis,

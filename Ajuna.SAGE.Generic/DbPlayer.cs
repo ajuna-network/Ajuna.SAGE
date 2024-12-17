@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Model
     public class DbPlayer
     {
         public ulong Id { get; set; }
-        public List<DbAsset> Assets { get; set; }
+        public ICollection<DbAsset>? Assets { get; set; }
         public uint BalanceValue { get; set; }
     }
 }

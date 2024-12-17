@@ -1,4 +1,6 @@
-﻿using Ajuna.SAGE.Game.Model;
+﻿using Ajuna.SAGE.Game.HeroJam;
+using Ajuna.SAGE.Game.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ajuna.SAGE.WebAPI.Model
 {
@@ -7,5 +9,14 @@ namespace Ajuna.SAGE.WebAPI.Model
         public ulong Id { get; set; }
 
         public uint Balance { get; set; }
+    }
+
+    public class TransitionRequest
+    {
+        public ulong PlayerId { get; set; }
+
+        public HeroJamIdentifier Identifier { get; set; }
+
+        public ulong[]? AssetIds { get; set; }
     }
 }

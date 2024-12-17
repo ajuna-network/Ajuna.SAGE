@@ -17,18 +17,12 @@ namespace Ajuna.SAGE.WebAPI.Controllers
 
         private readonly ApiContext _context;
 
-        private Engine<HeroJamIdentifier, HeroJamRule>? _engine;
+        private Engine<HeroJamIdentifier, HeroJamRule> _engine;
 
-        public ApiController(ApiContext context)
+        public ApiController(ApiContext context, Engine<HeroJamIdentifier, HeroJamRule> engine)
         {
-            // create engine
-            var randomSeed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
-            var blockchainProvider = new BlockchainInfoProvider(randomSeed);
-            _engine = HeroJameGame.Create(blockchainProvider);
-
             _context = context;
-            _context.Configs.Add(new DbConfig { Genesis = DateTime.Now });
-            _context.SaveChanges();
+            _engine = engine;
         }
 
         [HttpGet("HeroJam")]
@@ -47,7 +41,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             var config = _context.Configs.FirstOrDefault();
             if (config == null)
             {
-                return new JsonResult(NotFound("No genesis block found!"));
+                return NotFound("No genesis block found!");
             }
 
             return Ok(CurrentBlockNumber(config.Genesis));
@@ -66,7 +60,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             {
                 Id = request.Id,
                 BalanceValue = request.Balance,
-                Assets = []
+                Assets = new List<DbAsset>()
             };
 
             _context.Players.Add(newDbPlayer);
@@ -75,7 +69,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             return CreatedAtAction(nameof(DbPlayer), new { playerId = newDbPlayer.Id }, newDbPlayer);
         }
 
-        [HttpGet("Player")]
+        [HttpGet("Player/{playerId}")]
         public IActionResult DbPlayer(ulong playerId)
         {
             var indDbPlayer = _context.Players
@@ -84,14 +78,14 @@ namespace Ajuna.SAGE.WebAPI.Controllers
 
             if (indDbPlayer == null)
             {
-                return new JsonResult(NotFound("No player found!"));
+                return NotFound("No player found!");
             }
 
             return Ok(indDbPlayer);
         }
 
-        [HttpGet("Transition")]
-        public IActionResult Transition(ulong inDbPlayerId, HeroJamIdentifier identifier, [FromQuery] ulong[] inDbAssetIds)
+        [HttpPost("Transition")]
+        public IActionResult Transition([FromBody] TransitionRequest request)
         {
             if (_engine == null)
             {
@@ -106,28 +100,32 @@ namespace Ajuna.SAGE.WebAPI.Controllers
 
             var inDbPlayer = _context.Players
                 .Include(p => p.Assets)
-                .Where(p => p.Id == inDbPlayerId)
+                .Where(p => p.Id == request.PlayerId)
                 .FirstOrDefault();
 
             if (inDbPlayer == null)
             {
-                return NotFound($"Player with id={inDbPlayerId} doesn't exist!");
+                return NotFound($"Player with id={request.PlayerId} doesn't exist!");
             }
 
             var inDbAssets = new List<DbAsset>();
             var assets = new List<IAsset>();
 
-            foreach (var inDbAssetId in inDbAssetIds)
+            // get all assets from the player, if asset ids have been provided
+            if (request.AssetIds != null && request.AssetIds.Length > 0)
             {
-                var inDbAsset = _context.Assets.FirstOrDefault(p => p.Id == inDbAssetId);
-                if (inDbAsset == null)
+                foreach (var inDbAssetId in request.AssetIds)
                 {
-                    return NotFound($"Asset with id={inDbAssetId} doesn't exist!");
+                    var inDbAsset = _context.Assets.FirstOrDefault(p => p.Id == inDbAssetId);
+                    if (inDbAsset == null)
+                    {
+                        return NotFound($"Asset with id={inDbAssetId} doesn't exist!");
+                    }
+
+                    inDbAssets.Add(inDbAsset);
+
+                    assets.Add(Asset.MapToDomain(inDbAsset));
                 }
-
-                inDbAssets.Add(inDbAsset);
-
-                assets.Add(Asset.MapToDomain(inDbAsset));
             }
 
             var player = Player.MapToDomain(inDbPlayer);
@@ -135,20 +133,50 @@ namespace Ajuna.SAGE.WebAPI.Controllers
             // TODO: make sure no trade assets
             // TODO: make sure no locked assets
 
-            var flag = _engine.Transition(player, identifier, [.. assets], out IAsset[] result);
+            var flag = _engine.Transition(player, request.Identifier, [.. assets], out IAsset[] result);
 
             if (!flag)
             {
                 return Conflict("Transition failed!");
             }
 
-            // remove all assets from the player, that went into the transition
-            inDbAssets.ForEach(p => inDbPlayer.Assets.Remove(p));
+            var assetIds = assets.Select(a => a.Id).ToHashSet();
+            var resultIds = result.Select(r => r.Id).ToHashSet();
 
-            // Add the resulting assets to the player
-            foreach (var avatar in result)
+            var toBeRemoved = assets.Where(a => !resultIds.Contains(a.Id)).ToList();
+            var toBeCreated = result.Where(r => !assetIds.Contains(r.Id)).ToList();
+            var toBeUpdated = result.Where(r => assetIds.Contains(r.Id)).ToList();
+
+            // Remove the assets no longer needed
+            var removedAssetIds = toBeRemoved.Select(a => a.Id).ToHashSet();
+            var removedDbAssets = _context.Assets.Where(p => removedAssetIds.Contains(p.Id)).ToList();
+            if (removedDbAssets.Count > 0)
             {
-                inDbPlayer.Assets.Add(SAGE.Model.DbAsset.MapToDb(avatar));
+                _context.Assets.RemoveRange(removedDbAssets);
+            }
+
+            // Create new assets
+            var newDbAssets = toBeCreated.Select(a => SAGE.Model.DbAsset.MapToDb(a)).ToList();
+            foreach (var newDbAsset in newDbAssets)
+            {
+                inDbPlayer.Assets.Add(newDbAsset);
+            }
+
+            // Update all assets that have been tagged to be updated
+            foreach (var updatedAsset in toBeUpdated)
+            {
+                var inDbAsset = _context.Assets.FirstOrDefault(p => p.Id == updatedAsset.Id);
+                if (inDbAsset == null)
+                {
+                    return NotFound($"Asset with id={updatedAsset.Id} doesn't exist!");
+                }
+
+                // Update properties
+                inDbAsset.Score = updatedAsset.Score;
+                inDbAsset.CollectionId = updatedAsset.CollectionId;
+                inDbAsset.Genesis = updatedAsset.Genesis;
+                inDbAsset.Data = updatedAsset.Data;
+                inDbAsset.BalanceValue = updatedAsset.Balance.Value;
             }
 
             // add all result cards and save
@@ -164,7 +192,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
 
             if (inDbAsset == null)
             {
-                return new JsonResult(NotFound($"Asset with id={assetId} doesn't exist!"));
+                return NotFound($"Asset with id={assetId} doesn't exist!");
             }
 
             return Ok(inDbAsset);

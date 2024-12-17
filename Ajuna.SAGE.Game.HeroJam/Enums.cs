@@ -6,8 +6,8 @@
         Create = 1,
         Sleep = 2,
         Work = 3,
-        Travel = 4,
-        Claim = 5,
+        Idle = 4,
+        //Claim = 5,
     }
 
     public enum ActionTime : byte
@@ -22,12 +22,12 @@
     {
         None = 0,
         Hunt = 1,
-        Gather = 2,
-        Build = 3,
-        Travel = 4,
-        Train = 5,
-        Fight = 6,
-        Rest = 7,
+        //Gather = 2,
+        //Build = 3,
+        //Travel = 4,
+        //Train = 5,
+        //Fight = 6,
+        //Rest = 7,
     }
 
     public enum ZoneType : byte
