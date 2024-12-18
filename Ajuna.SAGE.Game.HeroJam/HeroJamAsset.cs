@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         public AssetType AssetType
         {
             get => (AssetType)Data.Read(0, ByteType.High);
-            set => Data.Set(0, ByteType.High, (byte)value);
+            set => Data?.Set(0, ByteType.High, (byte)value);
         }
 
         // [0]000000 00111111 11112222 22222233
@@ -31,7 +31,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         public AssetSubType AssetSubType
         {
             get => (AssetSubType)Data.Read(0, ByteType.Low);
-            set => Data.Set(0, ByteType.Low, (byte)value);
+            set => Data?.Set(0, ByteType.Low, (byte)value);
         }
 
         //  0000[0]0 00111111 11112222 22222233
@@ -40,7 +40,16 @@ namespace Ajuna.SAGE.Game.HeroJam
         public byte Energy
         {
             get => Data.Read(5, ByteType.Full);
-            set => Data.Set(5, ByteType.Full, value);
+            set => Data?.Set(5, ByteType.Full, value);
+        }
+
+        //  00000[0] 00111111 11112222 22222233
+        //  01234[6] 89012345 67890123 45678901
+        //  ......X. ........ ........ ........
+        public byte Fatigue
+        {
+            get => Data.Read(6, ByteType.Full);
+            set => Data?.Set(6, ByteType.Full, value);
         }
 
         //  00000000 00111111 11112222 2[2]2233
@@ -54,11 +63,20 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         //  00000000 00111111 11112222 22[2]233
         //  01234567 89012345 67890123 45[7]901
-        //  ........ ........ ........ ...X....
-        public byte StateValue
+        //  ........ ........ ........ ...H....
+        public byte StateSubType
         {
-            get => Data.Read(27, ByteType.Full);
-            set => Data.Set(27, ByteType.Full, value);
+            get => Data.Read(27, ByteType.High);
+            set => Data?.Set(27, ByteType.High, (byte)value);
+        }
+
+        //  00000000 00111111 11112222 22[2]233
+        //  01234567 89012345 67890123 45[7]901
+        //  ........ ........ ........ ...L....
+        public byte StateSubValue
+        {
+            get => Data.Read(27, ByteType.Low);
+            set => Data?.Set(27, ByteType.Low, value);
         }
 
         //  00000000 00111111 11112222 222[2]33
@@ -67,7 +85,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         public uint StateChangeBlockNumber
         {
             get => BitConverter.ToUInt32(Data.Read(28, 4));
-            set => Data.Set(28, BitConverter.GetBytes(value));
+            set => Data?.Set(28, BitConverter.GetBytes(value));
         }
 
         /// <inheritdoc/>

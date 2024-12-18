@@ -10,24 +10,34 @@
         //Claim = 5,
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum ActionTime : byte
     {
         None = 0,
         Short = 1,
         Medium = 2,
         Long = 3
+        // *** DO NOT PASS 15 INDEX ***
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum WorkType : byte
     {
         None = 0,
         Hunt = 1,
-        //Gather = 2,
-        //Build = 3,
-        //Travel = 4,
-        //Train = 5,
-        //Fight = 6,
-        //Rest = 7,
+        // *** DO NOT PASS 15 INDEX ***
+    }
+
+    public enum SleepType : byte
+    {
+        None = 0,
+        Normal = 1,
+        Fatigue = 2,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum ZoneType : byte
@@ -84,5 +94,12 @@
         Sleep = 1,
         Idle = 2,
         Work = 3,
+    }
+
+    public enum HeroStat
+    {
+        None = 0,
+        Energy = 1,
+        Fatigue = 2,
     }
 }
