@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ajuna.SAGE.Generic.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,5 +43,22 @@ namespace Ajuna.SAGE.Game.Model
 
             return false;
         }
+
+        public void SetValue(uint value)
+        {
+            Value = value;
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(IBalance? other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return Value == other.Value;
+        }
+
     }
 }

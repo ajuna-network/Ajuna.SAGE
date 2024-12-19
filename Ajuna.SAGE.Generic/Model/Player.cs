@@ -49,35 +49,38 @@ namespace Ajuna.SAGE.Generic.Model
         /// <summary>
         /// Transition
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="output"></param>
-        public void Transition(IAsset[]? input, IAsset[]? output)
+        /// <param name="inputs"></param>
+        /// <param name="outputs"></param>
+        public void Transition(IAsset[]? inputs, IAsset[]? outputs)
         {
             Assets ??= [];
 
-            input ??= [];
-            output ??= [];
+            inputs ??= [];
+            outputs ??= [];
 
             // Remove assets present in input but not in output
-            foreach (var asset in input)
+            foreach (var input in inputs)
             {
-                if (!output.Any(a => a.Equals(asset)))
+                if (!outputs.Any(a => a.Equals(input)))
                 {
-                    Assets.Remove(asset);
+                    Assets.Remove(input);
                 }
             }
 
             // Add or update assets present in output but not in the current assets
-            foreach (var asset in output)
+            foreach (var output in outputs)
             {
-                var existingAsset = Assets.FirstOrDefault(a => a.Equals(asset));
-                if (existingAsset == null)
+                var asset = Assets.FirstOrDefault(a => a.Equals(output));
+                if (asset == null)
                 {
-                    Assets.Add(asset);
+                    Assets.Add(output);
                 }
                 else
                 {
-                    // TODO: check if we need to updated somethign here
+                    // update mutable data fields
+                    asset.Score = output.Score;
+                    asset.Data = output.Data;
+                    asset.Balance.SetValue(output.Balance.Value);
                 }
             }
         }

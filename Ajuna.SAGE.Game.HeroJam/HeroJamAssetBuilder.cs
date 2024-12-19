@@ -43,7 +43,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             return this;
         }
 
-        public HeroJamAssetBuilder SetGeneses(uint genesis)
+        public HeroJamAssetBuilder SetGenesis(uint genesis)
         {
             _genesis = genesis;
             return this;

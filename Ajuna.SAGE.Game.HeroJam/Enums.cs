@@ -6,7 +6,7 @@
         Create = 1,
         Sleep = 2,
         Work = 3,
-        Idle = 4,
+        Use = 4,
         //Claim = 5,
     }
 
@@ -36,21 +36,21 @@
     {
         None = 0,
         Normal = 1,
-        Fatigue = 2,
+        //Fatigue = 2,
         // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum ZoneType : byte
     {
         None = 0,
-        Homebase = 1,
-        Village = 2,
-        Forest = 3,
-        Plains = 4,
-        Mountain = 5,
-        Cave = 6,
-        Desert = 7,
-        Dungeon = 8,
+        //Homebase = 1,
+        //Village = 2,
+        //Forest = 3,
+        //Plains = 4,
+        //Mountain = 5,
+        //Cave = 6,
+        //Desert = 7,
+        //Dungeon = 8,
     }
 
     public enum HeroRuleType : byte
@@ -92,14 +92,6 @@
     {
         None = 0,
         Sleep = 1,
-        Idle = 2,
-        Work = 3,
-    }
-
-    public enum HeroStat
-    {
-        None = 0,
-        Energy = 1,
-        Fatigue = 2,
+        Work = 2,
     }
 }

@@ -10,31 +10,38 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         public static uint Hour => 60 * 60 / BLOCKTIME_SEC;
 
-        public static uint ActionTimeToBlocks(ActionTime actionTime)
+        /// <summary>
+        /// Get the block time from the action time
+        /// </summary>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public static uint GetBlockTimeFrom(ActionTime actionTime)
         {
-            switch(actionTime)
+            return actionTime switch
             {
-                case ActionTime.Short:
-                    return 1 * 600;
-
-                case ActionTime.Medium:
-                    return 3 * 600;
-
-                case ActionTime.Long:
-                    return 6 * 600;
-
-                default:
-                    return 0;
-            }
+                ActionTime.Short => 1 * Hour,
+                ActionTime.Medium => 3 * Hour,
+                ActionTime.Long => 6 * Hour,
+                _ => throw new NotSupportedException($"Unsupported ActionTime {actionTime}!"),
+            };
         }
 
+        /// <summary>
+        /// Get the energy value for the state type
+        /// </summary>
+        /// <param name="stateType"></param>
+        /// <param name="stateSubType"></param>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public static int GetRessourceEnergy(StateType stateType, byte stateSubType, byte actionTime)
         {
             switch (stateType)
             {
-                case StateType.Idle:
+                case StateType.None:
                     {
-                        return -(actionTime * 3);
+                        return 0;
                     }
 
                 case StateType.Work:
@@ -53,7 +60,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                         return sleepType switch
                         {
                             SleepType.Normal => -(actionTime * 1),
-                            SleepType.Fatigue => -(actionTime * 2),
+                            //SleepType.Fatigue => -(actionTime * 2),
                             _ => throw new NotImplementedException($"Unknow sleep type {sleepType} for energy!"),
                         };
                     }
@@ -63,11 +70,23 @@ namespace Ajuna.SAGE.Game.HeroJam
             }
         }
 
+        /// <summary>
+        /// Get the fatigue value for the state type
+        /// </summary>
+        /// <param name="stateType"></param>
+        /// <param name="stateSubType"></param>
+        /// <param name="actionTime"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public static int GetRessourceFatigue(StateType stateType, byte stateSubType, byte actionTime)
         {
             switch (stateType)
             {
-                case StateType.Idle:
+                case StateType.None:
+                    {
+                        return 0;
+                    }
+
                 case StateType.Work:
                     {
                         return actionTime * 8;
@@ -79,7 +98,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                         return sleepType switch
                         {
                             SleepType.Normal => -(actionTime * actionTime * 11),
-                            SleepType.Fatigue => -(actionTime * actionTime * 5),
+                            //SleepType.Fatigue => -(actionTime * actionTime * 5),
                             _ => throw new NotImplementedException($"Unknow sleep type {sleepType} for energy!"),
                         };
                     }
