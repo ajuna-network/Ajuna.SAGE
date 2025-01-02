@@ -44,7 +44,7 @@ namespace Ajuna.SAGE.WebAPI.Test
             // Arrange
             var playerRequest = new
             {
-                Id = 1UL,
+                Id = 2UL,
                 Balance = 100
             };
 
@@ -58,7 +58,7 @@ namespace Ajuna.SAGE.WebAPI.Test
             var createdPlayer = JObject.Parse(content);
 
             Assert.That(createdPlayer, Is.Not.Null);
-            Assert.That((ulong)createdPlayer["id"], Is.EqualTo(1UL));
+            Assert.That((ulong)createdPlayer["id"], Is.EqualTo(2UL));
             Assert.That((int)createdPlayer["balanceValue"], Is.EqualTo(100));
         }
 
@@ -66,7 +66,7 @@ namespace Ajuna.SAGE.WebAPI.Test
         public async Task Get_NonExistentPlayer_ShouldContainNotFoundMessage()
         {
             // Arrange & Act
-            var response = await _client.GetAsync("api/Api/Player?playerId=9999");
+            var response = await _client.GetAsync("api/Api/Player/9999");
             var content = await response.Content.ReadAsStringAsync();
 
             // Since the current endpoint returns a JsonResult(NotFound("No player found!")) but not a 404 status code,
