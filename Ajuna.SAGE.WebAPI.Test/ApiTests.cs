@@ -99,7 +99,7 @@ namespace Ajuna.SAGE.WebAPI.Test
         [Order(5)]
         public async Task Transition_CreateHero_ShouldReturnOk()
         {
-            
+
             var transitionRequest = new TransitionRequest
             {
                 PlayerId = 2UL,
@@ -136,12 +136,54 @@ namespace Ajuna.SAGE.WebAPI.Test
 
             var asset = Asset.MapToDomain(dbAsset);
             Assert.That(asset, Is.Not.Null, "Asset should not be null");
-            
+
             var heroAsset = new HeroJamAsset(asset);
             Assert.That(heroAsset, Is.Not.Null, "HeroJamAsset should not be null");
             Assert.That(heroAsset.AssetType, Is.EqualTo(AssetType.Hero), "The newly created asset should be of type Hero");
 
             Assert.That(heroAsset.Balance.Value, Is.EqualTo(10), "Hero asset should have a balance of 10");
+        }
+
+        [Test]
+        [Order(6)]
+        public async Task Transition_CreateHero_ShouldFailWithAssets()
+        {
+
+            var transitionRequest = new TransitionRequest
+            {
+                PlayerId = 2UL,
+                Identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero),
+                AssetIds = new ulong[] { 1 }
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync("api/Api/Transition", transitionRequest);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict), "Status code should be Conflict");
+            Assert.That(content, Contains.Substring("Transition failed!"), "Response should contain 'Transition failed!' message");
+        }
+
+        [Test]
+        [Order(7)]
+        public async Task Transition_CreateHero_ShouldFailWithHero()
+        {
+
+            var transitionRequest = new TransitionRequest
+            {
+                PlayerId = 2UL,
+                Identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero),
+                AssetIds = Array.Empty<ulong>()
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync("api/Api/Transition", transitionRequest);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict), "Status code should be Conflict");
+            Assert.That(content, Contains.Substring("Transition failed!"), "Response should contain 'Transition failed!' message");
         }
 
     }
