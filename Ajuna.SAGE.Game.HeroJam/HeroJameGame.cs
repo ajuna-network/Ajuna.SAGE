@@ -121,10 +121,20 @@ namespace Ajuna.SAGE.Game.HeroJam
                         {
                             if (player.Assets == null || player.Assets.Count == 0)
                             {
-                                return true;
+                                return false;
                             }
 
                             return player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                        }
+
+                    case (byte)HeroRuleType.SameNotExist:
+                        {
+                            if (player.Assets == null || player.Assets.Count == 0)
+                            {
+                                return true;
+                            }
+
+                            return !player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
                         }
 
                     default:
@@ -150,8 +160,6 @@ namespace Ajuna.SAGE.Game.HeroJam
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Short),
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Medium),
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Long),
-
-
             };
 
             return result;
@@ -167,7 +175,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             byte matchType = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
             HeroJamRule[] rules = [
                 new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 0),
-                new HeroJamRule(HeroRuleType.SameExist, HeroRuleOp.MatchType, matchType),
+                new HeroJamRule(HeroRuleType.SameNotExist, HeroRuleOp.MatchType, matchType),
             ];
 
             ITransitioFee fee = new TransitioFee(10);

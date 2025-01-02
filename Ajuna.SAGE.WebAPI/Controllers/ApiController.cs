@@ -145,6 +145,9 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                 return Conflict("Transition failed!");
             }
 
+            // make sure that balance is taken over
+            inDbPlayer.BalanceValue = player.Balance.Value;
+
             var assetIds = assets.Select(a => a.Id).ToHashSet();
             var resultIds = result.Select(r => r.Id).ToHashSet();
 

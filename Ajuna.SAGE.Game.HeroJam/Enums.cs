@@ -61,7 +61,8 @@
         AllStateType = 3,
         CanStateChange = 4,
         IsOwnerOf = 5,
-        SameExist = 6
+        SameExist = 6,
+        SameNotExist = 7
     }
 
     public enum HeroRuleOp : byte

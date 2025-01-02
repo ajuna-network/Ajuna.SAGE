@@ -12,8 +12,8 @@ namespace Ajuna.SAGE.Game.HeroJam
             : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
-        public HeroJamAsset(IAsset asset) 
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
+        public HeroJamAsset(IAsset asset)
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data, asset.Balance)
         { }
 
         // [0]000000 00111111 11112222 22222233

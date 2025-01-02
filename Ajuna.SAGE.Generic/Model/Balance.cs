@@ -1,11 +1,4 @@
-﻿using Ajuna.SAGE.Generic.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ajuna.SAGE.Game.Model
+﻿namespace Ajuna.SAGE.Game.Model
 {
 
     /// <summary>
@@ -13,7 +6,7 @@ namespace Ajuna.SAGE.Game.Model
     /// </summary>
     public class Balance : IBalance
     {
-        public uint Value { get ; private set; }
+        public uint Value { get; set; }
 
         /// <summary>
         /// Balance constructor

@@ -1,7 +1,4 @@
-﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Generic.Model;
-
-namespace Ajuna.SAGE.Model
+﻿namespace Ajuna.SAGE.Model
 {
     public class DbPlayer
     {

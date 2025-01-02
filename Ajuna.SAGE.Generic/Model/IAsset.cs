@@ -1,5 +1,4 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Model;
 
 namespace Ajuna.SAGE.Generic.Model
 {

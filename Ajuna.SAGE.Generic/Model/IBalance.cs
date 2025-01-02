@@ -1,13 +1,11 @@
-﻿using Ajuna.SAGE.Generic.Model;
-
-namespace Ajuna.SAGE.Game.Model
+﻿namespace Ajuna.SAGE.Game.Model
 {
     /// <summary>
     /// Balance interface
     /// </summary>
     public interface IBalance : IEquatable<IBalance>
     {
-        uint Value { get; }
+        uint Value { get; set; }
 
         bool Withdraw(uint amount);
 

@@ -20,7 +20,7 @@ namespace Ajuna.SAGE.Generic.Model
 
         public byte[]? Data { get; set; }
 
-        public IBalance Balance { get; private set; }
+        public IBalance Balance { get; set; }
 
         /// <summary>
         /// Asset constructor
@@ -30,14 +30,17 @@ namespace Ajuna.SAGE.Generic.Model
         /// <param name="score"></param>
         /// <param name="genesis"></param>
         /// <param name="data"></param>
-        public Asset(ulong id, byte collectionId, uint score, uint genesis, byte[]? data)
+        public Asset(ulong id, byte collectionId, uint score, uint genesis, byte[]? data) 
+            : this(id, collectionId, score, genesis, data, new Balance()) { }
+
+        public Asset(ulong id, byte collectionId, uint score, uint genesis, byte[]? data, IBalance balance)
         {
             Id = id;
             CollectionId = collectionId;
             Score = score;
             Genesis = genesis;
             Data = data;
-            Balance = new Balance();
+            Balance = balance;
         }
 
         /// <summary>
@@ -88,9 +91,6 @@ namespace Ajuna.SAGE.Generic.Model
         /// <param name="dbAsset"></param>
         /// <returns></returns>
         public static Asset MapToDomain(DbAsset dbAsset) => 
-            new(dbAsset.Id, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data)
-            {
-                Balance = new Balance(dbAsset.BalanceValue)
-            };
+            new(dbAsset.Id, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data, new Balance(dbAsset.BalanceValue));
     }
 }
