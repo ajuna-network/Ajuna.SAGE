@@ -182,16 +182,16 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-                var asset = new HeroJamAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                var hero = new HeroJamAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetGenesis(b)
                     .SetEnergy(100)
                     .SetStateType(StateType.None)
                     .SetStateChangeBlockNumber(0)
                     .Build();
 
-                asset.Balance.Deposit(fee.Fee);
+                hero.Balance.Deposit(fee.Fee);
 
-                return [asset];
+                return [hero];
             };
 
             return (identifier, rules, fee, function);
@@ -217,11 +217,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             {
                 var hero = (HeroJamAsset)a.ElementAt(0);
 
-                int fatigue = HeroJamUtil.GetRessourceFatigue(hero.StateType, hero.StateSubType, hero.StateSubValue);
-                int energy = HeroJamUtil.GetRessourceEnergy(hero.StateType, hero.StateSubType, hero.StateSubValue);
-
-                hero.Fatigue = (byte)Math.Clamp(hero.Fatigue + fatigue, 0, 255);
-                hero.Energy = (byte)Math.Clamp(hero.Energy + energy, 0, 255);
+                hero = HeroJamUtil.GetAssetStateTransition(hero, h, out Asset[] assets);
 
                 // create a new element to return
                 var heroJamAsset = new HeroJamAsset(hero)
@@ -259,16 +255,12 @@ namespace Ajuna.SAGE.Game.HeroJam
             {
                 var hero = (HeroJamAsset)a.ElementAt(0);
 
-                int fatigue = HeroJamUtil.GetRessourceFatigue(hero.StateType, hero.StateSubType, hero.StateSubValue);
-                int energy = HeroJamUtil.GetRessourceEnergy(hero.StateType, hero.StateSubType, hero.StateSubValue);
-
-                hero.Fatigue = (byte)Math.Clamp(hero.Fatigue + fatigue, 0, 255);
-                hero.Energy = (byte)Math.Clamp(hero.Energy + energy, 0, 255);
+                hero = HeroJamUtil.GetAssetStateTransition(hero, h, out Asset[] assets);
 
                 switch (workType)
                 {
                     case WorkType.Hunt:
-                        hero.Balance.Deposit(10);
+                        // ... do something
                         break;
 
                     default:
@@ -283,6 +275,12 @@ namespace Ajuna.SAGE.Game.HeroJam
                     StateSubValue = (byte)actionTime,
                     StateChangeBlockNumber = b + HeroJamUtil.GetBlockTimeFrom(actionTime)
                 };
+
+                var list = new List<Asset>() { heroJamAsset };
+                if (assets != null)
+                {
+                    list.AddRange(assets);
+                }
 
                 return [heroJamAsset];
             };

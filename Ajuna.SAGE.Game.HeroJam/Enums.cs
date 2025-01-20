@@ -19,7 +19,7 @@
         Short = 1,
         Medium = 2,
         Long = 3
-        // *** DO NOT PASS 15 INDEX ***
+        // *** DO NOT PASS 3 INDEX (as there is logic, not working with 3+) ***
     }
 
     /// <summary>
@@ -32,6 +32,9 @@
         // *** DO NOT PASS 15 INDEX ***
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum SleepType : byte
     {
         None = 0,
@@ -82,11 +85,40 @@
     {
         None = 0,
         Hero = 1,
+        Animal = 2,
     }
 
     public enum AssetSubType
     {
         None = 0,
+    }
+
+    public enum AnimalType
+    {
+        None = 0,
+        
+        // Tier 1
+        Insects = 1, // 🦗 – Can be caught without much effort.
+        Mouse = 2, // 🐭 – Small, but easy to trap.
+        Hedgehog = 3, // 🦔 – Slow-moving, but requires careful handling.
+
+        // Tier 2
+        Squirrel = 4, // 🐿 – Quick, but catchable with patience or a trap.
+        Lizard = 5, // 🦎 – Can be caught by hand if spotted in time.
+        Snake = 6, // 🐍 – Risky but possible without weapons (bare hands or a stick).
+        Duck = 7, // 🦆 – Can be grabbed near water but may require trapping.
+
+        // Tier 3
+        Rabbit = 8, // 🐰 – Fast, but can be caught with simple traps.
+        Turkey = 9, // 🦃 – Alert and fast on foot, easier with ranged weapons.
+        Fox = 10, // 🦊 – Smart and fast
+        Boar = 11, // 🐗 – Strong and aggressive, dangerous without proper tools.
+
+        // Tier 4
+        Deer = 12, // 🦌 – Extremely fast, requires ranged weapons or skilled tracking.
+        Wolf = 13, // 🐺 – Hunts in packs and is dangerous when provoked.
+        Bison = 14, // 🐃 – Massive, resilient, and can charge aggressively.
+        Bear = 15, // 🐻 – The most dangerous; requires high-level gear or traps.
     }
 
     public enum StateType

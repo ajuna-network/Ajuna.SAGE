@@ -118,7 +118,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(heroOutAsset.Energy, Is.EqualTo(100));
             Assert.That(heroOutAsset.Fatigue, Is.EqualTo(0));
-            Assert.That(heroInAsset.Score, Is.EqualTo(0));
+            Assert.That(heroInAsset.Score, Is.EqualTo(1));
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(heroInAsset, Is.Not.Null);
             Assert.That(heroInAsset.Energy, Is.EqualTo(100));
             Assert.That(heroInAsset.Fatigue, Is.EqualTo(0));
-            Assert.That(heroInAsset.Score, Is.EqualTo(0));
+            Assert.That(heroInAsset.Score, Is.EqualTo(1));
 
             // Set identifier for CreateHero
             var subIdentifier = (byte)SleepType.Normal << 4 + (byte)ActionTime.Short;
