@@ -200,14 +200,14 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // Create a usable animal asset.
             // For example, a Duck that, when disassembled, produces 4 Meat.
-            BaseAsset disassemble = HeroJamUtil.CreateAnimal((AssetSubType)AnimalSubType.Duck, 1);
-            _player.Assets.Add(disassemble);
+            BaseAsset asset = HeroJamUtil.CreateAnimal((AssetSubType)AnimalSubType.Duck, 1);
+            _player.Assets.Add(asset);
             // Ensure the asset is a UsableAsset.
-            Assert.That(disassemble, Is.InstanceOf<UsableAsset>());
-            Assert.That(disassemble.AssetFlags[(byte)UseType.Disassemble], Is.True);
+            Assert.That(asset, Is.InstanceOf<UsableAsset>());
+            Assert.That(asset.AssetFlags[(byte)UseType.Disassemble], Is.True);
 
             // Prepare the two-asset input: hero at index 0 and usable animal at index 1.
-            IAsset[] inputAssets = new IAsset[] { hero, disassemble };
+            IAsset[] inputAssets = [hero, asset];
 
             // Set identifier for Use transition with UseType.Disassemble.
             var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Disassemble);
@@ -239,19 +239,21 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_player.Assets, Is.Not.Null);
             var hero = _player.Assets.ElementAt(0) as HeroAsset;
             Assert.That(hero, Is.Not.Null);
+            Assert.That(hero.Energy, Is.EqualTo(82));
 
             // Create a consumable asset. For example, Meat that gives +7 Energy.
-            BaseAsset consumable = HeroJamUtil.CreateItem((AssetSubType)ItemSubType.Meat, 1);
+            BaseAsset asset = HeroJamUtil.CreateItem((AssetSubType)ItemSubType.Meat, 1);
             // Ensure the asset is a ConsumableAsset.
-            Assert.That(consumable, Is.InstanceOf<ConsumableAsset>());
+            Assert.That(asset, Is.InstanceOf<ConsumableAsset>());
+            Assert.That(asset.AssetFlags[(byte)UseType.Consume], Is.True);
 
-            _player.Assets.Add(consumable);
+            _player.Assets.Add(asset);
 
             // Record the hero's energy before consumption.
             byte energyBefore = hero.Energy;
 
             // Prepare the input: hero at index 0 and the consumable asset at index 1.
-            IAsset[] inputAssets = new IAsset[] { hero, consumable };
+            IAsset[] inputAssets = [hero, asset];
 
             // Set identifier for Use transition with UseType.Consume.
             var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Consume);
@@ -269,7 +271,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var updatedHero = outputAssets[0] as HeroAsset;
             Assert.That(updatedHero, Is.Not.Null);
             // For Meat, the consume effect is to add +7 Energy.
-            Assert.That(updatedHero.Energy, Is.EqualTo(Math.Min(energyBefore + 7, 100)));  // assuming a max of 100
+            Assert.That(updatedHero.Energy, Is.EqualTo(Math.Min(energyBefore + 7, 100)));
         }
 
     }
