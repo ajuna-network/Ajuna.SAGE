@@ -1,5 +1,9 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Generic;
+using Ajuna.SAGE.Generic.Model;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
+
+[assembly: InternalsVisibleTo("Ajuna.SAGE.Game.HeroJam.Test")]
 
 namespace Ajuna.SAGE.Game.HeroJam
 {
@@ -109,7 +113,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             }
         }
 
-        public static HeroJamAsset GetAssetStateTransition(HeroJamAsset hero, byte[] randomHash, out Asset[] assets)
+        public static HeroAsset GetAssetStateTransition(HeroAsset hero, byte[] randomHash, out Asset[] assets)
         {
             // Manage Ressources
 
@@ -131,12 +135,12 @@ namespace Ajuna.SAGE.Game.HeroJam
             return hero;
         }
 
-        private static int GetScore(StateType stateType, byte stateSubType, byte stateSubValue)
+        internal static int GetScore(StateType stateType, byte stateSubType, byte stateSubValue)
         {
             return 1;
         }
 
-        private static Asset[] GetAssetStateAssets(StateType stateType, byte stateSubType, byte stateSubValue, byte[] randomHash, uint score)
+        internal static Asset[] GetAssetStateAssets(StateType stateType, byte stateSubType, byte stateSubValue, byte[] randomHash, uint score)
         {
             Asset[] assets = [];
 
@@ -167,7 +171,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             return assets;
         }
 
-        private static Asset[] GetHuntAssets(byte stateSubValue, byte[] randomHash, uint score)
+        internal static Asset[] GetHuntAssets(byte stateSubValue, byte[] randomHash, uint score)
         {
             ActionTime actionTime = (ActionTime)stateSubValue;
             Asset[] assets = [];
@@ -183,21 +187,143 @@ namespace Ajuna.SAGE.Game.HeroJam
             return assets;
         }
 
-        private static Asset[] GetHuntAssets(byte random, uint score)
+        internal static Asset[] GetHuntAssets(byte random, uint score)
         {
-            HeroJamAsset asset = new HeroJamAsset(0, COLLECTION_ID, 0, 0);
-            asset.AssetType = AssetType.Animal;
-            asset.AssetSubType = random switch
+            BaseAsset asset = random switch
             {
-                < 1 => (AssetSubType)AnimalType.Duck,
-                < 5 => (AssetSubType)AnimalType.Snake,
-                < 11 => (AssetSubType)AnimalType.Lizard,
-                < 17 => (AssetSubType)AnimalType.Squirrel,
-                < 34 => (AssetSubType)AnimalType.Hedgehog,
-                < 68 => (AssetSubType)AnimalType.Mouse,
-                _ => (AssetSubType)AnimalType.Insects,
+                < 1 => CreateAnimal((AssetSubType)AnimalSubType.Duck, 1),
+                < 5 => CreateAnimal((AssetSubType)AnimalSubType.Snake, 1),
+                < 11 => CreateAnimal((AssetSubType)AnimalSubType.Lizard, 1),
+                < 17 => CreateAnimal((AssetSubType)AnimalSubType.Squirrel, 1),
+                < 34 => CreateAnimal((AssetSubType)AnimalSubType.Hedgehog, 1),
+                < 68 => CreateAnimal( (AssetSubType)AnimalSubType.Mouse, 1),
+                _ => CreateAnimal((AssetSubType)AnimalSubType.Insects, 1)
             };
             return [asset];
+        }
+
+        internal static BaseAsset[] Disassemble(HeroAsset hero, UsableAsset asset)
+        {
+            var assetType = asset.Result1AssetType;
+            var assetSubType = asset.Result1AssetSubType;
+            var assetAmount = asset.Result1Amount;
+
+            return assetType switch
+            {
+                AssetType.Item => (ItemSubType)assetSubType switch
+                {
+                    ItemSubType.Meat => [hero, CreateItem(assetSubType, assetAmount)],
+                    _ => throw new NotImplementedException($"Unknow asset sub type {assetSubType} in disassemble!"),
+                },
+                _ => throw new NotImplementedException($"Unknow asset type {assetType} in disassemble!"),
+            };
+        }
+
+        internal static BaseAsset[] Consume(HeroAsset hero, ConsumableAsset asset)
+        {
+            var effectHeroStat = asset.Effect1HeroStats;
+            var effectValue = asset.Effect1Value;
+
+            switch (effectHeroStat)
+            {
+                case HeroStats.Energy:
+                    {
+                        hero.Energy = (byte)Math.Clamp(hero.Energy + effectValue, 0, 100);
+                        return [hero];
+                    }
+                case HeroStats.Fatigue:
+                    {
+                        hero.Fatigue = (byte)Math.Clamp(hero.Fatigue + effectValue, 0, 100);
+                        return [hero];
+                    }
+                default:
+                    throw new NotImplementedException($"Unknow hero stats {effectHeroStat} in consume!");
+            }
+        }
+
+        internal static BaseAsset CreateItem(AssetSubType assetSubType, byte amount)
+        {
+            var baseItem = new BaseAssetBuilder(null, COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Meat)
+                .Build();
+
+            var assetFlag = new AssetFlags(0);
+
+            switch ((ItemSubType)assetSubType)
+            {
+                case ItemSubType.Meat:
+                    {
+                        var item = new ConsumableAsset(baseItem);
+                        assetFlag[(byte)UseType.Consume] = true;
+
+                        item.AssetFlags = assetFlag;
+                        item.Effect1HeroStats = HeroStats.Energy;
+                        item.Effect1Value = (sbyte)7;
+                        return item;
+                    }
+                default:
+                    throw new NotImplementedException($"Unknow animal type {assetSubType} for asset creation!");
+            }
+        }
+
+        internal static BaseAsset CreateAnimal(AssetSubType assetSubType, byte amount)
+        {
+            var baseItem = new BaseAssetBuilder(null, COLLECTION_ID, AssetType.Animal, assetSubType)
+                .Build();
+
+            var assetFlag = new AssetFlags(0);
+
+            switch((AnimalSubType)assetSubType)
+            {
+                case AnimalSubType.Duck:
+                    {
+                        var item = new UsableAsset(baseItem);
+                        assetFlag[(byte)UseType.Disassemble] = true;
+
+                        item.AssetFlags = assetFlag;
+                        item.Result1AssetType = AssetType.Item;
+                        item.Result1AssetSubType = (AssetSubType)ItemSubType.Meat;
+                        item.Result1Amount = 4;
+                        return item;
+                    }
+                case AnimalSubType.Snake:
+                case AnimalSubType.Lizard:
+                case AnimalSubType.Squirrel:
+                case AnimalSubType.Hedgehog:
+                    {
+                        var item = new UsableAsset(baseItem);
+                        assetFlag[(byte)UseType.Disassemble] = true;
+
+                        item.AssetFlags = assetFlag;
+                        item.Result1AssetType = AssetType.Item;
+                        item.Result1AssetSubType = (AssetSubType)ItemSubType.Meat;
+                        item.Result1Amount = 2;
+                        return item;
+                    }
+                case AnimalSubType.Mouse:
+                    {
+                        var item = new UsableAsset(baseItem);
+                        assetFlag[(byte)UseType.Disassemble] = true;
+                        
+                        item.AssetFlags = assetFlag;
+                        item.Result1AssetType = AssetType.Item;
+                        item.Result1AssetSubType = (AssetSubType)ItemSubType.Meat;
+                        item.Result1Amount = 1;
+                        return item;
+                    }
+                case AnimalSubType.Insects:
+                    {
+                        var item = new ConsumableAsset(baseItem);
+                        assetFlag[(byte)UseType.Consume] = true;
+
+                        item.AssetFlags = assetFlag;
+                        item.Effect1HeroStats = HeroStats.Energy;
+                        item.Effect1Value = (sbyte)3;
+                        return item;
+                    }
+                default:
+                    throw new NotImplementedException($"Unknow animal type {assetSubType} for asset creation!");
+            }
+
         }
     }
 }

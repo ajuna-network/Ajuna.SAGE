@@ -82,7 +82,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                         {
                             return assets.All(a =>
                             {
-                                HeroJamAsset? heroJameAsset = a as HeroJamAsset;
+                                HeroAsset? heroJameAsset = a as HeroAsset;
                                 var expectedAssetType = (AssetType)BitConverter.ToUInt32(rule.RuleValue);
                                 return heroJameAsset != null && heroJameAsset.AssetType == expectedAssetType;
                             });
@@ -92,7 +92,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                         {
                             return assets.All(a =>
                             {
-                                HeroJamAsset? heroJameAsset = a as HeroJamAsset;
+                                HeroAsset? heroJameAsset = a as HeroAsset;
                                 var expectedStateType = (StateType)BitConverter.ToUInt32(rule.RuleValue);
                                 return rule.RuleOp switch
                                 {
@@ -114,7 +114,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                             {
                                 return false;
                             }
-                            return assets[assetIndex] is HeroJamAsset heroJamAsset && heroJamAsset.StateChangeBlockNumber < blocknumber;
+                            return assets[assetIndex] is HeroAsset heroJamAsset && heroJamAsset.StateChangeBlockNumber < blocknumber;
                         }
 
                     case (byte)HeroRuleType.SameExist:
@@ -135,6 +135,46 @@ namespace Ajuna.SAGE.Game.HeroJam
                             }
 
                             return !player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                        }
+
+                    case (byte)HeroRuleType.AssetTypeAt:
+                        {
+                            if (rule.RuleOp != (byte)HeroRuleOp.Composite)
+                            {
+                                return false;
+                            }
+
+                            byte composite = rule.RuleValue[0];
+                            byte index = (byte)(composite & 0x0F);
+                            byte assetType = (byte) (composite >> 4);
+   
+                            if (assets.Length <= index)
+                            {
+                                return false;
+                            }
+                            // We assume all assets are HeroJamAsset for this game.
+                            var baseAsset = assets[index] as BaseAsset;
+                            return baseAsset != null && ((uint)baseAsset.AssetType) == assetType;
+                        }
+
+                    case (byte)HeroRuleType.AssetFlagAt:
+                        {
+                            if (rule.RuleOp != (byte)HeroRuleOp.Composite)
+                            {
+                                return false;
+                            }
+
+                            byte composite = rule.RuleValue[0];
+                            byte index = (byte)(composite & 0x0F);
+                            byte flagIndex = (byte)(composite >> 4);
+
+                            if (assets.Length <= index)
+                            {
+                                return false;
+                            }
+                            // We assume all assets are HeroJamAsset for this game.
+                            var baseAsset = assets[index] as BaseAsset;
+                            return baseAsset.AssetFlags[flagIndex];
                         }
 
                     default:
@@ -160,6 +200,9 @@ namespace Ajuna.SAGE.Game.HeroJam
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Short),
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Medium),
                 GetWorkTransitionSet(WorkType.Hunt, ActionTime.Long),
+
+                GetUseTransitionSet(UseType.Disassemble),
+                GetUseTransitionSet(UseType.Consume),
             };
 
             return result;
@@ -182,12 +225,16 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-                var hero = new HeroJamAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetGenesis(b)
-                    .SetEnergy(100)
-                    .SetStateType(StateType.None)
-                    .SetStateChangeBlockNumber(0)
                     .Build();
+
+                var hero = new HeroAsset(baseAsset)
+                {
+                    Energy = 100,
+                    StateType = StateType.None,
+                    StateChangeBlockNumber = 0,
+                };
 
                 hero.Balance.Deposit(fee.Fee);
 
@@ -215,15 +262,15 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-                var hero = (HeroJamAsset)a.ElementAt(0);
+                var hero = (HeroAsset)a.ElementAt(0);
 
                 hero = HeroJamUtil.GetAssetStateTransition(hero, h, out Asset[] assets);
 
                 // create a new element to return
-                var heroJamAsset = new HeroJamAsset(hero)
+                var heroJamAsset = new HeroAsset(hero)
                 {
                     StateType = StateType.Sleep,
-                    StateSubType = (byte) SleepType.Normal,
+                    StateSubType = (byte)SleepType.Normal,
                     StateSubValue = (byte)actionTime,
                     StateChangeBlockNumber = b + HeroJamUtil.GetBlockTimeFrom(actionTime)
                 };
@@ -244,16 +291,18 @@ namespace Ajuna.SAGE.Game.HeroJam
         {
             var subIdentifier = (byte)workType << 4 + (byte)actionTime;
             var identifier = new HeroJamIdentifier((byte)HeroAction.Work, (byte)subIdentifier);
+            byte heroAt0 = ((byte)AssetType.Hero << 4) | 0;
+
             HeroJamRule[] rules = [
                 new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
+                new HeroJamRule(HeroRuleType.AssetTypeAt, HeroRuleOp.Composite, [heroAt0, 0x00, 0x00, 0x00]),
                 new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
-                new HeroJamRule(HeroRuleType.AllAssetType, HeroRuleOp.EQ, (uint)AssetType.Hero),
                 new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
             ];
 
             TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-                var hero = (HeroJamAsset)a.ElementAt(0);
+                var hero = (HeroAsset)a.ElementAt(0);
 
                 hero = HeroJamUtil.GetAssetStateTransition(hero, h, out Asset[] assets);
 
@@ -266,9 +315,9 @@ namespace Ajuna.SAGE.Game.HeroJam
                     default:
                         throw new NotSupportedException($"Unsupported WorkType {workType}!");
                 }
-                
+
                 // create a new element to return
-                var heroJamAsset = new HeroJamAsset(hero)
+                var heroJamAsset = new HeroAsset(hero)
                 {
                     StateType = StateType.Work,
                     StateSubType = (byte)workType,
@@ -288,5 +337,55 @@ namespace Ajuna.SAGE.Game.HeroJam
             return (identifier, rules, default, function);
         }
 
+        /// <summary>
+        /// Get the transition set for the use action
+        /// </summary>
+        /// <returns></returns>
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetUseTransitionSet(UseType useType)
+        {
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)useType);
+
+            byte heroAt0 = ((byte)AssetType.Hero << 4) | 0;
+            byte isUseTypeAt1 = (byte) (((byte)useType << 4) | 1);
+
+            HeroJamRule[] rules =
+            [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 2),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
+                new HeroJamRule(HeroRuleType.AssetTypeAt, HeroRuleOp.Composite, [ heroAt0, 0x00, 0x00, 0x00 ]),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 1),
+                new HeroJamRule(HeroRuleType.AssetFlagAt, HeroRuleOp.Composite, [isUseTypeAt1, 0x00, 0x00, 0x00 ]),
+                new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
+            ];
+
+            ITransitioFee fee = default;
+
+            TransitionFunction<HeroJamRule> function = (rules, fee, assets, randomHash, blockNumber) =>
+            {
+
+                var hero = (HeroAsset)assets.ElementAt(0);
+
+                // Retrieve the hero and the animal asset.
+                switch (useType) {
+                    
+                    case UseType.Disassemble:
+                        {
+                            var usable = (UsableAsset)assets.ElementAt(1);
+                            return HeroJamUtil.Disassemble(hero, usable);
+                        }
+                    case UseType.Consume:
+                        {
+                            var consume = (ConsumableAsset)assets.ElementAt(1);
+                            return HeroJamUtil.Consume(hero, consume);
+                        }
+
+                    default:
+                        throw new NotSupportedException($"Unsupported UseType {useType}!");
+                }
+
+            };
+
+            return (identifier, rules, fee, function);
+        }
     }
 }

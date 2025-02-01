@@ -137,7 +137,7 @@ namespace Ajuna.SAGE.WebAPI.Test
             var asset = Asset.MapToDomain(dbAsset);
             Assert.That(asset, Is.Not.Null, "Asset should not be null");
 
-            var heroAsset = new HeroJamAsset(asset);
+            var heroAsset = new HeroAsset(asset);
             Assert.That(heroAsset, Is.Not.Null, "HeroJamAsset should not be null");
             Assert.That(heroAsset.AssetType, Is.EqualTo(AssetType.Hero), "The newly created asset should be of type Hero");
 

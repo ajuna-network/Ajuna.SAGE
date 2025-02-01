@@ -50,10 +50,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // Verify that the hero was created
             Assert.That(outputAssets.Length, Is.EqualTo(1));
-            Assert.That(outputAssets[0], Is.InstanceOf<HeroJamAsset>());
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
 
             // Cast to HeroJamAsset and check the properties
-            var heroAsset = outputAssets[0] as HeroJamAsset;
+            var heroAsset = outputAssets[0] as HeroAsset;
 
             // Check that the hero asset is correctly initialized
             Assert.That(heroAsset, Is.Not.Null);
@@ -76,7 +76,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_player.Assets, Is.Not.Null);
             Assert.That(_player.Assets?.Count, Is.EqualTo(1));
 
-            var heroInAsset = _player.Assets.ElementAt(0) as HeroJamAsset;
+            var heroInAsset = _player.Assets.ElementAt(0) as HeroAsset;
             Assert.That(heroInAsset, Is.Not.Null);
             Assert.That(heroInAsset.Energy, Is.EqualTo(100));
             Assert.That(heroInAsset.Fatigue, Is.EqualTo(0));
@@ -87,7 +87,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var identifier = new HeroJamIdentifier((byte)HeroAction.Work, (byte)subIdentifier);
 
             var inputAssets = _player.Assets?
-                .Select(p => new HeroJamAsset(p))
+                .Select(p => new HeroAsset(p))
                 .Where(p => p.AssetType == AssetType.Hero)
                 .ToArray();
 
@@ -104,10 +104,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // Verify that the hero was created
             Assert.That(outputAssets.Length, Is.EqualTo(1));
-            Assert.That(outputAssets[0], Is.InstanceOf<HeroJamAsset>());
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
 
             // Cast to HeroJamAsset and check the properties
-            var heroOutAsset = outputAssets[0] as HeroJamAsset;
+            var heroOutAsset = outputAssets[0] as HeroAsset;
 
             // Check that the hero asset is correctly initialized
             Assert.That(heroOutAsset, Is.Not.Null);
@@ -136,7 +136,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_player.Assets, Is.Not.Null);
             Assert.That(_player.Assets?.Count, Is.EqualTo(1));
 
-            var heroInAsset = _player.Assets.ElementAt(0) as HeroJamAsset;
+            var heroInAsset = _player.Assets.ElementAt(0) as HeroAsset;
             Assert.That(heroInAsset, Is.Not.Null);
             Assert.That(heroInAsset.Energy, Is.EqualTo(100));
             Assert.That(heroInAsset.Fatigue, Is.EqualTo(0));
@@ -147,7 +147,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)subIdentifier);
 
             var inputAssets = _player.Assets?
-                .Select(p => new HeroJamAsset(p))
+                .Select(p => new HeroAsset(p))
                 .Where(p => p.AssetType == AssetType.Hero && p.AssetSubType == AssetSubType.None)
                 .ToArray();
 
@@ -164,10 +164,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // Verify that the hero was created
             Assert.That(outputAssets.Length, Is.EqualTo(1));
-            Assert.That(outputAssets[0], Is.InstanceOf<HeroJamAsset>());
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
 
             // Cast to HeroJamAsset and check the properties
-            var heroOutAsset = outputAssets[0] as HeroJamAsset;
+            var heroOutAsset = outputAssets[0] as HeroAsset;
 
             // Check that the hero asset is correctly initialized
             Assert.That(heroOutAsset, Is.Not.Null);
@@ -178,6 +178,98 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(heroOutAsset.Energy, Is.EqualTo(82));
             Assert.That(heroOutAsset.Fatigue, Is.EqualTo(24));
+        }
+
+        [Test]
+        [Order(5)]
+        public void Test_HeroJamEngine_CurrentBlockNumber_3()
+        {
+            _blockchainInfoProvider.CurrentBlockNumber = 4400;
+            Assert.That(_blockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(4400));
+        }
+
+        [Test]
+        [Order(6)]
+        public void Test_Disassemble_Transition()
+        {
+            // First, ensure a hero exists.
+            Assert.That(_player.Assets, Is.Not.Null);
+            Assert.That(_player.Assets.Count, Is.GreaterThanOrEqualTo(1));
+            var hero = _player.Assets.ElementAt(0) as HeroAsset;
+            Assert.That(hero, Is.Not.Null);
+
+            // Create a usable animal asset.
+            // For example, a Duck that, when disassembled, produces 4 Meat.
+            BaseAsset disassemble = HeroJamUtil.CreateAnimal((AssetSubType)AnimalSubType.Duck, 1);
+            _player.Assets.Add(disassemble);
+            // Ensure the asset is a UsableAsset.
+            Assert.That(disassemble, Is.InstanceOf<UsableAsset>());
+            Assert.That(disassemble.AssetFlags[(byte)UseType.Disassemble], Is.True);
+
+            // Prepare the two-asset input: hero at index 0 and usable animal at index 1.
+            IAsset[] inputAssets = new IAsset[] { hero, disassemble };
+
+            // Set identifier for Use transition with UseType.Disassemble.
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Disassemble);
+
+            var transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
+            Assert.That(transitionResult, Is.True);
+
+            // Execute the transition on the player.
+            _player.Transition(inputAssets, outputAssets);
+
+            // Expecting two assets: updated hero and a new consumable asset (e.g. Meat).
+            Assert.That(outputAssets.Length, Is.EqualTo(2));
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
+            Assert.That(outputAssets[1], Is.InstanceOf<ConsumableAsset>());
+
+            // Verify that the consumable asset has the expected properties.
+            var consumable = outputAssets[1] as ConsumableAsset;
+            Assert.That(consumable, Is.Not.Null);
+            // For Meat, we expect the effect to be: Effect1HeroStats = Energy and Effect1Value = 7.
+            Assert.That(consumable.Effect1HeroStats, Is.EqualTo(HeroStats.Energy));
+            Assert.That(consumable.Effect1Value, Is.EqualTo(7));
+        }
+
+        [Test]
+        [Order(6)]
+        public void Test_Consume_Transition()
+        {
+            // First, create a hero if not already present.
+            Assert.That(_player.Assets, Is.Not.Null);
+            var hero = _player.Assets.ElementAt(0) as HeroAsset;
+            Assert.That(hero, Is.Not.Null);
+
+            // Create a consumable asset. For example, Meat that gives +7 Energy.
+            BaseAsset consumable = HeroJamUtil.CreateItem((AssetSubType)ItemSubType.Meat, 1);
+            // Ensure the asset is a ConsumableAsset.
+            Assert.That(consumable, Is.InstanceOf<ConsumableAsset>());
+
+            _player.Assets.Add(consumable);
+
+            // Record the hero's energy before consumption.
+            byte energyBefore = hero.Energy;
+
+            // Prepare the input: hero at index 0 and the consumable asset at index 1.
+            IAsset[] inputAssets = new IAsset[] { hero, consumable };
+
+            // Set identifier for Use transition with UseType.Consume.
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Consume);
+
+            var transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
+            Assert.That(transitionResult, Is.True);
+
+            // Execute the transition.
+            _player.Transition(inputAssets, outputAssets);
+
+            // Expecting only one asset: the updated hero.
+            Assert.That(outputAssets.Length, Is.EqualTo(1));
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
+
+            var updatedHero = outputAssets[0] as HeroAsset;
+            Assert.That(updatedHero, Is.Not.Null);
+            // For Meat, the consume effect is to add +7 Energy.
+            Assert.That(updatedHero.Energy, Is.EqualTo(Math.Min(energyBefore + 7, 100)));  // assuming a max of 100
         }
 
     }

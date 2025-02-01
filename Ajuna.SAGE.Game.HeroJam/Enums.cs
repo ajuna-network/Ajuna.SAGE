@@ -43,6 +43,18 @@
         // *** DO NOT PASS 15 INDEX ***
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum UseType : byte
+    {
+        None = 0,
+        Disassemble = 1,
+        Assemble = 2,
+        Consume = 3,
+        // *** DO NOT PASS 15 INDEX ***
+    }
+
     public enum ZoneType : byte
     {
         None = 0,
@@ -65,7 +77,9 @@
         CanStateChange = 4,
         IsOwnerOf = 5,
         SameExist = 6,
-        SameNotExist = 7
+        SameNotExist = 7,
+        AssetTypeAt = 8,
+        AssetFlagAt = 9
     }
 
     public enum HeroRuleOp : byte
@@ -78,7 +92,8 @@
         LE = 5,
         NE = 6,
         Index = 7,
-        MatchType = 8
+        MatchType = 8,
+        Composite = 9,
     }
 
     public enum AssetType
@@ -86,6 +101,7 @@
         None = 0,
         Hero = 1,
         Animal = 2,
+        Item = 3,
     }
 
     public enum AssetSubType
@@ -93,7 +109,12 @@
         None = 0,
     }
 
-    public enum AnimalType
+    public enum HeroSubType
+    {
+        None = 0
+    }
+
+    public enum AnimalSubType
     {
         None = 0,
         
@@ -121,10 +142,23 @@
         Bear = 15, // 🐻 – The most dangerous; requires high-level gear or traps.
     }
 
+    public enum ItemSubType
+    {
+        None = 0,
+        Meat = 1
+    }
+
     public enum StateType
     {
         None = 0,
         Sleep = 1,
         Work = 2,
+    }
+
+    public enum HeroStats
+    {
+        None = 0,
+        Energy = 1,
+        Fatigue = 2,
     }
 }
