@@ -36,8 +36,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_player.Balance.Value, Is.EqualTo(100));
 
             // Set identifier for CreateHero
-            var subIdentifier = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)subIdentifier);
+            var identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None);
 
             IAsset[]? inputAssets = null;
 
@@ -82,8 +81,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             IAsset[] inputAssets = [hero];
 
-            byte subIdentifier = ((byte)AssetType.Item << 4) + (byte)(AssetSubType)ItemSubType.Map;
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, subIdentifier);
+            var identifier = HeroJamIdentifier.Create(AssetType.Item, (AssetSubType)ItemSubType.Map);
 
             // Execute the transition.
             bool transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
@@ -132,8 +130,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(heroInAsset.Score, Is.EqualTo(0));
 
             // Set identifier for CreateHero
-            var subIdentifier = (byte)WorkType.Hunt << 4 + (byte)ActionTime.Long;
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Work, (byte)subIdentifier);
+            var identifier = HeroJamIdentifier.Work(WorkType.Hunt, ActionTime.Long);
 
             var inputAssets = _player.Assets?
                 .Select(p => new HeroAsset(p))
@@ -192,8 +189,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(heroInAsset.Score, Is.EqualTo(1));
 
             // Set identifier for CreateHero
-            var subIdentifier = (byte)SleepType.Normal << 4 + (byte)ActionTime.Short;
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Sleep, (byte)subIdentifier);
+            var identifier = HeroJamIdentifier.Sleep(SleepType.Normal, ActionTime.Short);
 
             var inputAssets = _player.Assets?
                 .Select(p => new HeroAsset(p))
@@ -259,7 +255,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             IAsset[] inputAssets = [hero, asset];
 
             // Set identifier for Use transition with UseType.Disassemble.
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Disassemble);
+            var identifier = HeroJamIdentifier.Use(UseType.Disassemble);
 
             var transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
             Assert.That(transitionResult, Is.True);
@@ -305,7 +301,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             IAsset[] inputAssets = [hero, asset];
 
             // Set identifier for Use transition with UseType.Consume.
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Use, (byte)UseType.Consume);
+            var identifier = HeroJamIdentifier.Use(UseType.Consume);
 
             var transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
             Assert.That(transitionResult, Is.True);

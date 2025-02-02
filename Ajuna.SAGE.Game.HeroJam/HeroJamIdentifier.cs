@@ -17,5 +17,14 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         public static HeroJamIdentifier Create(AssetType assetType, AssetSubType assetSubType)
             => new((byte)HeroAction.Create, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+
+        public static HeroJamIdentifier Sleep(SleepType sleepType, ActionTime actionTime)
+            => new((byte)HeroAction.Sleep, (byte)(((byte)sleepType << 4) + (byte)actionTime));
+
+        public static HeroJamIdentifier Work(WorkType workType, ActionTime actionTime)
+            => new((byte)HeroAction.Work, (byte)(((byte)workType << 4) + (byte)actionTime));
+
+        public static HeroJamIdentifier Use(UseType useType)
+            => new((byte)HeroAction.Use, (byte)(((byte)useType << 4) + (byte)0));
     }
 }
