@@ -17,7 +17,7 @@
             _flags[0] = (value & 0b0000_0001) > 0;
         }
 
-        public readonly bool this[byte index]
+        public bool this[byte index]
         { 
             get => _flags[index];
             set => _flags[index] = value;

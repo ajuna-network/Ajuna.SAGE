@@ -99,11 +99,10 @@ namespace Ajuna.SAGE.WebAPI.Test
         [Order(5)]
         public async Task Transition_CreateHero_ShouldReturnOk()
         {
-
             var transitionRequest = new TransitionRequest
             {
                 PlayerId = 2UL,
-                Identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero),
+                Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
                 AssetIds = Array.Empty<ulong>()
             };
 
@@ -148,11 +147,10 @@ namespace Ajuna.SAGE.WebAPI.Test
         [Order(6)]
         public async Task Transition_CreateHero_ShouldFailWithAssets()
         {
-
             var transitionRequest = new TransitionRequest
             {
                 PlayerId = 2UL,
-                Identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero),
+                Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
                 AssetIds = new ulong[] { 1 }
             };
 
@@ -169,11 +167,10 @@ namespace Ajuna.SAGE.WebAPI.Test
         [Order(7)]
         public async Task Transition_CreateHero_ShouldFailWithHero()
         {
-
             var transitionRequest = new TransitionRequest
             {
                 PlayerId = 2UL,
-                Identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero),
+                Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
                 AssetIds = Array.Empty<ulong>()
             };
 

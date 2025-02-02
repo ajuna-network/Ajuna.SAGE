@@ -36,7 +36,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_player.Balance.Value, Is.EqualTo(100));
 
             // Set identifier for CreateHero
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero);
+            var subIdentifier = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)subIdentifier);
 
             IAsset[]? inputAssets = null;
 
@@ -71,10 +72,58 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
         [Test]
         [Order(2)]
+        public void Test_CreateMap_Transition()
+        {
+            // Verify a hero exists.
+            Assert.That(_player.Assets, Is.Not.Null);
+            Assert.That(_player.Assets.Count, Is.GreaterThanOrEqualTo(1));
+            var hero = _player.Assets.ElementAt(0) as HeroAsset;
+            Assert.That(hero, Is.Not.Null);
+
+            IAsset[] inputAssets = [hero];
+
+            byte subIdentifier = ((byte)AssetType.Item << 4) + (byte)(AssetSubType)ItemSubType.Map;
+            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, subIdentifier);
+
+            // Execute the transition.
+            bool transitionResult = _engine.Transition(_player, identifier, inputAssets, out var outputAssets);
+            Assert.That(transitionResult, Is.True, "CreateMap transition should succeed.");
+
+            // Perform the player transition.
+            _player.Transition(inputAssets, outputAssets);
+
+            // Verify that two assets are returned: an updated hero and the new map.
+            Assert.That(outputAssets.Length, Is.EqualTo(2));
+            Assert.That(outputAssets[0], Is.InstanceOf<HeroAsset>());
+            Assert.That(outputAssets[1], Is.InstanceOf<MapAsset>());
+
+            var updatedHero = outputAssets[0] as HeroAsset;
+            var mapAsset = outputAssets[1] as MapAsset;
+            Assert.That(updatedHero, Is.Not.Null);
+            Assert.That(mapAsset, Is.Not.Null);
+
+            // Verify that the hero's location has been updated based on the dummy hash.
+            Assert.That(updatedHero.LocationX, Is.GreaterThan(0));
+            Assert.That(updatedHero.LocationY, Is.GreaterThan(0));
+
+            // Verify that the map asset has the expected initial properties.
+            // In our implementation, we set TargetX and TargetY to 0.
+            Assert.That(mapAsset.TargetX, Is.EqualTo(0));
+            Assert.That(mapAsset.TargetY, Is.EqualTo(0));
+
+            // Optionally, verify the map asset's type.
+            Assert.That(mapAsset.AssetType, Is.EqualTo(AssetType.Item));
+            // And its subtype corresponds to Map:
+            Assert.That(mapAsset.AssetSubType, Is.EqualTo((AssetSubType)ItemSubType.Map));
+        }
+
+
+        [Test]
+        [Order(3)]
         public void Test_Work_Transition()
         {
             Assert.That(_player.Assets, Is.Not.Null);
-            Assert.That(_player.Assets?.Count, Is.EqualTo(1));
+            Assert.That(_player.Assets?.Count, Is.GreaterThanOrEqualTo(1));
 
             var heroInAsset = _player.Assets.ElementAt(0) as HeroAsset;
             Assert.That(heroInAsset, Is.Not.Null);
@@ -122,7 +171,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test]
-        [Order(3)]
+        [Order(4)]
         public void Test_HeroJamEngine_CurrentBlockNumber_2()
         {
             _blockchainInfoProvider.CurrentBlockNumber = 3700;
@@ -130,11 +179,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test]
-        [Order(4)]
+        [Order(5)]
         public void Test_Sleep_Transition()
         {
             Assert.That(_player.Assets, Is.Not.Null);
-            Assert.That(_player.Assets?.Count, Is.EqualTo(1));
+            Assert.That(_player.Assets?.Count, Is.GreaterThanOrEqualTo(1));
 
             var heroInAsset = _player.Assets.ElementAt(0) as HeroAsset;
             Assert.That(heroInAsset, Is.Not.Null);
@@ -181,7 +230,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test]
-        [Order(5)]
+        [Order(6)]
         public void Test_HeroJamEngine_CurrentBlockNumber_3()
         {
             _blockchainInfoProvider.CurrentBlockNumber = 4400;
@@ -189,7 +238,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test]
-        [Order(6)]
+        [Order(7)]
         public void Test_Disassemble_Transition()
         {
             // First, ensure a hero exists.
@@ -203,7 +252,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             BaseAsset asset = HeroJamUtil.CreateAnimal((AssetSubType)AnimalSubType.Duck, 1);
             _player.Assets.Add(asset);
             // Ensure the asset is a UsableAsset.
-            Assert.That(asset, Is.InstanceOf<UsableAsset>());
+            Assert.That(asset, Is.InstanceOf<DisassemblableAsset>());
             Assert.That(asset.AssetFlags[(byte)UseType.Disassemble], Is.True);
 
             // Prepare the two-asset input: hero at index 0 and usable animal at index 1.
@@ -232,7 +281,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test]
-        [Order(6)]
+        [Order(8)]
         public void Test_Consume_Transition()
         {
             // First, create a hero if not already present.

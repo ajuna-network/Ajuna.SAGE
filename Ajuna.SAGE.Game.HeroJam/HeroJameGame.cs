@@ -192,6 +192,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             var result = new List<(HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>)>
             {
                 GetCreateHero(),
+                GetCreateMap(),
 
                 GetSleepTransitionSet(SleepType.Normal, ActionTime.Short),
                 GetSleepTransitionSet(SleepType.Normal, ActionTime.Medium),
@@ -214,8 +215,9 @@ namespace Ajuna.SAGE.Game.HeroJam
         /// <returns></returns>
         private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetCreateHero()
         {
-            var identifier = new HeroJamIdentifier((byte)HeroAction.Create, (byte)AssetType.Hero);
+            var identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None);
             byte matchType = (byte)AssetType.Hero << 4 + (byte)AssetSubType.None;
+
             HeroJamRule[] rules = [
                 new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 0),
                 new HeroJamRule(HeroRuleType.SameNotExist, HeroRuleOp.MatchType, matchType),
@@ -231,6 +233,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
                 var hero = new HeroAsset(baseAsset)
                 {
+                    LocationX = 0,
+                    LocationY = 0,
                     Energy = 100,
                     StateType = StateType.None,
                     StateChangeBlockNumber = 0,
@@ -242,6 +246,41 @@ namespace Ajuna.SAGE.Game.HeroJam
             };
 
             return (identifier, rules, fee, function);
+        }
+
+        private static (HeroJamIdentifier, HeroJamRule[], ITransitioFee?, TransitionFunction<HeroJamRule>) GetCreateMap()
+        {
+            var identifier = HeroJamIdentifier.Create(AssetType.Item, (AssetSubType)ItemSubType.Map);
+            byte matchType = (byte)AssetType.Item << 4 + (byte)(AssetSubType)ItemSubType.Map;
+            byte heroAt0 = ((byte)AssetType.Hero << 4) | 0;
+
+            HeroJamRule[] rules = [
+                new HeroJamRule(HeroRuleType.AssetCount, HeroRuleOp.EQ, 1),
+                new HeroJamRule(HeroRuleType.IsOwnerOf, HeroRuleOp.Index, 0),
+                new HeroJamRule(HeroRuleType.AssetTypeAt, HeroRuleOp.Composite, [ heroAt0, 0x00, 0x00, 0x00 ]),
+                new HeroJamRule(HeroRuleType.SameNotExist, HeroRuleOp.MatchType, matchType),
+            ];
+
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
+            {
+                var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
+                    .SetGenesis(b)
+                    .Build();
+
+                var hero = (HeroAsset)a.ElementAt(0);
+                hero.LocationX = h[0];
+                hero.LocationY = h[1];
+
+                var map = new MapAsset(baseAsset)
+                {
+                    TargetX = 0,
+                    TargetY = 0,
+                };
+
+                return [hero, map];
+            };
+
+            return (identifier, rules, default, function);
         }
 
         /// <summary>
@@ -360,22 +399,21 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             ITransitioFee fee = default;
 
-            TransitionFunction<HeroJamRule> function = (rules, fee, assets, randomHash, blockNumber) =>
+            TransitionFunction<HeroJamRule> function = (r, f, a, h, b) =>
             {
-
-                var hero = (HeroAsset)assets.ElementAt(0);
+                var hero = (HeroAsset)a.ElementAt(0);
 
                 // Retrieve the hero and the animal asset.
                 switch (useType) {
                     
                     case UseType.Disassemble:
                         {
-                            var usable = (UsableAsset)assets.ElementAt(1);
+                            var usable = (DisassemblableAsset)a.ElementAt(1);
                             return HeroJamUtil.Disassemble(hero, usable);
                         }
                     case UseType.Consume:
                         {
-                            var consume = (ConsumableAsset)assets.ElementAt(1);
+                            var consume = (ConsumableAsset)a.ElementAt(1);
                             return HeroJamUtil.Consume(hero, consume);
                         }
 

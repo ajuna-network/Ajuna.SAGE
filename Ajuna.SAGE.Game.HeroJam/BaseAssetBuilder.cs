@@ -65,5 +65,6 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             return asset;
         }
+
     }
 }

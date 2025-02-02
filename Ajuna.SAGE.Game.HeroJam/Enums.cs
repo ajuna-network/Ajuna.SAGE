@@ -145,7 +145,8 @@
     public enum ItemSubType
     {
         None = 0,
-        Meat = 1
+        Map = 1,
+        Meat = 2
     }
 
     public enum StateType

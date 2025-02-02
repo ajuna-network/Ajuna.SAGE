@@ -14,5 +14,8 @@ namespace Ajuna.SAGE.Game.HeroJam
         }
 
         public HeroJamIdentifier(byte transitionType) : this(transitionType, 0) { }
+
+        public static HeroJamIdentifier Create(AssetType assetType, AssetSubType assetSubType)
+            => new((byte)HeroAction.Create, (byte)(((byte)assetType << 4) + (byte)assetSubType));
     }
 }

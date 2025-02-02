@@ -48,14 +48,34 @@ namespace Ajuna.SAGE.Game.HeroJam
     {
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
-        // X....X.. ........ ........ ....XXXX
+        // X..XXX.. ........ ........ ....XXXX
         public HeroAsset(ulong id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
-        { }
+        {
+            AssetType = AssetType.Hero;
+        }
 
         public HeroAsset(IAsset asset)
             : base(asset)
         { }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ...X.... ........ ........ ........
+        public byte LocationX
+        {
+            get => Data[3];
+            set => Data[3] = value;
+        }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ....X... ........ ........ ........
+        public byte LocationY
+        {
+            get => Data[4];
+            set => Data[4] = value;
+        }
 
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
@@ -116,20 +136,53 @@ namespace Ajuna.SAGE.Game.HeroJam
     {
         public ItemAsset(ulong id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
-        { }
+        { 
+            AssetType = AssetType.Item;
+        }
 
         public ItemAsset(IAsset asset)
             : base(asset)
         { }
     }
 
-    public class UsableAsset : BaseAsset
+    public class MapAsset : ItemAsset
     {
-        public UsableAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public MapAsset(ulong id, byte collectionId, uint score, uint genesis)
+            : base(id, collectionId, score, genesis)
+        {
+            AssetSubType = (AssetSubType) ItemSubType.Map;
+        }
+
+        public MapAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ...X.... ........ ........ ........
+        public byte TargetX
+        {
+            get => Data[3];
+            set => Data[3] = value;
+        }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ....X... ........ ........ ........
+        public byte TargetY
+        {
+            get => Data[4];
+            set => Data[4] = value;
+        }
+    }
+
+    public class DisassemblableAsset : BaseAsset
+    {
+        public DisassemblableAsset(ulong id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         { }
 
-        public UsableAsset(IAsset asset)
+        public DisassemblableAsset(IAsset asset)
             : base(asset)
         { }
 

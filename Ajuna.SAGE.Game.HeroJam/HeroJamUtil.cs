@@ -202,7 +202,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             return [asset];
         }
 
-        internal static BaseAsset[] Disassemble(HeroAsset hero, UsableAsset asset)
+        internal static BaseAsset[] Disassemble(HeroAsset hero, DisassemblableAsset asset)
         {
             var assetType = asset.Result1AssetType;
             var assetSubType = asset.Result1AssetSubType;
@@ -276,7 +276,7 @@ namespace Ajuna.SAGE.Game.HeroJam
             {
                 case AnimalSubType.Duck:
                     {
-                        var item = new UsableAsset(baseItem);
+                        var item = new DisassemblableAsset(baseItem);
                         assetFlag[(byte)UseType.Disassemble] = true;
 
                         item.AssetFlags = assetFlag;
@@ -290,7 +290,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 case AnimalSubType.Squirrel:
                 case AnimalSubType.Hedgehog:
                     {
-                        var item = new UsableAsset(baseItem);
+                        var item = new DisassemblableAsset(baseItem);
                         assetFlag[(byte)UseType.Disassemble] = true;
 
                         item.AssetFlags = assetFlag;
@@ -301,7 +301,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                     }
                 case AnimalSubType.Mouse:
                     {
-                        var item = new UsableAsset(baseItem);
+                        var item = new DisassemblableAsset(baseItem);
                         assetFlag[(byte)UseType.Disassemble] = true;
                         
                         item.AssetFlags = assetFlag;
