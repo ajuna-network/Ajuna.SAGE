@@ -82,9 +82,9 @@ namespace Ajuna.SAGE.Game.HeroJam
                         {
                             return assets.All(a =>
                             {
-                                HeroAsset? heroJameAsset = a as HeroAsset;
+                                BaseAsset? baseAsset = a as BaseAsset;
                                 var expectedAssetType = (AssetType)BitConverter.ToUInt32(rule.RuleValue);
-                                return heroJameAsset != null && heroJameAsset.AssetType == expectedAssetType;
+                                return baseAsset != null && baseAsset.AssetType == expectedAssetType;
                             });
                         }
 

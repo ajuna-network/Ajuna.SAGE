@@ -1,0 +1,166 @@
+﻿using Ajuna.SAGE.Generic;
+using Ajuna.SAGE.Generic.Model;
+using System.Security.Cryptography;
+
+namespace Ajuna.SAGE.Game.CasinoJam
+{
+    public class BaseAsset : Asset
+    {
+        public BaseAsset(uint score = 0, uint genesis = 0)
+            : base(CasinoJamUtil.GenerateRandomId(), CasinoJamUtil.COLLECTION_ID, score, genesis, new byte[Constants.DNA_SIZE])
+        { }
+
+        public BaseAsset(byte collectionId, uint score, uint genesis)
+            : base(CasinoJamUtil.GenerateRandomId(), collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        { }
+
+        public BaseAsset(ulong id, byte collectionId, uint score, uint genesis)
+            : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        { }
+
+        public BaseAsset(IAsset asset)
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data, asset.Balance)
+        { }
+
+        public AssetType AssetType
+        {
+            get => (AssetType)Data.Read(0, ByteType.High);
+            set => Data?.Set(0, ByteType.High, (byte)value);
+        }
+
+        public AssetSubType AssetSubType
+        {
+            get => (AssetSubType)Data.Read(0, ByteType.Low);
+            set => Data?.Set(0, ByteType.Low, (byte)value);
+        }
+
+        /// <inheritdoc/>
+        public override byte[] MatchType => Data != null && Data.Length > 0 ? [Data[0]] : [];
+    }
+
+    public class PlayerAsset : BaseAsset
+    {
+        public PlayerAsset(uint score, uint genesis)
+            : base(score, genesis)
+        {
+            AssetType = AssetType.Player;
+            Token = 0;
+        }
+
+        public PlayerAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ........ XXXX.... ........ ........
+        public uint Token
+        {
+            get => BitConverter.ToUInt32(Data, 8);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                for (int i = 0; i < 4; i++)
+                {
+                    Data[8 + i] = bytes[i];
+                }
+            }
+        }
+    }
+
+    public class MachineAsset : BaseAsset
+    {
+        public MachineAsset(uint score, uint genesis)
+            : base(score, genesis)
+        {
+            AssetType = AssetType.Machine;
+            Token = 0;
+        }
+
+        public MachineAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ........ XXXX.... ........ ........
+        public uint Token
+        {
+            get => BitConverter.ToUInt32(Data, 8);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                for (int i = 0; i < 4; i++)
+                {
+                    Data[8 + i] = bytes[i];
+                }
+            }
+        }
+    }
+
+    public class BanditAsset : MachineAsset
+    {
+        public BanditAsset(uint score, uint genesis)
+            : base(score, genesis)
+        {
+            AssetSubType = (AssetSubType)MachineSubType.Bandit;
+        }
+
+        public BanditAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        /// <summary>
+        /// SlotResult is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data at positions 16 and 17.
+        /// </summary>
+        public ushort SlotAResult
+        {
+            get => BitConverter.ToUInt16(Data, 16);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[16] = bytes[0];
+                Data[17] = bytes[1];
+            }
+        }
+
+        public ushort SlotBResult
+        {
+            get => BitConverter.ToUInt16(Data, 18);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[18] = bytes[0];
+                Data[19] = bytes[1];
+            }
+        }
+
+        public ushort SlotCResult
+        {
+            get => BitConverter.ToUInt16(Data, 20);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[20] = bytes[0];
+                Data[21] = bytes[1];
+            }
+        }
+
+        public ushort SlotDResult
+        {
+            get => BitConverter.ToUInt16(Data, 22);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[22] = bytes[0];
+                Data[23] = bytes[1];
+            }
+        }
+    }
+}

@@ -11,13 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.WebAPI", "Ajuna.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.WebAPI.Test", "Ajuna.SAGE.WebAPI.Test\Ajuna.SAGE.WebAPI.Test.csproj", "{48C28703-3ADA-40EE-B423-023ED8FD1167}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.Game.Console", "Ajuna.SAGE.Game.Console\Ajuna.SAGE.Game.Console.csproj", "{7892170B-6BFF-44CB-840C-E387E72FAAC5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.Game.HeroJam.Test", "Ajuna.SAGE.Game.HeroJam.Test\Ajuna.SAGE.Game.HeroJam.Test.csproj", "{F4A811EF-8CB4-4A12-AC1E-647ECE7736B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.Game.HeroJam", "Ajuna.SAGE.Game.HeroJam\Ajuna.SAGE.Game.HeroJam.csproj", "{43D0969D-FDCF-4B87-85CE-E7EBDD432435}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ajuna.SAGE.Generic", "Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj", "{A3BE5D7D-8B1F-45D4-955A-A747BB1AFC34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ajuna.SAGE.Generic", "Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj", "{A3BE5D7D-8B1F-45D4-955A-A747BB1AFC34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ajuna.SAGE.Game.CasinoJam", "Ajuna.SAGE.Game.CasinoJam\Ajuna.SAGE.Game.CasinoJam.csproj", "{657EB263-8B2C-4C48-A811-085F6E377A10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ajuna.SAGE.Game.CasinoJam.Test", "Ajuna.SAGE.Game.CasinoJam.Test\Ajuna.SAGE.Game.CasinoJam.Test.csproj", "{D1636A4A-98E6-4D76-BC34-ED3808A33C75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +43,6 @@ Global
 		{48C28703-3ADA-40EE-B423-023ED8FD1167}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C28703-3ADA-40EE-B423-023ED8FD1167}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48C28703-3ADA-40EE-B423-023ED8FD1167}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7892170B-6BFF-44CB-840C-E387E72FAAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7892170B-6BFF-44CB-840C-E387E72FAAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7892170B-6BFF-44CB-840C-E387E72FAAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7892170B-6BFF-44CB-840C-E387E72FAAC5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4A811EF-8CB4-4A12-AC1E-647ECE7736B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4A811EF-8CB4-4A12-AC1E-647ECE7736B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4A811EF-8CB4-4A12-AC1E-647ECE7736B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +55,14 @@ Global
 		{A3BE5D7D-8B1F-45D4-955A-A747BB1AFC34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3BE5D7D-8B1F-45D4-955A-A747BB1AFC34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3BE5D7D-8B1F-45D4-955A-A747BB1AFC34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{657EB263-8B2C-4C48-A811-085F6E377A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{657EB263-8B2C-4C48-A811-085F6E377A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{657EB263-8B2C-4C48-A811-085F6E377A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{657EB263-8B2C-4C48-A811-085F6E377A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1636A4A-98E6-4D76-BC34-ED3808A33C75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1636A4A-98E6-4D76-BC34-ED3808A33C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1636A4A-98E6-4D76-BC34-ED3808A33C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1636A4A-98E6-4D76-BC34-ED3808A33C75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
