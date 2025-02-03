@@ -23,5 +23,19 @@ namespace Ajuna.SAGE.Game.CasinoJam
             RuleOp = Convert.ToByte(operation);
             RuleValue = value;
         }
+
+        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation)
+        {
+            RuleType = Convert.ToByte(type);
+            RuleOp = Convert.ToByte(operation);
+            RuleValue = [];
+        }
+
+        public CasinoJamRule(CasinoRuleType type)
+        {
+            RuleType = Convert.ToByte(type);
+            RuleOp = 0x00;
+            RuleValue = [];
+        }
     }
 }

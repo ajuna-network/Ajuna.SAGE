@@ -19,6 +19,7 @@
         SameNotExist = 7,
         AssetTypesAt = 8,
         ScoreOf0 = 9,
+        IsOwnerOfAll = 10,
     }
 
     public enum CasinoRuleOp : byte

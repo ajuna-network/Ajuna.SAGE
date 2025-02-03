@@ -81,6 +81,23 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             return player.IsOwnerOf(assets[assetIndex]);
                         }
 
+                    case (byte)CasinoRuleType.IsOwnerOfAll:
+                        {
+                            if (rule.RuleOp != (byte)CasinoRuleOp.None)
+                            {
+                                return false;
+                            }
+                            
+                            for (int i = 0; i < assets.Length; i++)
+                            {
+                                if (!player.IsOwnerOf(assets[i]))
+                                {
+                                    return false;
+                                }
+                            }
+                                 return true;
+                        }
+
                     case (byte)CasinoRuleType.AllAssetType:
                         {
                             return assets.All(a =>
@@ -276,7 +293,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, 0x00, 0x00, 0x00]),
                 new CasinoJamRule(CasinoRuleType.ScoreOf0, CasinoRuleOp.GE, value),
             ];
@@ -319,8 +336,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
             ];
 
@@ -408,8 +424,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
             ];
 
