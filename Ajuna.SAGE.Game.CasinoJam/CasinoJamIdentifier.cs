@@ -24,5 +24,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public static CasinoJamIdentifier Change(TokenType tokenType, AmountType amountType)
             => new((byte)CasinoAction.Change, (byte)(((byte)tokenType << 4) + (byte)amountType));
 
+        public static CasinoJamIdentifier Loot()
+             => new((byte)CasinoAction.Loot,(0x00 << 4) + 0x00);
+
     }
 }

@@ -6,6 +6,7 @@
         Create = 1,
         Gamble = 2,
         Change = 3,
+        Loot = 4,
     }
 
     public enum CasinoRuleType : byte

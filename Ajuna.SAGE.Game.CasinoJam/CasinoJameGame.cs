@@ -193,7 +193,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
             var result = new List<(CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>)>
             {
                 GetCreatePlayerTransition(),
+
                 GetCreateMachineTransition(MachineSubType.Bandit),
+
                 GetChangeTransition(TokenType.T1, AmountType.A1),
                 GetChangeTransition(TokenType.T10, AmountType.A1),
                 GetChangeTransition(TokenType.T100, AmountType.A1),
@@ -203,6 +205,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 GetGambleTransition(AmountType.A2),
                 GetGambleTransition(AmountType.A3),
                 GetGambleTransition(AmountType.A4),
+
+                GetLootTransition()
             };
 
             return result;
@@ -263,7 +267,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Get Money Change transition set
         /// </summary>
         /// <returns></returns>
-        internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetChangeTransition(TokenType tokenType, AmountType amountType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetChangeTransition(TokenType tokenType, AmountType amountType)
         {
             var identifier = CasinoJamIdentifier.Change(tokenType, amountType);
             uint factor = (uint)Math.Pow(10, (uint)tokenType);
@@ -303,11 +307,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
         }
 
         /// <summary>
-        /// Get the transition set for the sleep action
+        /// Get Gamble transition set
         /// </summary>
         /// <param name="actionTime"></param>
         /// <returns></returns>
-        internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(AmountType amountType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(AmountType amountType)
         {
             var identifier = CasinoJamIdentifier.Gamble(0x00, amountType);
             byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
@@ -385,6 +389,47 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     bandit.Score -= effectivePayout;
                     bandit.Token += effectivePayout;
                 }
+
+                return [player, bandit];
+            };
+
+            return (identifier, rules, default, function);
+        }
+
+        /// <summary>
+        /// Get Loot transition set
+        /// </summary>
+        /// <returns></returns>
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetLootTransition()
+        {
+            var identifier = CasinoJamIdentifier.Loot();
+            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
+            byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
+            ];
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            {
+                var player = new PlayerAsset(a.ElementAt(0));
+                var bandit = new BanditAsset(a.ElementAt(1));
+
+                bandit.SlotAResult = 0;
+                bandit.SlotBResult = 0;
+                bandit.SlotCResult = 0;
+                bandit.SlotDResult = 0;
+
+                uint capacity = uint.MaxValue - player.Token;
+
+                // make sure no over flow.
+                var banditTokens = Math.Min(bandit.Token, capacity);
+                bandit.Token -= banditTokens;
+
+                player.Token += banditTokens;             
 
                 return [player, bandit];
             };
