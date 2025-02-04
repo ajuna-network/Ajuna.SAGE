@@ -350,14 +350,17 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 bandit.SlotCResult = 0;
                 bandit.SlotDResult = 0;
 
+                var playFee = (uint)amountType;
+
                 // the player does not have enough tokens to gamble
-                if (player.Token < (uint)amountType)
+                if (player.Token < (uint)amountType || bandit.Score > (uint.MaxValue - playFee))
                 {
                     return [player, bandit];
                 }
 
-                // remove the actual tokens that are gambled
-                player.Token -= (uint)amountType;
+                // remove the actual tokens that are gambled from the player and add to the bandit
+                player.Token -= playFee;
+                bandit.Score += playFee;
 
                 for (int i = 0; i < (byte)amountType; i++)
                 {
@@ -388,20 +391,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             break;
                     }
 
-                    uint baseReward = $"{Slot1}{Slot2}{Slot3}" == "777" ? 1000u : 0u;
+                    uint finalReward = CasinoJamUtil.SlotReward(Slot1, Slot2, Slot3, Bonus1, Bonus2);
 
-                    uint finalReward = baseReward;
-                    if (Bonus1 == Bonus2 && Bonus1 % 2 == 0)
-                    {
-                        finalReward = baseReward * ((uint)Bonus1 + 2);
-                    }
-                    else if (Bonus1 == Bonus2 && Bonus1 % 2 == 1 && baseReward == 0)
-                    {
-                        // return one token for that round
-                        finalReward = 1;
-                    }
+                    var effectivePayout = Math.Min(finalReward, bandit.Score);
 
-                    uint effectivePayout = Math.Min(finalReward, bandit.Score);
                     bandit.Score -= effectivePayout;
                     bandit.Token += effectivePayout;
                 }

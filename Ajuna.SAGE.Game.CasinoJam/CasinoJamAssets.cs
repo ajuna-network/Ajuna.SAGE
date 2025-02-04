@@ -118,6 +118,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Bits 3-2:   Bonus1 (2 bits)
         /// Bits 1-0:   Bonus2 (2 bits)
         /// Stored in Data at positions 16 and 17.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ XX...... ........
         /// </summary>
         public ushort SlotAResult
         {
@@ -130,6 +133,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
             }
         }
 
+        /// <summary>
+        /// SlotResult is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data at positions 18 and 19.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ..XX.... ........
+        /// </summary>
         public ushort SlotBResult
         {
             get => BitConverter.ToUInt16(Data, 18);
@@ -141,6 +156,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
             }
         }
 
+        /// <summary>
+        /// SlotResult is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data at positions 20 and 21.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ....XX.. ........
+        /// </summary>
         public ushort SlotCResult
         {
             get => BitConverter.ToUInt16(Data, 20);
@@ -152,6 +179,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
             }
         }
 
+        /// <summary>
+        /// SlotResult is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data at positions 22 and 23.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ......XX ........
+        /// </summary>
         public ushort SlotDResult
         {
             get => BitConverter.ToUInt16(Data, 22);
@@ -160,6 +199,24 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 byte[] bytes = BitConverter.GetBytes(value);
                 Data[22] = bytes[0];
                 Data[23] = bytes[1];
+            }
+        }
+
+        /// <summary>
+        /// Jackpot is a 32-bit field that encodes the jackpot value.
+        /// Stored in Data at positions 24 and 25.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ XX......
+        /// </summary>
+        public uint Jackpot
+        {
+            get => BitConverter.ToUInt16(Data, 24);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[24] = bytes[0];
+                Data[25] = bytes[1];
             }
         }
     }

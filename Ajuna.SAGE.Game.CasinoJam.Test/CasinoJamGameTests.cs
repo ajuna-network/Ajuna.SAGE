@@ -191,7 +191,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(1));
-            Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
+            Assert.That(updatedBandit.Score, Is.EqualTo(prevBanditScore));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -247,8 +247,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
 
             Assert.That(updatedBandit, Is.Not.Null);
-            Assert.That(updatedBandit.Token, Is.EqualTo(1));
-            Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
+            Assert.That(updatedBandit.Token, Is.EqualTo(prevBanditToken));
+            Assert.That(updatedBandit.Score, Is.EqualTo(prevBanditScore));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);

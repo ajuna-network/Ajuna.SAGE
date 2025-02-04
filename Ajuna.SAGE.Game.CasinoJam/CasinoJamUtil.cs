@@ -77,5 +77,32 @@ namespace Ajuna.SAGE.Game.CasinoJam
             int bonus2 = slotResult & 0x03;
             return (slot1, slot2, slot3, bonus1, bonus2);
         }
+
+        /// <summary>
+        /// Calculates the reward for a slot machine result.
+        /// </summary>
+        /// <param name="slot1"></param>
+        /// <param name="slot2"></param>
+        /// <param name="slot3"></param>
+        /// <param name="bonus1"></param>
+        /// <param name="bonus2"></param>
+        /// <returns></returns>
+        public static uint SlotReward(byte slot1, byte slot2, byte slot3, byte bonus1, byte bonus2)
+        {
+            uint baseReward = $"{slot1}{slot2}{slot3}" == "777" ? 1000u : 0u;
+
+            uint finalReward = baseReward;
+            if (bonus1 == bonus2 && bonus1 % 2 == 0)
+            {
+                finalReward = baseReward * ((uint)bonus1 + 2);
+            }
+            else if (bonus1 == bonus2 && bonus1 % 2 == 1 && baseReward == 0)
+            {
+                // return one token for that round
+                finalReward = 1;
+            }
+
+            return finalReward;
+        }
     }
 }
