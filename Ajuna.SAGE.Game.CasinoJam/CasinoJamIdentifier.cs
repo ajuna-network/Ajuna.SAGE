@@ -18,14 +18,16 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public static CasinoJamIdentifier Create(AssetType assetType, AssetSubType assetSubType)
             => new((byte)CasinoAction.Create, (byte)(((byte)assetType << 4) + (byte)assetSubType));
 
-        public static CasinoJamIdentifier Gamble(TokenType tokenType, AmountType amountType)
+        public static CasinoJamIdentifier Fund(AssetType player, TokenType tokenType)
+            => new((byte)CasinoAction.Fund, (byte)(((byte)player << 4) + (byte)tokenType));
+
+        public static CasinoJamIdentifier Gamble(TokenType tokenType, ValueType amountType)
             => new((byte)CasinoAction.Gamble, (byte)(((byte)tokenType << 4) + (byte)amountType));
 
-        public static CasinoJamIdentifier Change(TokenType tokenType, AmountType amountType)
+        public static CasinoJamIdentifier Change(TokenType tokenType, ValueType amountType)
             => new((byte)CasinoAction.Change, (byte)(((byte)tokenType << 4) + (byte)amountType));
 
         public static CasinoJamIdentifier Loot()
              => new((byte)CasinoAction.Loot,(0x00 << 4) + 0x00);
-
     }
 }

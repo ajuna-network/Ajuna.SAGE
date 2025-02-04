@@ -4,22 +4,23 @@
     {
         None = 0,
         Create = 1,
-        Gamble = 2,
-        Change = 3,
-        Loot = 4,
+        Fund = 2,
+        Gamble = 3,
+        Change = 4,
+        Loot = 5,
     }
 
     public enum CasinoRuleType : byte
     {
         None = 0,
         AssetCount = 1,
-        AllAssetType = 2,
-        IsOwnerOf = 5,
-        SameExist = 6,
-        SameNotExist = 7,
-        AssetTypesAt = 8,
-        ScoreOf0 = 9,
-        IsOwnerOfAll = 10,
+        AssetTypeIs = 2,
+        IsOwnerOf = 3,
+        SameExist = 4,
+        SameNotExist = 5,
+        AssetTypesAt = 6,
+        ScoreOf = 7,
+        IsOwnerOfAll = 8,
     }
 
     public enum CasinoRuleOp : byte
@@ -34,6 +35,7 @@
         Index = 7,
         MatchType = 8,
         Composite = 9,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum AssetType
@@ -61,24 +63,30 @@
 
     public enum TokenType
     {
-        T1 = 0,
-        T10 = 1,
-        T100 = 2,
-        T1000 = 3,
+        T_1 = 0,
+        T_10 = 1,
+        T_100 = 2,
+        T_1000 = 3,
+        T_10000 = 4,
+        T_100000 = 5,
+        T_1000000 = 6,
     }
 
-    public enum AmountType
+    public enum ValueType
     {
-        A0 = 0,
-        A1 = 1,
-        A2 = 2,
-        A3 = 3,
-        A4 = 4,
-        A5 = 5,
-        A6 = 6,
-        A7 = 7,
-        A8 = 8,
-        A9 = 9,
+        V0 = 0,
+        V1 = 1,
+        V2 = 2,
+        V3 = 3,
+        V4 = 4,
+        V5 = 5,
+        V6 = 6,
+        V7 = 7,
+        V8 = 8,
+        V9 = 9,
+        // ...
+        None = 15,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
 }
