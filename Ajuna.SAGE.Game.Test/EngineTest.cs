@@ -16,10 +16,10 @@ namespace Ajuna.SAGE.Game.Test
             _mockBlockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
 
             // Set up the necessary methods in the mock
-            _mockBlockchainInfoProvider.Setup(m => m.GenerateRandomHash()).Returns(new byte[] { 1, 2, 3, 4 });
+            _mockBlockchainInfoProvider.Setup(m => m.GenerateRandomHash()).Returns([1, 2, 3, 4]);
             _mockBlockchainInfoProvider.Setup(m => m.CurrentBlockNumber).Returns(100);
 
-            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b) => true);
+            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b, m) => true);
         }
 
         [Test]
@@ -142,11 +142,11 @@ namespace Ajuna.SAGE.Game.Test
 
             // Setting up the Engine with custom Verify function
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(blockchainInfoProvider.Object)
-                .SetVerifyFunction((player, rule, assets, blocknumber) =>
+                .SetVerifyFunction((p, r, a, b, m) =>
                 {
-                    if (rule.RuleType == (byte)ActionRuleType.MinAsset && rule.RuleOp == (byte)ActionRuleOp.GreaterEqual)
+                    if (r.RuleType == (byte)ActionRuleType.MinAsset && r.RuleOp == (byte)ActionRuleOp.GreaterEqual)
                     {
-                        return assets.Length >= BitConverter.ToUInt32(rule.RuleValue);
+                        return a.Length >= BitConverter.ToUInt32(r.RuleValue);
                     }
 
                     return false;

@@ -31,33 +31,33 @@ namespace Ajuna.SAGE.Game.CasinoJam
         ///
         /// </summary>
         /// <returns></returns>
-        internal static Func<IPlayer, CasinoJamRule, IAsset[], uint, bool> GetVerifyFunction()
+        internal static Func<IPlayer, CasinoJamRule, IAsset[], uint, IAssetBalanceManager, bool> GetVerifyFunction()
         {
-            return (player, rule, assets, blocknumber) =>
+            return (p, r, a, b, m) =>
             {
-                switch (rule.CasinoRuleType)
+                switch (r.CasinoRuleType)
                 {
                     case CasinoRuleType.AssetCount:
                         {
-                            switch (rule.CasinoRuleOp)
+                            switch (r.CasinoRuleOp)
                             {
                                 case CasinoRuleOp.EQ:
-                                    return assets.Length == BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length == BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.GE:
-                                    return assets.Length >= BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length >= BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.GT:
-                                    return assets.Length > BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length > BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.LT:
-                                    return assets.Length < BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length < BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.LE:
-                                    return assets.Length <= BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length <= BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.NE:
-                                    return assets.Length != BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length != BitConverter.ToUInt32(r.RuleValue);
 
                                 default:
                                     return false;
@@ -66,29 +66,29 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.IsOwnerOf:
                         {
-                            if (rule.CasinoRuleOp != CasinoRuleOp.Index)
+                            if (r.CasinoRuleOp != CasinoRuleOp.Index)
                             {
                                 return false;
                             }
-                            var assetIndex = BitConverter.ToUInt32(rule.RuleValue);
-                            if (assets.Length <= assetIndex)
+                            var assetIndex = BitConverter.ToUInt32(r.RuleValue);
+                            if (a.Length <= assetIndex)
                             {
                                 return false;
                             }
 
-                            return player.IsOwnerOf(assets[assetIndex]);
+                            return p.IsOwnerOf(a[assetIndex]);
                         }
 
                     case CasinoRuleType.IsOwnerOfAll:
                         {
-                            if (rule.CasinoRuleOp != CasinoRuleOp.None)
+                            if (r.CasinoRuleOp != CasinoRuleOp.None)
                             {
                                 return false;
                             }
 
-                            for (int i = 0; i < assets.Length; i++)
+                            for (int i = 0; i < a.Length; i++)
                             {
-                                if (!player.IsOwnerOf(assets[i]))
+                                if (!p.IsOwnerOf(a[i]))
                                 {
                                     return false;
                                 }
@@ -98,55 +98,55 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.AssetTypeIs:
                         {
-                            if (assets.Length == 0)
+                            if (a.Length == 0)
                             {
                                 return false;
                             }
 
-                            if (rule.ValueType == ValueType.None)
+                            if (r.ValueType == ValueType.None)
                             {
                                 return false;
                             }
 
-                            if (assets.Length <= (byte)rule.ValueType)
+                            if (a.Length <= (byte)r.ValueType)
                             {
                                 return false;
                             }
 
-                            var asset = new BaseAsset(assets[(byte)rule.ValueType]);
-                            return asset.AssetType == (AssetType)BitConverter.ToUInt32(rule.RuleValue);
+                            var asset = new BaseAsset(a[(byte)r.ValueType]);
+                            return asset.AssetType == (AssetType)BitConverter.ToUInt32(r.RuleValue);
                         }
 
                     case CasinoRuleType.SameExist:
                         {
-                            if (player.Assets == null || player.Assets.Count == 0)
+                            if (p.Assets == null || p.Assets.Count == 0)
                             {
                                 return false;
                             }
 
-                            return player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                            return p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.SameNotExist:
                         {
-                            if (player.Assets == null || player.Assets.Count == 0)
+                            if (p.Assets == null || p.Assets.Count == 0)
                             {
                                 return true;
                             }
 
-                            return !player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                            return !p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.AssetTypesAt:
                         {
-                            if (rule.CasinoRuleOp != CasinoRuleOp.Composite)
+                            if (r.CasinoRuleOp != CasinoRuleOp.Composite)
                             {
                                 return false;
                             }
 
-                            for (int i = 0; i < rule.RuleValue.Length; i++)
+                            for (int i = 0; i < r.RuleValue.Length; i++)
                             {
-                                byte composite = rule.RuleValue[i];
+                                byte composite = r.RuleValue[i];
 
                                 if (composite == 0)
                                 {
@@ -156,12 +156,12 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                 byte assetType = (byte)(composite >> 4);
                                 byte assetSubType = (byte)(composite & 0x0F);
 
-                                if (assets.Length <= i)
+                                if (a.Length <= i)
                                 {
                                     return false;
                                 }
 
-                                var baseAsset = assets[i] as BaseAsset;
+                                var baseAsset = a[i] as BaseAsset;
                                 if (baseAsset == null || (byte)baseAsset.AssetType != assetType || (byte)baseAsset.AssetSubType != assetSubType)
                                 {
                                     return false;
@@ -171,43 +171,50 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             return true;
                         }
 
-                    case CasinoRuleType.ScoreOf:
+                    case CasinoRuleType.BalanceOf:
                         {
-                            if (assets.Length == 0)
+                            if (a.Length == 0)
                             {
                                 return false;
                             }
 
-                            if (rule.ValueType == ValueType.None)
+                            if (r.ValueType == ValueType.None)
                             {
                                 return false;
                             }
 
-                            if (assets.Length <= (byte)rule.ValueType)
+                            if (a.Length <= (byte)r.ValueType)
                             {
                                 return false;
                             }
 
-                            var asset = assets[(byte)rule.ValueType];
-                            switch (rule.CasinoRuleOp)
+                            var asset = a[(byte)r.ValueType];
+                            var balance = m.AssetBalance(asset.Id);
+
+                            if (!balance.HasValue)
+                            {
+                                return false;
+                            }
+
+                            switch (r.CasinoRuleOp)
                             {
                                 case CasinoRuleOp.EQ:
-                                    return asset.Score == BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value == BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.GE:
-                                    return asset.Score >= BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value >= BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.GT:
-                                    return asset.Score > BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value > BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.LT:
-                                    return asset.Score < BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value < BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.LE:
-                                    return asset.Score <= BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value <= BitConverter.ToUInt32(r.RuleValue);
 
                                 case CasinoRuleOp.NE:
-                                    return asset.Score != BitConverter.ToUInt32(rule.RuleValue);
+                                    return balance.Value != BitConverter.ToUInt32(r.RuleValue);
 
                                 default:
                                     return false;
@@ -215,7 +222,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                         }
 
                     default:
-                        throw new NotSupportedException($"Unsupported RuleType {rule.RuleType}!");
+                        throw new NotSupportedException($"Unsupported RuleType {r.RuleType}!");
                 }
             };
         }
@@ -398,22 +405,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     m.Withdraw(bandit.Id, effectivePayout);
                     m.Deposit(player.Id, effectivePayout);
                 }
-
-                // 💎 0: DIAMOND
-                // 🍒 1: CHERRY
-                // 🍊 2: ORANGE
-                // 🍋 3: LEMON
-                // 🍇 4: GRAPE
-                // 🍉 5: WATERMELON
-                // 🍀 6: CLOVER
-                // 🔔 7: CLOCK 
-                // 👑 8: CROWN
-                // 💰 9: MONEYBAG
-
-                // 👑 0: CROWN
-                // 🍋 1: LEMON
-                // 💰 2: MONEYBAG
-                // 🍒 3: CHERRY
 
                 return [player, bandit];
             };

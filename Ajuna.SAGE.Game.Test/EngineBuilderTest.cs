@@ -36,7 +36,7 @@ namespace Ajuna.SAGE.Game.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b) => true)
+                .SetVerifyFunction((p, r, a, b, m) => true)
                 .AddTransition(identifier, new[] { rules }, default, function)
                 .Build();
 
@@ -84,9 +84,9 @@ namespace Ajuna.SAGE.Game.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b) => true)
-                .AddTransition(identifier1, new[] { rules1 }, default, function1)
-                .AddTransition(identifier2, new[] { rules2 }, default, function2)
+                .SetVerifyFunction((p, r, a, b, m) => true)
+                .AddTransition(identifier1, [rules1], default, function1)
+                .AddTransition(identifier2, [rules2], default, function2)
                 .Build();
 
             var assets = new Asset[]

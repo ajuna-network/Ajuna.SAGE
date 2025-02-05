@@ -14,7 +14,7 @@ namespace Ajuna.SAGE.Game
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? Fee, TransitionFunction<TRules> Function)> _transitions;
 
-        private Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
+        private Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> _verifyFunction;
 
         /// <summary>
         /// Engine Builder
@@ -44,7 +44,7 @@ namespace Ajuna.SAGE.Game
         /// </summary>
         /// <param name="verifyFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, IAsset[], uint, bool> verifyFunction)
+        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> verifyFunction)
         {
             _verifyFunction = verifyFunction;
             return this;

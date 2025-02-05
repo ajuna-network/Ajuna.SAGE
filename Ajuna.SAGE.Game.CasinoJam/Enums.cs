@@ -4,10 +4,17 @@
     {
         None = 0,
         Create = 1,
-        Fund = 2,
-        Gamble = 3,
-        Change = 4,
+        Config = 2,
+        Fund = 3,
+        Gamble = 4,
         Loot = 5,
+        // *** DO NOT PASS 15 INDEX ***
+    }
+
+    public enum CasinoSubAction : byte
+    {
+        None = 0,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum CasinoRuleType : byte
@@ -19,8 +26,9 @@
         SameExist = 4,
         SameNotExist = 5,
         AssetTypesAt = 6,
-        ScoreOf = 7,
+        BalanceOf = 7,
         IsOwnerOfAll = 8,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum CasinoRuleOp : byte
@@ -43,22 +51,26 @@
         None = 0,
         Player = 1,
         Machine = 2,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum AssetSubType
     {
         None = 0,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum PlayerSubType
     {
         None = 0
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum MachineSubType
     {
         None = 0,
         Bandit = 1
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum TokenType
@@ -70,6 +82,7 @@
         T_10000 = 4,
         T_100000 = 5,
         T_1000000 = 6,
+        // *** DO NOT PASS 15 INDEX ***
     }
 
     public enum ValueType

@@ -21,7 +21,7 @@ namespace Ajuna.SAGE.Game
         private readonly IBlockchainInfoProvider _blockchainInfo;
         public IBlockchainInfoProvider BlockchainInfoProvider => _blockchainInfo;
 
-        private readonly Func<IPlayer, TRules, IAsset[], uint, bool> _verifyFunction;
+        private readonly Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> _verifyFunction;
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
@@ -33,7 +33,7 @@ namespace Ajuna.SAGE.Game
         /// Game
         /// </summary>
         /// <param name="seed"></param>
-        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, IAsset[], uint, bool> verifyFunction)
+        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> verifyFunction)
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
@@ -98,7 +98,7 @@ namespace Ajuna.SAGE.Game
             TransitionFunction<TRules> function = tuple.function;
 
             // check if the executor has the assets and the rules are all okay
-            if (!rules.All(rule => _verifyFunction(executor, rule, assets, blockNumber)))
+            if (!rules.All(rule => _verifyFunction(executor, rule, assets, blockNumber, _assetBalanceManager)))
             {
                 result = [];
                 return false;

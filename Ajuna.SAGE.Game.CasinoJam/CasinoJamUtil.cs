@@ -89,6 +89,22 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// <returns></returns>
         public static uint SlotReward(byte slot1, byte slot2, byte slot3, byte bonus1, byte bonus2)
         {
+            // 💎 0: DIAMOND
+            // 🍒 1: CHERRY
+            // 🍊 2: ORANGE
+            // 🍋 3: LEMON
+            // 🍇 4: GRAPE
+            // 🍉 5: WATERMELON
+            // 🍀 6: CLOVER
+            // 🔔 7: CLOCK 
+            // 👑 8: CROWN
+            // 💰 9: MONEYBAG
+
+            // 👑 0: CROWN
+            // 🍋 1: LEMON
+            // 💰 2: MONEYBAG
+            // 🍒 3: CHERRY
+
             uint baseReward = $"{slot1}{slot2}{slot3}" == "777" ? 1000u : 0u;
 
             uint finalReward = baseReward;

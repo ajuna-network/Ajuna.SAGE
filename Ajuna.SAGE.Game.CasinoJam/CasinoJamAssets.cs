@@ -81,6 +81,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
             : base(asset)
         { }
 
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ H....... ........ ........
+        public TokenType MaxReward
+        {
+            get => (TokenType)Data.Read(8, ByteType.High);
+            set => Data?.Set(8, ByteType.High, (byte)value);
+        }
+
     }
 
     public class BanditAsset : MachineAsset

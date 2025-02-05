@@ -31,33 +31,33 @@ namespace Ajuna.SAGE.Game.HeroJam
         ///
         /// </summary>
         /// <returns></returns>
-        private static Func<IPlayer, HeroJamRule, IAsset[], uint, bool> GetVerifyFunction()
+        private static Func<IPlayer, HeroJamRule, IAsset[], uint, IAssetBalanceManager, bool> GetVerifyFunction()
         {
-            return (player, rule, assets, blocknumber) =>
+            return (p, r, a, b, m) =>
             {
-                switch (rule.RuleType)
+                switch (r.RuleType)
                 {
                     case (byte)HeroRuleType.AssetCount:
                         {
-                            switch (rule.RuleOp)
+                            switch (r.RuleOp)
                             {
                                 case (byte)HeroRuleOp.EQ:
-                                    return assets.Length == BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length == BitConverter.ToUInt32(r.RuleValue);
 
                                 case (byte)HeroRuleOp.GE:
-                                    return assets.Length >= BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length >= BitConverter.ToUInt32(r.RuleValue);
 
                                 case (byte)HeroRuleOp.GT:
-                                    return assets.Length > BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length > BitConverter.ToUInt32(r.RuleValue);
 
                                 case (byte)HeroRuleOp.LT:
-                                    return assets.Length < BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length < BitConverter.ToUInt32(r.RuleValue);
 
                                 case (byte)HeroRuleOp.LE:
-                                    return assets.Length <= BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length <= BitConverter.ToUInt32(r.RuleValue);
 
                                 case (byte)HeroRuleOp.NE:
-                                    return assets.Length != BitConverter.ToUInt32(rule.RuleValue);
+                                    return a.Length != BitConverter.ToUInt32(r.RuleValue);
 
                                 default:
                                     return false;
@@ -66,120 +66,120 @@ namespace Ajuna.SAGE.Game.HeroJam
 
                     case (byte)HeroRuleType.IsOwnerOf:
                         {
-                            if (rule.RuleOp != (byte)HeroRuleOp.Index)
+                            if (r.RuleOp != (byte)HeroRuleOp.Index)
                             {
                                 return false;
                             }
-                            var assetIndex = BitConverter.ToUInt32(rule.RuleValue);
-                            if (assets.Length <= assetIndex)
+                            var assetIndex = BitConverter.ToUInt32(r.RuleValue);
+                            if (a.Length <= assetIndex)
                             {
                                 return false;
                             }
 
-                            return player.IsOwnerOf(assets[assetIndex]);
+                            return p.IsOwnerOf(a[assetIndex]);
                         }
 
                     case (byte)HeroRuleType.AllAssetType:
                         {
-                            return assets.All(a =>
+                            return a.All(a =>
                             {
                                 BaseAsset? baseAsset = a as BaseAsset;
-                                var expectedAssetType = (AssetType)BitConverter.ToUInt32(rule.RuleValue);
+                                var expectedAssetType = (AssetType)BitConverter.ToUInt32(r.RuleValue);
                                 return baseAsset != null && baseAsset.AssetType == expectedAssetType;
                             });
                         }
 
                     case (byte)HeroRuleType.AllStateType:
                         {
-                            return assets.All(a =>
+                            return a.All(a =>
                             {
                                 HeroAsset? heroJameAsset = a as HeroAsset;
-                                var expectedStateType = (StateType)BitConverter.ToUInt32(rule.RuleValue);
-                                return rule.RuleOp switch
+                                var expectedStateType = (StateType)BitConverter.ToUInt32(r.RuleValue);
+                                return r.RuleOp switch
                                 {
                                     (byte)HeroRuleOp.EQ => heroJameAsset != null && heroJameAsset.StateType == expectedStateType,
                                     (byte)HeroRuleOp.NE => heroJameAsset != null && heroJameAsset.StateType != expectedStateType,
-                                    _ => throw new NotSupportedException($"Unsupported RuleOp {rule.RuleOp} for RuleType {rule.RuleType}!"),
+                                    _ => throw new NotSupportedException($"Unsupported RuleOp {r.RuleOp} for RuleType {r.RuleType}!"),
                                 };
                             });
                         }
 
                     case (byte)HeroRuleType.CanStateChange:
                         {
-                            if (rule.RuleOp != (byte)HeroRuleOp.Index)
+                            if (r.RuleOp != (byte)HeroRuleOp.Index)
                             {
                                 return false;
                             }
-                            var assetIndex = BitConverter.ToUInt32(rule.RuleValue);
-                            if (assets.Length <= assetIndex)
+                            var assetIndex = BitConverter.ToUInt32(r.RuleValue);
+                            if (a.Length <= assetIndex)
                             {
                                 return false;
                             }
-                            return assets[assetIndex] is HeroAsset heroJamAsset && heroJamAsset.StateChangeBlockNumber < blocknumber;
+                            return a[assetIndex] is HeroAsset heroJamAsset && heroJamAsset.StateChangeBlockNumber < b;
                         }
 
                     case (byte)HeroRuleType.SameExist:
                         {
-                            if (player.Assets == null || player.Assets.Count == 0)
+                            if (p.Assets == null || p.Assets.Count == 0)
                             {
                                 return false;
                             }
 
-                            return player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                            return p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case (byte)HeroRuleType.SameNotExist:
                         {
-                            if (player.Assets == null || player.Assets.Count == 0)
+                            if (p.Assets == null || p.Assets.Count == 0)
                             {
                                 return true;
                             }
 
-                            return !player.Assets.Any(a => a.MatchType.SequenceEqual(rule.RuleValue));
+                            return !p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case (byte)HeroRuleType.AssetTypeAt:
                         {
-                            if (rule.RuleOp != (byte)HeroRuleOp.Composite)
+                            if (r.RuleOp != (byte)HeroRuleOp.Composite)
                             {
                                 return false;
                             }
 
-                            byte composite = rule.RuleValue[0];
+                            byte composite = r.RuleValue[0];
                             byte index = (byte)(composite & 0x0F);
                             byte assetType = (byte)(composite >> 4);
 
-                            if (assets.Length <= index)
+                            if (a.Length <= index)
                             {
                                 return false;
                             }
                             // We assume all assets are HeroJamAsset for this game.
-                            var baseAsset = assets[index] as BaseAsset;
+                            var baseAsset = a[index] as BaseAsset;
                             return baseAsset != null && ((uint)baseAsset.AssetType) == assetType;
                         }
 
                     case (byte)HeroRuleType.AssetFlagAt:
                         {
-                            if (rule.RuleOp != (byte)HeroRuleOp.Composite)
+                            if (r.RuleOp != (byte)HeroRuleOp.Composite)
                             {
                                 return false;
                             }
 
-                            byte composite = rule.RuleValue[0];
+                            byte composite = r.RuleValue[0];
                             byte index = (byte)(composite & 0x0F);
                             byte flagIndex = (byte)(composite >> 4);
 
-                            if (assets.Length <= index)
+                            if (a.Length <= index)
                             {
                                 return false;
                             }
                             // We assume all assets are HeroJamAsset for this game.
-                            var baseAsset = assets[index] as BaseAsset;
+                            var baseAsset = a[index] as BaseAsset;
                             return baseAsset.AssetFlags[flagIndex];
                         }
 
                     default:
-                        throw new NotSupportedException($"Unsupported RuleType {rule.RuleType}!");
+                        throw new NotSupportedException($"Unsupported RuleType {r.RuleType}!");
                 }
             };
         }
