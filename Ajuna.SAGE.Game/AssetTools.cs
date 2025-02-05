@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic
+namespace Ajuna.SAGE.Game
 {
     public class AssetTools
     {

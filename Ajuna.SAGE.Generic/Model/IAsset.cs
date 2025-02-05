@@ -1,6 +1,6 @@
 ﻿using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic.Model
+namespace Ajuna.SAGE.Game.Model
 {
     /// <summary>
     /// Asset interface
@@ -31,11 +31,6 @@ namespace Ajuna.SAGE.Generic.Model
         /// Custom Data
         /// </summary>
         byte[] Data { get; set; }
-
-        /// <summary>
-        /// Balance
-        /// </summary>
-        IBalance Balance { get; }
 
         /// <summary>
         /// Match type for same type as

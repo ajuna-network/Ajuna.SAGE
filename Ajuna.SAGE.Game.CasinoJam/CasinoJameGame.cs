@@ -1,6 +1,6 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
@@ -273,16 +273,17 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 new CasinoJamRule(CasinoRuleType.SameNotExist, CasinoRuleOp.MatchType, matchType),
             ];
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
-                // initiate the player with a score of 1000
-                var asset = new PlayerAsset(0, b);
-                asset.Balance.SetValue(0);
+                // initiate the player
+                var asset = new PlayerAsset(b);
 
                 return [asset];
             };
 
-            return (identifier, rules, default, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -300,16 +301,17 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 new CasinoJamRule(CasinoRuleType.SameNotExist, CasinoRuleOp.MatchType, matchType),
             ];
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
-                // initiate the bandit machine with a score of 10'000'000
-                var asset = new BanditAsset(0, b);
-                asset.Balance.SetValue(0);
+                // initiate the bandit machine
+                var asset = new BanditAsset(b);
 
                 return [asset];
             };
 
-            return (identifier, rules, default, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -330,11 +332,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 new CasinoJamRule(CasinoRuleType.ScoreOf, ValueType.V0, CasinoRuleOp.GE, value),
             ];
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            ITransitioFee? fee = new TransitioFee(value);
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 var player = (PlayerAsset)a.ElementAt(0);
 
-                uint current = player.Token;
+                uint current = player.TokenWallet;
 
                 uint capacity = uint.MaxValue - current;
                 uint requested = value;
@@ -347,13 +351,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 }
 
                 player.Score -= actual;
-                player.Balance.Withdraw(actual);
-                player.Token += actual;
+                m.Withdraw(player.Id, actual);
+                player.TokenWallet += actual;
 
                 return [player];
             };
 
-            return (identifier, rules, default, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -373,7 +377,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
             ];
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 var player = new PlayerAsset(a.ElementAt(0));
                 var bandit = new BanditAsset(a.ElementAt(1));
@@ -386,15 +392,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 var playFee = (uint)amountType;
 
                 // the player does not have enough tokens to gamble
-                if (player.Token < (uint)amountType || bandit.Score > (uint.MaxValue - playFee))
+                if (player.TokenWallet < (uint)amountType || bandit.Score > (uint.MaxValue - playFee))
                 {
                     return [player, bandit];
                 }
 
                 // remove the actual tokens that are gambled from the player and add to the bandit
-                player.Token -= playFee;
+                player.TokenWallet -= playFee;
                 bandit.Score += playFee;
-                bandit.Balance.Deposit(playFee);
+                m.Deposit(bandit.Id, playFee);
 
                 for (int i = 0; i < (byte)amountType; i++)
                 {
@@ -430,7 +436,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     var effectivePayout = Math.Min(finalReward, bandit.Score);
 
                     bandit.Score -= effectivePayout;
-                    bandit.Balance.Withdraw(effectivePayout);
+                    m.Withdraw(bandit.Id, effectivePayout);
                     bandit.Token += effectivePayout;
                 }
 
@@ -453,7 +459,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 return [player, bandit];
             };
 
-            return (identifier, rules, default, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -472,7 +478,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
             ];
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 var player = new PlayerAsset(a.ElementAt(0));
                 var bandit = new BanditAsset(a.ElementAt(1));
@@ -482,18 +490,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 bandit.SlotCResult = 0;
                 bandit.SlotDResult = 0;
 
-                uint capacity = uint.MaxValue - player.Token;
+                uint capacity = uint.MaxValue - player.TokenWallet;
 
                 // make sure no over flow.
                 var banditTokens = Math.Min(bandit.Token, capacity);
                 bandit.Token -= banditTokens;
 
-                player.Token += banditTokens;             
+                player.TokenWallet += banditTokens;             
 
                 return [player, bandit];
             };
 
-            return (identifier, rules, default, function);
+            return (identifier, rules, fee, function);
         }
 
         /// <summary>
@@ -514,7 +522,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             ITransitioFee fee = new TransitioFee(value);
 
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b) =>
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 var asset = new BaseAsset(a.ElementAt(0));
 
@@ -527,7 +535,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 // deposit funds into the asset
                 asset.Score += fee.Fee;
-                asset.Balance.Deposit(fee.Fee);
+                m.Deposit(asset.Id, fee.Fee);
 
                 return [asset];
             };

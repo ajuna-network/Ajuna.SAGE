@@ -1,5 +1,5 @@
-﻿using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam
 {
@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         { }
 
         public BaseAsset(IAsset asset)
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data, asset.Balance)
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
         { }
 
         // 00000000 00111111 11112222 22222233

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using Ajuna.SAGE.Game.HeroJam;
-using Ajuna.SAGE.Generic;
+using Ajuna.SAGE.Game;
 using Ajuna.SAGE.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

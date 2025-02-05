@@ -1,4 +1,4 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game.CasinoJam
 {

@@ -1,4 +1,4 @@
-namespace Ajuna.SAGE.Generic.Test
+namespace Ajuna.SAGE.Game.Test
 {
     public class WrappedAssetTest
     {

@@ -1,4 +1,6 @@
-﻿namespace Ajuna.SAGE.Game.Model
+﻿using System.ComponentModel;
+
+namespace Ajuna.SAGE.Game.Model
 {
     public interface ITransitioFee
     {
@@ -13,5 +15,6 @@
         {
             Fee = fee;
         }
+
     }
 }

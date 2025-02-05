@@ -1,5 +1,6 @@
+using Ajuna.SAGE.Game;
 using Ajuna.SAGE.Game.HeroJam;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 using Ajuna.SAGE.Model;
 using Ajuna.SAGE.WebAPI.Model;
 using Newtonsoft.Json.Linq;
@@ -131,16 +132,12 @@ namespace Ajuna.SAGE.WebAPI.Test
 
             // Check that the single asset has AssetType = Hero
             var dbAsset = dbPlayer.Assets.First();
-            Assert.That(dbAsset.BalanceValue, Is.EqualTo(10), "Balance of db asset should be 10");
-
             var asset = Asset.MapToDomain(dbAsset);
             Assert.That(asset, Is.Not.Null, "Asset should not be null");
 
             var heroAsset = new HeroAsset(asset);
             Assert.That(heroAsset, Is.Not.Null, "HeroJamAsset should not be null");
             Assert.That(heroAsset.AssetType, Is.EqualTo(AssetType.Hero), "The newly created asset should be of type Hero");
-
-            Assert.That(heroAsset.Balance.Value, Is.EqualTo(10), "Hero asset should have a balance of 10");
         }
 
         [Test]

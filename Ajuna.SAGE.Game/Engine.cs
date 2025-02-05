@@ -1,12 +1,17 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Generic.Model;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Ajuna.SAGE.Generic.Tests")]
+[assembly: InternalsVisibleTo("Ajuna.SAGE.Game.Test")]
 
-namespace Ajuna.SAGE.Generic
+namespace Ajuna.SAGE.Game
 {
-    public delegate IEnumerable<IAsset> TransitionFunction<TRules>(TRules[] rules, ITransitioFee? fee, IEnumerable<IAsset> assets, byte[] randomHash, uint blockNumber)
+    public delegate IEnumerable<IAsset> TransitionFunction<TRules>(
+        TRules[] rules,
+        ITransitioFee? fee,
+        IEnumerable<IAsset> assets,
+        byte[] randomHash,
+        uint blockNumber,
+        IAssetBalanceManager assetBalances)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -20,6 +25,9 @@ namespace Ajuna.SAGE.Generic
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
+        private readonly AssetBalanceManager _assetBalanceManager;
+        public uint? AssetBalance(ulong id) => _assetBalanceManager.AssetBalance(id);
+
         /// <summary>
         /// Game
         /// </summary>
@@ -29,6 +37,7 @@ namespace Ajuna.SAGE.Generic
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
             _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
+            _assetBalanceManager = new AssetBalanceManager();
         }
 
         /// <summary>
@@ -37,7 +46,7 @@ namespace Ajuna.SAGE.Generic
         public IBlockchainInfoProvider BlockchainInfo => _blockchainInfo;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="idType1"></param>
         /// <param name="idType2"></param>
@@ -102,9 +111,9 @@ namespace Ajuna.SAGE.Generic
             }
 
             // execute the transition function
-            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber);
+            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber, _assetBalanceManager);
 
-            result = functionResult != null ? [..functionResult] : [];
+            result = functionResult != null ? [.. functionResult] : [];
 
             return true;
         }

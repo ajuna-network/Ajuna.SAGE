@@ -1,4 +1,4 @@
-﻿namespace Ajuna.SAGE.Generic.Model
+﻿namespace Ajuna.SAGE.Game.Model
 {
     public interface ITransitionIdentifier
     {

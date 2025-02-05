@@ -1,8 +1,8 @@
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace Ajuna.SAGE.Generic.Test
+namespace Ajuna.SAGE.Game.Test
 {
     public class AvatarToolsTest
     {

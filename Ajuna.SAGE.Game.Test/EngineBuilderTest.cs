@@ -1,10 +1,10 @@
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 using Moq;
 
-namespace Ajuna.SAGE.Generic.Tests
+namespace Ajuna.SAGE.Game.Test
 {
     [TestFixture]
-    public class EngineBuilderTests
+    public class EngineBuilderTest
     {
         private Mock<IBlockchainInfoProvider> _mockBlockchainInfoProvider;
 
@@ -28,7 +28,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b) =>
+            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -39,8 +39,6 @@ namespace Ajuna.SAGE.Generic.Tests
                 .SetVerifyFunction((p, r, a, b) => true)
                 .AddTransition(identifier, new[] { rules }, default, function)
                 .Build();
-
-
 
             var assets = new Asset[]
             {
@@ -71,14 +69,14 @@ namespace Ajuna.SAGE.Generic.Tests
             var rules1 = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
             var rules2 = new ActionRule(ActionRuleType.MaxAsset, ActionRuleOp.LesserEqual, 5);
 
-            TransitionFunction<ActionRule> function1 = (r, f, w, h, b) =>
+            TransitionFunction<ActionRule> function1 = (r, f, w, h, b, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
                 return new List<IAsset> { asset };
             };
 
-            TransitionFunction<ActionRule> function2 = (r, f, w, h, b) =>
+            TransitionFunction<ActionRule> function2 = (r, f, w, h, b, m) =>
             {
                 var asset = w.First();
                 asset.Score += 20;

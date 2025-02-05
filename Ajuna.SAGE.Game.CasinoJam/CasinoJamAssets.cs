@@ -1,5 +1,5 @@
-﻿using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 using System.Security.Cryptography;
 
 namespace Ajuna.SAGE.Game.CasinoJam
@@ -19,7 +19,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         { }
 
         public BaseAsset(IAsset asset)
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data, asset.Balance)
+            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
         { }
 
         public AssetType AssetType
@@ -40,11 +40,12 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
     public class PlayerAsset : BaseAsset
     {
-        public PlayerAsset(uint score, uint genesis)
-            : base(score, genesis)
+        public PlayerAsset(uint genesis)
+            : base(0, genesis)
         {
             AssetType = AssetType.Player;
-            Token = 0;
+            TokenWallet = 0;
+            TokenReward = 0;
         }
 
         public PlayerAsset(IAsset asset)
@@ -54,7 +55,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
         // ........ XXXX.... ........ ........
-        public uint Token
+        public uint TokenWallet
         {
             get => BitConverter.ToUInt32(Data, 8);
             set
@@ -66,12 +67,28 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 }
             }
         }
+
+        // 00000000 00111111 11112222 22222233
+        // 01234567 89012345 67890123 45678901
+        // ........ ....XXXX ........ ........
+        public uint TokenReward
+        {
+            get => BitConverter.ToUInt32(Data, 12);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                for (int i = 0; i < 4; i++)
+                {
+                    Data[12 + i] = bytes[i];
+                }
+            }
+        }
     }
 
     public class MachineAsset : BaseAsset
     {
-        public MachineAsset(uint score, uint genesis)
-            : base(score, genesis)
+        public MachineAsset(uint genesis)
+            : base(0, genesis)
         {
             AssetType = AssetType.Machine;
             Token = 0;
@@ -100,8 +117,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
     public class BanditAsset : MachineAsset
     {
-        public BanditAsset(uint score, uint genesis)
-            : base(score, genesis)
+        public BanditAsset(uint genesis)
+            : base(genesis)
         {
             AssetSubType = (AssetSubType)MachineSubType.Bandit;
         }

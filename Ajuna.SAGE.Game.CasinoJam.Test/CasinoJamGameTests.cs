@@ -1,6 +1,6 @@
 using Ajuna.SAGE.Game.CasinoJam;
-using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam.Test
 {
@@ -60,6 +60,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(asset.AssetType, Is.EqualTo(AssetType.Player));
             Assert.That(asset.AssetSubType, Is.EqualTo(AssetSubType.None));
             Assert.That(asset.Score, Is.EqualTo(0));
+            Assert.That(_engine.AssetBalance(asset.Id), Is.Null);
 
             Assert.That(_user.Assets?.Count, Is.EqualTo(1));
         }
@@ -99,7 +100,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(asset.AssetType, Is.EqualTo(AssetType.Player));
             Assert.That(asset.AssetSubType, Is.EqualTo(AssetSubType.None));
             Assert.That(asset.Score, Is.EqualTo(1000));
-            Assert.That(asset.Balance.Value, Is.EqualTo(1_000));
 
             Assert.That(_user.Assets?.Count, Is.EqualTo(1));
             Assert.That(_user.Balance.Value, Is.EqualTo(1_001_000));
@@ -175,7 +175,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(asset, Is.Not.Null);
             Assert.That(asset.AssetType, Is.EqualTo(AssetType.Machine));
             Assert.That(asset.Score, Is.EqualTo(1_000_000));
-            Assert.That(asset.Balance.Value, Is.EqualTo(1_000_000));
 
             Assert.That(_user.Assets?.Count, Is.EqualTo(2));
             // initial balance
@@ -217,8 +216,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(asset.AssetType, Is.EqualTo(AssetType.Player));
             Assert.That(asset.AssetSubType, Is.EqualTo(AssetSubType.None));
             Assert.That(asset.Score, Is.EqualTo(prevScore - 1));
-            Assert.That(asset.Balance.Value, Is.EqualTo(prevScore - 1));
-            Assert.That(asset.Token, Is.EqualTo(1u));
+            Assert.That(asset.TokenWallet, Is.EqualTo(1u));
 
             Assert.That(_user.Assets?.Count, Is.EqualTo(2));
         }
@@ -232,7 +230,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -260,9 +258,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken - 1));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken - 1));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -270,7 +267,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(1));
             Assert.That(updatedBandit.Score, Is.EqualTo(prevBanditScore));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(prevBanditScore));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -291,7 +287,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -319,9 +315,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -329,7 +324,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(prevBanditToken));
             Assert.That(updatedBandit.Score, Is.EqualTo(prevBanditScore));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(prevBanditScore));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -376,8 +370,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedPlayer.AssetType, Is.EqualTo(AssetType.Player));
             Assert.That(updatedPlayer.AssetSubType, Is.EqualTo(AssetSubType.None));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevScore - 10));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevScore - 10));
-            Assert.That(updatedPlayer.Token, Is.EqualTo(10u));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(10u));
 
             Assert.That(_user.Assets?.Count, Is.EqualTo(2));
         }
@@ -391,7 +384,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -419,9 +412,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken - 2));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken - 2));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -429,7 +421,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(2));
             Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(bandit.Score));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -450,7 +441,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -478,9 +469,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken - 3));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken - 3));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -488,7 +478,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(2));
             Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(bandit.Score));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -509,7 +498,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -537,9 +526,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken - 4));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken - 4));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -547,7 +535,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(3));
             Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(bandit.Score));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
@@ -568,7 +555,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var player = new PlayerAsset(_user.Assets.ElementAt(0));
             var prevPlayerScore = player.Score;
-            var prevPlayerToken = player.Token;
+            var prevPlayerToken = player.TokenWallet;
 
             var bandit = _user.Assets.ElementAt(1) as BanditAsset;
             var prevBanditScore = bandit.Score;
@@ -596,9 +583,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             PlayerAsset updatedPlayer = outputAssets[0] as PlayerAsset;
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(updatedPlayer.Token, Is.EqualTo(prevPlayerToken + prevBanditToken));
+            Assert.That(updatedPlayer.TokenWallet, Is.EqualTo(prevPlayerToken + prevBanditToken));
             Assert.That(updatedPlayer.Score, Is.EqualTo(prevPlayerScore));
-            Assert.That(updatedPlayer.Balance.Value, Is.EqualTo(prevPlayerScore));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = outputAssets[1] as BanditAsset;
@@ -606,7 +592,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(updatedBandit.Token, Is.EqualTo(0));
             Assert.That(updatedBandit.Score, Is.EqualTo(bandit.Score));
-            Assert.That(updatedBandit.Balance.Value, Is.EqualTo(bandit.Score));
 
             var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);

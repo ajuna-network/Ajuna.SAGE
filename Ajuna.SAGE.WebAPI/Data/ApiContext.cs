@@ -40,9 +40,5 @@ public class ApiContext : DbContext
         modelBuilder.Entity<DbAsset>()
             .Property(a => a.CollectionId)
             .IsRequired();
-
-        modelBuilder.Entity<DbAsset>()
-            .Property(a => a.BalanceValue)
-            .IsRequired();
     }
 }

@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Ajuna.SAGE.Generic;
+using Ajuna.SAGE.Game;
 using System.Linq;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Tests
 {

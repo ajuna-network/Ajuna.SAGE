@@ -1,10 +1,10 @@
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 using Moq;
 
-namespace Ajuna.SAGE.Generic.Tests
+namespace Ajuna.SAGE.Game.Test
 {
     [TestFixture]
-    public class EngineTests
+    public class EngineTest
     {
         private Mock<IBlockchainInfoProvider> _mockBlockchainInfoProvider;
         private Engine<ActionIdentifier, ActionRule> _engine;
@@ -39,7 +39,7 @@ namespace Ajuna.SAGE.Generic.Tests
 
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b) =>
+            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -82,7 +82,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) => w.Select(a => a);
 
             _engine.AddTransition(identifier, [rules], default, function);
 
@@ -134,7 +134,7 @@ namespace Ajuna.SAGE.Generic.Tests
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rule = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 2);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) => w.Select(a => a);
 
             var blockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
             blockchainInfoProvider.Setup(b => b.GenerateRandomHash()).Returns(new byte[] { 0x00 });
@@ -167,5 +167,6 @@ namespace Ajuna.SAGE.Generic.Tests
             Assert.That(success, Is.False, "Expected Transition to return false due to insufficient assets.");
             Assert.That(result, Is.Empty, "Expected result to be empty when transition fails.");
         }
+
     }
 }

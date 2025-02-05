@@ -1,5 +1,5 @@
-using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam.Test
 {
@@ -62,7 +62,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(heroAsset.Energy, Is.EqualTo(100));
             Assert.That(heroAsset.StateType, Is.EqualTo(StateType.None));
             Assert.That(heroAsset.StateChangeBlockNumber, Is.EqualTo(0));
-            Assert.That(heroAsset.Balance.Value, Is.EqualTo(10));
+            Assert.That(_engine.AssetBalance(heroAsset.Id), Is.EqualTo(10));
 
             Assert.That(_player.Assets?.Count, Is.EqualTo(1));
             // balance after create hero

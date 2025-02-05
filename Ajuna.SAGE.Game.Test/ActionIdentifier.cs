@@ -1,6 +1,6 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic.Tests
+namespace Ajuna.SAGE.Game.Test
 {
     public struct ActionIdentifier : ITransitionIdentifier
     {

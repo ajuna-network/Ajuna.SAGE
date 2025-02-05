@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
-using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam
 {

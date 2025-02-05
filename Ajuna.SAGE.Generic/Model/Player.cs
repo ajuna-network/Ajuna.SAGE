@@ -1,7 +1,7 @@
 ﻿using Ajuna.SAGE.Game.Model;
 using Ajuna.SAGE.Model;
 
-namespace Ajuna.SAGE.Generic.Model
+namespace Ajuna.SAGE.Game.Model
 {
 
     /// <summary>
@@ -80,7 +80,6 @@ namespace Ajuna.SAGE.Generic.Model
                     // update mutable data fields
                     asset.Score = output.Score;
                     asset.Data = output.Data;
-                    asset.Balance.SetValue(output.Balance.Value);
                 }
             }
         }

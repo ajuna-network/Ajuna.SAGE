@@ -1,6 +1,6 @@
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic.Test
+namespace Ajuna.SAGE.Game.Test
 {
     public class DataTest
     {

@@ -1,7 +1,7 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic
+namespace Ajuna.SAGE.Game
 {
     /// <summary>
     /// Engine Builder class

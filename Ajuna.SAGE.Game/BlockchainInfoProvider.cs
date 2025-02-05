@@ -1,5 +1,5 @@
 ﻿
-namespace Ajuna.SAGE.Generic
+namespace Ajuna.SAGE.Game
 {
     public interface IBlockchainInfoProvider
     {

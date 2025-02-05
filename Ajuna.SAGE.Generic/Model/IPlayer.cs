@@ -1,6 +1,6 @@
 ﻿using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Generic.Model
+namespace Ajuna.SAGE.Game.Model
 {
     /// <summary>
     /// Player interface

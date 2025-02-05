@@ -1,4 +1,4 @@
-﻿namespace Ajuna.SAGE.Generic.Tests
+﻿namespace Ajuna.SAGE.Game.Test
 {
     public enum ActionType : byte
     {

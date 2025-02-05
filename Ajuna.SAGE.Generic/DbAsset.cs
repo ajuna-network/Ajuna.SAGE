@@ -1,4 +1,4 @@
-﻿using Ajuna.SAGE.Generic.Model;
+﻿using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Model
 {
@@ -9,7 +9,6 @@ namespace Ajuna.SAGE.Model
         public uint Score { get; set; }
         public uint Genesis { get; set; }
         public byte[]? Data { get; set; }
-        public uint BalanceValue { get; set; }
 
         public static DbAsset MapToDb(IAsset asset) => new()
         {
@@ -18,7 +17,6 @@ namespace Ajuna.SAGE.Model
             Score = asset.Score,
             Genesis = asset.Genesis,
             Data = asset.Data,
-            BalanceValue = asset.Balance.Value
         };
     }
 }

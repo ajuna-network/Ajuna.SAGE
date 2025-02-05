@@ -1,6 +1,6 @@
 ﻿using Ajuna.SAGE.Game.HeroJam;
-using Ajuna.SAGE.Generic;
-using Ajuna.SAGE.Generic.Model;
+using Ajuna.SAGE.Game;
+using Ajuna.SAGE.Game.Model;
 using Ajuna.SAGE.Model;
 using Ajuna.SAGE.WebAPI.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -184,7 +184,6 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                 inDbAsset.CollectionId = updatedAsset.CollectionId;
                 inDbAsset.Genesis = updatedAsset.Genesis;
                 inDbAsset.Data = updatedAsset.Data;
-                inDbAsset.BalanceValue = updatedAsset.Balance.Value;
             }
 
             // add all result cards and save
