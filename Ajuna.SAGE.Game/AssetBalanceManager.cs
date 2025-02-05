@@ -3,7 +3,9 @@ namespace Ajuna.SAGE.Game
 {
     public interface IAssetBalanceManager
     {
+        bool CanDeposit(ulong id, uint balance, out uint currentBalance);
         bool Deposit(ulong id, uint balance);
+        bool CanWithdraw(ulong id, uint balance, out uint currentBalance);
         bool Withdraw(ulong id, uint balance);
         ulong AllAssetBalances();
         uint? AssetBalance(ulong id);
@@ -11,37 +13,35 @@ namespace Ajuna.SAGE.Game
 
     public class AssetBalanceManager : IAssetBalanceManager
     {
-        // Internal storage for asset balances.
         private readonly Dictionary<ulong, uint> _assetsBalances = [];
+
+        public bool CanDeposit(ulong id, uint balance, out uint currentBalance)
+        {
+            return !_assetsBalances.TryGetValue(id, out currentBalance) || balance <= uint.MaxValue - currentBalance;
+        }
 
         public bool Deposit(ulong id, uint balance)
         {
-            if (_assetsBalances.TryGetValue(id, out uint currentBalance))
+            if (!CanDeposit(id, balance, out uint currentBalance))
             {
-                var capacity = uint.MaxValue - currentBalance;
-                if (balance > capacity)
-                {
-                    return false;
-                }
-                _assetsBalances[id] = currentBalance + balance;
+                return false;
             }
-            else
-            {
-                _assetsBalances[id] = balance;
-            }
+            _assetsBalances[id] = currentBalance + balance;
             return true;
+        }
+
+        public bool CanWithdraw(ulong id, uint balance, out uint currentBalance)
+        {
+            return _assetsBalances.TryGetValue(id, out currentBalance) && balance <= currentBalance;
         }
 
         public bool Withdraw(ulong id, uint balance)
         {
-            if (!_assetsBalances.TryGetValue(id, out uint currentBalance))
+            if (!CanWithdraw(id, balance, out uint currentBalance))
             {
                 return false;
             }
-            if (balance > currentBalance)
-            {
-                return false;
-            }
+
             _assetsBalances[id] = currentBalance - balance;
             return true;
         }

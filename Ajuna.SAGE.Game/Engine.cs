@@ -26,6 +26,7 @@ namespace Ajuna.SAGE.Game
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
         private readonly AssetBalanceManager _assetBalanceManager;
+        // only for testing
         public uint? AssetBalance(ulong id) => _assetBalanceManager.AssetBalance(id);
 
         /// <summary>

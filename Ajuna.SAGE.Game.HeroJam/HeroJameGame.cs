@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Game;
-using Ajuna.SAGE.Game.Model;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Ajuna.SAGE.Game.HeroJam.Test")]
 
 namespace Ajuna.SAGE.Game.HeroJam
 {
@@ -146,8 +147,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
                             byte composite = rule.RuleValue[0];
                             byte index = (byte)(composite & 0x0F);
-                            byte assetType = (byte) (composite >> 4);
-   
+                            byte assetType = (byte)(composite >> 4);
+
                             if (assets.Length <= index)
                             {
                                 return false;
@@ -382,7 +383,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         {
             var identifier = HeroJamIdentifier.Use(useType);
             byte heroAt0 = ((byte)AssetType.Hero << 4) | 0;
-            byte isUseTypeAt1 = (byte) (((byte)useType << 4) | 1);
+            byte isUseTypeAt1 = (byte)(((byte)useType << 4) | 1);
 
             HeroJamRule[] rules =
             [
@@ -401,8 +402,9 @@ namespace Ajuna.SAGE.Game.HeroJam
                 var hero = (HeroAsset)a.ElementAt(0);
 
                 // Retrieve the hero and the animal asset.
-                switch (useType) {
-                    
+                switch (useType)
+                {
+
                     case UseType.Disassemble:
                         {
                             var usable = (DisassemblableAsset)a.ElementAt(1);

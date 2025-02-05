@@ -1,6 +1,4 @@
 ﻿using Ajuna.SAGE.Game.Model;
-using Ajuna.SAGE.Game;
-using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
@@ -87,7 +85,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             {
                                 return false;
                             }
-                            
+
                             for (int i = 0; i < assets.Length; i++)
                             {
                                 if (!player.IsOwnerOf(assets[i]))
@@ -95,7 +93,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                     return false;
                                 }
                             }
-                                 return true;
+                            return true;
                         }
 
                     case CasinoRuleType.AssetTypeIs:
@@ -243,17 +241,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 GetCreateMachineTransition(MachineSubType.Bandit),
 
-                GetChangeTransition(TokenType.T_1, ValueType.V1),
-                GetChangeTransition(TokenType.T_10, ValueType.V1),
-                GetChangeTransition(TokenType.T_100, ValueType.V1),
-                GetChangeTransition(TokenType.T_1000, ValueType.V1),
-
                 GetGambleTransition(ValueType.V1),
                 GetGambleTransition(ValueType.V2),
                 GetGambleTransition(ValueType.V3),
                 GetGambleTransition(ValueType.V4),
 
-                GetLootTransition()
+                GetLootTransition(TokenType.T_1),
+                GetLootTransition(TokenType.T_10),
+                GetLootTransition(TokenType.T_100),
+                GetLootTransition(TokenType.T_1000),
+                GetLootTransition(TokenType.T_10000),
+                GetLootTransition(TokenType.T_100000),
+                GetLootTransition(TokenType.T_1000000),
             };
 
             return result;
@@ -315,59 +314,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
         }
 
         /// <summary>
-        /// Get Money Change transition set
-        /// </summary>
-        /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetChangeTransition(TokenType tokenType, ValueType amountType)
-        {
-            var identifier = CasinoJamIdentifier.Change(tokenType, amountType);
-            uint factor = (uint)Math.Pow(10, (uint)tokenType);
-            uint value = factor * (uint)amountType;
-            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
-
-            CasinoJamRule[] rules = [
-                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
-                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, 0x00, 0x00, 0x00]),
-                new CasinoJamRule(CasinoRuleType.ScoreOf, ValueType.V0, CasinoRuleOp.GE, value),
-            ];
-
-            ITransitioFee? fee = new TransitioFee(value);
-
-            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
-            {
-                var player = (PlayerAsset)a.ElementAt(0);
-
-                uint current = player.TokenWallet;
-
-                uint capacity = uint.MaxValue - current;
-                uint requested = value;
-
-                uint actual = Math.Min(requested, capacity);
-
-                if (actual <= 0)
-                {
-                    return [player];
-                }
-
-                player.Score -= actual;
-                m.Withdraw(player.Id, actual);
-                player.TokenWallet += actual;
-
-                return [player];
-            };
-
-            return (identifier, rules, fee, function);
-        }
-
-        /// <summary>
         /// Get Gamble transition set
         /// </summary>
         /// <param name="actionTime"></param>
         /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(ValueType amountType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(ValueType valueType)
         {
-            var identifier = CasinoJamIdentifier.Gamble(0x00, amountType);
+            var identifier = CasinoJamIdentifier.Gamble(0x00, valueType);
             byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
             byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
 
@@ -389,20 +342,21 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 bandit.SlotCResult = 0;
                 bandit.SlotDResult = 0;
 
-                var playFee = (uint)amountType;
+                var playFee = (uint)valueType;
 
-                // the player does not have enough tokens to gamble
-                if (player.TokenWallet < (uint)amountType || bandit.Score > (uint.MaxValue - playFee))
+                // player needs to be able to pay fee and bandit needs to be able to receive reward
+                if (!m.CanWithdraw(player.Id, playFee, out _) || !m.CanDeposit(bandit.Id, playFee, out _))
                 {
                     return [player, bandit];
                 }
 
                 // remove the actual tokens that are gambled from the player and add to the bandit
-                player.TokenWallet -= playFee;
-                bandit.Score += playFee;
+                m.Withdraw(player.Id, playFee);
                 m.Deposit(bandit.Id, playFee);
 
-                for (int i = 0; i < (byte)amountType; i++)
+                // TODO: Need to make sure that we don't allow play if the machine can't execute the max reward possible
+
+                for (int i = 0; i < (byte)valueType; i++)
                 {
                     var offset = (uint)(i * 5);
                     var Slot1 = (byte)(h[0 + offset] % 10);
@@ -435,9 +389,14 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     var effectivePayout = Math.Min(finalReward, bandit.Score);
 
-                    bandit.Score -= effectivePayout;
+                    if (!m.CanWithdraw(bandit.Id, effectivePayout, out _) || !m.CanDeposit(player.Id, effectivePayout, out _))
+                    {
+                        // TODO: if the bandit can't pay the reward, then the player gets the fee back, but it also is a very problematic case
+                        return [player, bandit];
+                    }
+
                     m.Withdraw(bandit.Id, effectivePayout);
-                    bandit.Token += effectivePayout;
+                    m.Deposit(player.Id, effectivePayout);
                 }
 
                 // 💎 0: DIAMOND
@@ -466,11 +425,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Get Loot transition set
         /// </summary>
         /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetLootTransition()
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetLootTransition(TokenType tokenType)
         {
-            var identifier = CasinoJamIdentifier.Loot();
+            var identifier = CasinoJamIdentifier.Loot(tokenType);
             byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
             byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
+
+            var value = (uint)Math.Pow(10, (byte)tokenType);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
@@ -490,13 +451,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 bandit.SlotCResult = 0;
                 bandit.SlotDResult = 0;
 
-                uint capacity = uint.MaxValue - player.TokenWallet;
-
-                // make sure no over flow.
-                var banditTokens = Math.Min(bandit.Token, capacity);
-                bandit.Token -= banditTokens;
-
-                player.TokenWallet += banditTokens;             
+                if (m.CanDeposit(player.Id, value, out _) && m.Withdraw(bandit.Id, value))
+                {
+                    m.Deposit(player.Id, value);
+                }
 
                 return [player, bandit];
             };
@@ -526,15 +484,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
             {
                 var asset = new BaseAsset(a.ElementAt(0));
 
-                uint capacity = uint.MaxValue - asset.Score;
-                if (capacity < fee.Fee)
-                {
-                    // we can't fund at this point overflow
-                    return [asset];
-                }
-
-                // deposit funds into the asset
-                asset.Score += fee.Fee;
                 m.Deposit(asset.Id, fee.Fee);
 
                 return [asset];

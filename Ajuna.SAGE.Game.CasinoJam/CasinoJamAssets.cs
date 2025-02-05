@@ -44,8 +44,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             : base(0, genesis)
         {
             AssetType = AssetType.Player;
-            TokenWallet = 0;
-            TokenReward = 0;
+            LastReward = 0;
         }
 
         public PlayerAsset(IAsset asset)
@@ -55,7 +54,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
         // ........ XXXX.... ........ ........
-        public uint TokenWallet
+        public uint LastReward
         {
             get => BitConverter.ToUInt32(Data, 8);
             set
@@ -68,21 +67,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
             }
         }
 
-        // 00000000 00111111 11112222 22222233
-        // 01234567 89012345 67890123 45678901
-        // ........ ....XXXX ........ ........
-        public uint TokenReward
-        {
-            get => BitConverter.ToUInt32(Data, 12);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < 4; i++)
-                {
-                    Data[12 + i] = bytes[i];
-                }
-            }
-        }
     }
 
     public class MachineAsset : BaseAsset
@@ -91,28 +75,12 @@ namespace Ajuna.SAGE.Game.CasinoJam
             : base(0, genesis)
         {
             AssetType = AssetType.Machine;
-            Token = 0;
         }
 
         public MachineAsset(IAsset asset)
             : base(asset)
         { }
 
-        // 00000000 00111111 11112222 22222233
-        // 01234567 89012345 67890123 45678901
-        // ........ XXXX.... ........ ........
-        public uint Token
-        {
-            get => BitConverter.ToUInt32(Data, 8);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < 4; i++)
-                {
-                    Data[8 + i] = bytes[i];
-                }
-            }
-        }
     }
 
     public class BanditAsset : MachineAsset

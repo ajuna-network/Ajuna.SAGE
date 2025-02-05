@@ -9,16 +9,16 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_PlayerAssetTokenProperty()
         {
             var playerAsset = new PlayerAsset(1);
-            playerAsset.TokenWallet = 123456u;
-            Assert.That(playerAsset.TokenWallet, Is.EqualTo(123456u));
+            playerAsset.LastReward = 123456u;
+            Assert.That(playerAsset.LastReward, Is.EqualTo(123456u));
         }
 
         [Test]
         public void Test_MachineAssetTokenProperty()
         {
             var machineAsset = new MachineAsset(1);
-            machineAsset.Token = 654321u;
-            Assert.That(machineAsset.Token, Is.EqualTo(654321u));
+            //machineAsset.Token = 654321u;
+            //Assert.That(machineAsset.Token, Is.EqualTo(654321u));
         }
 
         [Test]

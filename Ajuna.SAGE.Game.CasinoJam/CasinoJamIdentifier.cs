@@ -1,4 +1,5 @@
 ﻿using Ajuna.SAGE.Game.Model;
+using System;
 
 namespace Ajuna.SAGE.Game.CasinoJam
 {
@@ -21,13 +22,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public static CasinoJamIdentifier Fund(AssetType player, TokenType tokenType)
             => new((byte)CasinoAction.Fund, (byte)(((byte)player << 4) + (byte)tokenType));
 
-        public static CasinoJamIdentifier Gamble(TokenType tokenType, ValueType amountType)
-            => new((byte)CasinoAction.Gamble, (byte)(((byte)tokenType << 4) + (byte)amountType));
+        public static CasinoJamIdentifier Gamble(TokenType tokenType, ValueType valueType)
+            => new((byte)CasinoAction.Gamble, (byte)(((byte)tokenType << 4) + (byte)valueType));
 
-        public static CasinoJamIdentifier Change(TokenType tokenType, ValueType amountType)
-            => new((byte)CasinoAction.Change, (byte)(((byte)tokenType << 4) + (byte)amountType));
+        public static CasinoJamIdentifier Change(TokenType tokenType, ValueType valueType)
+            => new((byte)CasinoAction.Change, (byte)(((byte)tokenType << 4) + (byte)valueType));
 
-        public static CasinoJamIdentifier Loot()
-             => new((byte)CasinoAction.Loot,(0x00 << 4) + 0x00);
+        public static CasinoJamIdentifier Loot(TokenType tokenType)
+             => new((byte)CasinoAction.Loot, (byte)(((byte)tokenType << 4) + (byte)0x00));
     }
 }
