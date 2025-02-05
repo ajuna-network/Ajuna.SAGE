@@ -84,12 +84,56 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ H....... ........ ........
-        public TokenType MaxReward
+        public TokenType Value1Factor
         {
             get => (TokenType)Data.Read(8, ByteType.High);
             set => Data?.Set(8, ByteType.High, (byte)value);
         }
 
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ L....... ........ ........
+        public MultiplierType Value1Multiplier
+        {
+            get => (MultiplierType)Data.Read(8, ByteType.Low);
+            set => Data?.Set(8, ByteType.Low, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .H...... ........ ........
+        public TokenType Value2Factor
+        {
+            get => (TokenType)Data.Read(9, ByteType.High);
+            set => Data?.Set(9, ByteType.High, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .L...... ........ ........
+        public MultiplierType Value2Multiplier
+        {
+            get => (MultiplierType)Data.Read(9, ByteType.Low);
+            set => Data?.Set(9, ByteType.Low, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ..H..... ........ ........
+        public TokenType Value3Factor
+        {
+            get => (TokenType)Data.Read(10, ByteType.High);
+            set => Data?.Set(10, ByteType.High, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ..L..... ........ ........
+        public MultiplierType Value3Multiplier
+        {
+            get => (MultiplierType)Data.Read(10, ByteType.Low);
+            set => Data?.Set(10, ByteType.Low, (byte)value);
+        }
     }
 
     public class BanditAsset : MachineAsset
@@ -103,6 +147,44 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public BanditAsset(IAsset asset)
             : base(asset)
         { }
+
+        /// <summary>
+        /// SetSlot is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data starting at positions 16 till 22.
+        public void SetSlot(byte index, ushort packed)
+        {
+            if (index > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            byte offset = 16;
+            byte[] bytes = BitConverter.GetBytes(packed);
+            Data[offset + (index * 2)] = bytes[0];
+            Data[offset + (index * 2) + 1] = bytes[1];
+        }
+
+        /// <summary>
+        /// GetSlot is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data starting at positions 16 till 22.
+        public ushort GetSlot(byte index)
+        {
+            if (index > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            var offset = 16;
+            return BitConverter.ToUInt16(Data, offset + (index * 2));
+        }
 
         /// <summary>
         /// SlotResult is a 16-bit field that encodes:

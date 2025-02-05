@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public static CasinoJamIdentifier Fund(AssetType player, TokenType tokenType)
             => new((byte)CasinoAction.Fund << 4 | (byte)CasinoSubAction.None, (byte)(((byte)player << 4) + (byte)tokenType));
 
-        public static CasinoJamIdentifier Gamble(TokenType tokenType, ValueType valueType)
+        public static CasinoJamIdentifier Gamble(TokenType tokenType, MultiplierType valueType)
             => new((byte)CasinoAction.Gamble << 4 | (byte)CasinoSubAction.None, (byte)(((byte)tokenType << 4) + (byte)valueType));
 
         public static CasinoJamIdentifier Loot(TokenType tokenType)

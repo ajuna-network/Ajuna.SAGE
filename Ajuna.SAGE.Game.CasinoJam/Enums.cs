@@ -85,7 +85,7 @@
         // *** DO NOT PASS 15 INDEX ***
     }
 
-    public enum ValueType
+    public enum MultiplierType
     {
         V0 = 0,
         V1 = 1,

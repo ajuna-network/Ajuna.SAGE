@@ -103,7 +103,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                 return false;
                             }
 
-                            if (r.ValueType == ValueType.None)
+                            if (r.ValueType == MultiplierType.None)
                             {
                                 return false;
                             }
@@ -178,7 +178,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                 return false;
                             }
 
-                            if (r.ValueType == ValueType.None)
+                            if (r.ValueType == MultiplierType.None)
                             {
                                 return false;
                             }
@@ -248,10 +248,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 GetCreateMachineTransition(MachineSubType.Bandit),
 
-                GetGambleTransition(ValueType.V1),
-                GetGambleTransition(ValueType.V2),
-                GetGambleTransition(ValueType.V3),
-                GetGambleTransition(ValueType.V4),
+                GetGambleTransition(MultiplierType.V1),
+                GetGambleTransition(MultiplierType.V2),
+                GetGambleTransition(MultiplierType.V3),
+                GetGambleTransition(MultiplierType.V4),
 
                 GetLootTransition(TokenType.T_1),
                 GetLootTransition(TokenType.T_10),
@@ -313,7 +313,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
             {
                 // initiate the bandit machine
                 var asset = new BanditAsset(b);
-
+                asset.Value1Factor = TokenType.T_1;
+                asset.Value1Multiplier = MultiplierType.V1;
                 return [asset];
             };
 
@@ -325,7 +326,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// </summary>
         /// <param name="actionTime"></param>
         /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(ValueType valueType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(MultiplierType valueType)
         {
             var identifier = CasinoJamIdentifier.Gamble(0x00, valueType);
             byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
@@ -357,54 +358,64 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return [player, bandit];
                 }
 
-                // remove the actual tokens that are gambled from the player and add to the bandit
+                var spinTimes = (byte)valueType;
+
+                var value1 = (uint)Math.Pow(10, (byte)bandit.Value1Factor) * (byte)bandit.Value1Multiplier;
+                var maxReward2 = (uint)Math.Pow(10, (byte)bandit.Value2Factor) * (byte)bandit.Value2Multiplier;
+                var maxReward3 = (uint)Math.Pow(10, (byte)bandit.Value3Factor) * (byte)bandit.Value3Multiplier;
+
+                // calculate minimum of funds required for the bandit to pay the fix max rewards possible
+                uint minReward = value1;
+                uint jackMaxReward = maxReward2;
+                uint specMaxReward = maxReward3;
+
+                var spinMaxReward = minReward * 8192;
+                var maxReward = (spinMaxReward * spinTimes) + specMaxReward;
+
+                // TODO: (implement) this should be verified and flagged on the asset
+                if (!m.CanWithdraw(bandit.Id, maxReward, out _))
+                {
+                    return [player, bandit];
+                }
+
+                // TODO: (implement) this should be verified and flagged on the asset
+                if (!m.CanDeposit(player.Id, maxReward, out _))
+                {
+                    return [player, bandit];
+                }
+
+                FullSpin spins = CasinoJamUtil.Spins(spinTimes, minReward, jackMaxReward, specMaxReward, h);
+                
+                uint reward = 0;
+                try
+                {
+                    reward = checked((uint)spins.SpinResults.Sum(s => s.Reward) 
+                        + spins.JackPotReward 
+                        + spins.SpecialReward);
+                }
+                catch (OverflowException)
+                {
+                    // TODO: (verify) Overflow detected; handle by aborting the play.
+                    return [player, bandit];
+                }
+
+                if (!m.CanWithdraw(bandit.Id, reward, out _) || !m.CanDeposit(player.Id, reward, out _))
+                {
+                    // TODO: (verify) Bandit is not able to pay the reward
+                    return [player, bandit];
+                }
+
+                // pay fees now as we know we can
                 m.Withdraw(player.Id, playFee);
                 m.Deposit(bandit.Id, playFee);
 
-                // TODO: Need to make sure that we don't allow play if the machine can't execute the max reward possible
-
-                for (int i = 0; i < (byte)valueType; i++)
+                for (byte i = 0; i < spins.SpinResults.Length; i++)
                 {
-                    var offset = (uint)(i * 5);
-                    var Slot1 = (byte)(h[0 + offset] % 10);
-                    var Slot2 = (byte)(h[1 + offset] % 10);
-                    var Slot3 = (byte)(h[2 + offset] % 10);
-                    var Bonus1 = (byte)(h[3 + offset] % 4);
-                    var Bonus2 = (byte)(h[4 + offset] % 4);
-
-                    ushort packed = CasinoJamUtil.PackSlotResult(Slot1, Slot2, Slot3, Bonus1, Bonus2);
-                    switch (i)
-                    {
-                        case 0:
-                            bandit.SlotAResult = packed;
-                            break;
-
-                        case 1:
-                            bandit.SlotBResult = packed;
-                            break;
-
-                        case 2:
-                            bandit.SlotCResult = packed;
-                            break;
-
-                        case 3:
-                            bandit.SlotDResult = packed;
-                            break;
-                    }
-
-                    uint finalReward = CasinoJamUtil.SlotReward(Slot1, Slot2, Slot3, Bonus1, Bonus2);
-
-                    var effectivePayout = Math.Min(finalReward, bandit.Score);
-
-                    if (!m.CanWithdraw(bandit.Id, effectivePayout, out _) || !m.CanDeposit(player.Id, effectivePayout, out _))
-                    {
-                        // TODO: if the bandit can't pay the reward, then the player gets the fee back, but it also is a very problematic case
-                        return [player, bandit];
-                    }
-
-                    m.Withdraw(bandit.Id, effectivePayout);
-                    m.Deposit(player.Id, effectivePayout);
+                    bandit.SetSlot(i, spins.SpinResults[i].Packed);
                 }
+
+                m.Withdraw(bandit.Id, reward);
+                m.Deposit(player.Id, reward);
 
                 return [player, bandit];
             };
@@ -465,7 +476,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1u),
-                new CasinoJamRule(CasinoRuleType.AssetTypeIs, ValueType.V0, CasinoRuleOp.MatchType, matchType),
+                new CasinoJamRule(CasinoRuleType.AssetTypeIs, MultiplierType.V0, CasinoRuleOp.MatchType, matchType),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
             ];
 
