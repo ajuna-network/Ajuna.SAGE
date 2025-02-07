@@ -6,17 +6,17 @@ namespace Ajuna.SAGE.WebAPI.Model
 {
     public class CreatePlayerRequest
     {
-        public ulong Id { get; set; }
+        public uint Id { get; set; }
 
         public uint Balance { get; set; }
     }
 
     public class TransitionRequest
     {
-        public ulong PlayerId { get; set; }
+        public uint PlayerId { get; set; }
 
         public HeroJamIdentifier Identifier { get; set; }
 
-        public ulong[]? AssetIds { get; set; }
+        public uint[]? AssetIds { get; set; }
     }
 }

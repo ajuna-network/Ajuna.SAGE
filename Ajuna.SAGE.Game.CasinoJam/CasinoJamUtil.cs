@@ -15,14 +15,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         public static byte BANDIT_MAX_SPINS = 4;
 
-        public static ulong GenerateRandomId()
-        {
-            var id = new byte[8];
-            RandomNumberGenerator.Fill(id);
-
-            return BitConverter.ToUInt64(id, 0);
-        }
-
         /// <summary>
         /// Packs the slot machine result into a 16-bit unsigned integer.
         /// Layout:

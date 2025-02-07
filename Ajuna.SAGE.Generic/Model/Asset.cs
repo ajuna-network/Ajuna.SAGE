@@ -4,13 +4,12 @@ using System.Buffers;
 
 namespace Ajuna.SAGE.Game.Model
 {
-
     /// <summary>
     /// Asset class
     /// </summary>
     public class Asset : IAsset
     {
-        public ulong Id { get; set; }
+        public uint Id { get; set; }
 
         public byte CollectionId { get; }
 
@@ -20,6 +19,8 @@ namespace Ajuna.SAGE.Game.Model
 
         public byte[]? Data { get; set; }
 
+        public bool IsLockable { get; set; }
+
         /// <summary>
         /// Asset constructor
         /// </summary>
@@ -28,7 +29,7 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="score"></param>
         /// <param name="genesis"></param>
         /// <param name="data"></param>
-        public Asset(ulong id, byte collectionId, uint score, uint genesis, byte[]? data)
+        public Asset(uint id, byte collectionId, uint score, uint genesis, byte[]? data)
         {
             Id = id;
             CollectionId = collectionId;
@@ -43,7 +44,7 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="id"></param>
         /// <param name="collectionId"></param>
         /// <returns></returns>
-        public static Asset Empty(ulong id, byte collectionId)
+        public static Asset Empty(uint id, byte collectionId)
         {
             Asset avatar = new(id, collectionId, 0, 0, null);
             return avatar;
@@ -84,7 +85,7 @@ namespace Ajuna.SAGE.Game.Model
         /// </summary>
         /// <param name="dbAsset"></param>
         /// <returns></returns>
-        public static Asset MapToDomain(DbAsset dbAsset) => 
+        public static Asset MapToDomain(DbAsset dbAsset) =>
             new(dbAsset.Id, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data);
     }
 }

@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.Model
         /// <summary>
         /// Id of the player
         /// </summary>
-        ulong Id { get; set; }
+        uint Id { get; set; }
 
         /// <summary>
         /// Assets of the player

@@ -25,13 +25,13 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_AddTransition_And_Transition_Valid()
         {
-            string playerIdHex = "0xb4e21f9a7c3d5e8f";
-            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
+            string playerIdHex = "0xb4e21f9a";
+            string assetIdHex = "0x3e4a6f8d";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
             var player = new Player(playerId);
 
             // Arrange
@@ -46,9 +46,9 @@ namespace Ajuna.SAGE.Game.Test
                 return new List<IAsset> { asset };
             };
 
-            _engine.AddTransition(identifier, new[] { rules }, default, function);
+            _engine.AddTransition(identifier, [rules], default, function);
 
-            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
+            var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new IAsset[]
             {
                 new Asset(assetId, collectionId, score, genesis, [])
@@ -69,13 +69,13 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_Transition_DuplicateAssets_ThrowsException()
         {
-            string playerIdHex = "0xb4e21f9a7c3d5e8f";
-            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
+            string playerIdHex = "0xb4e21f9a";
+            string assetIdHex = "0x3e4a6f8d";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
             var player = new Player(playerId);
 
             // Arrange
@@ -86,7 +86,7 @@ namespace Ajuna.SAGE.Game.Test
 
             _engine.AddTransition(identifier, [rules], default, function);
 
-            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
+            var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var duplicateAsset = new Asset(assetId, collectionId, score, genesis, []);
             var assets = new Asset[] { duplicateAsset, duplicateAsset };
 
@@ -97,18 +97,18 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_Transition_UnsupportedIdentifier_ThrowsException()
         {
-            string playerIdHex = "0xb4e21f9a7c3d5e8f";
-            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
+            string playerIdHex = "0xb4e21f9a";
+            string assetIdHex = "0x3e4a6f8d";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
             var player = new Player(playerId);
 
             // Arrange
             var unsupportedIdentifier = new ActionIdentifier((ActionType)99, (ActionSubType)99);
-            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
+            var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
                 new Asset(assetId, collectionId, score, genesis,[])
@@ -121,13 +121,13 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_Transition_InvalidAssetCount_ReturnsFalse()
         {
-            string playerIdHex = "0xb4e21f9a7c3d5e8f";
-            string assetIdHex = "0x3e4a6f8d9c0f1b2e";
+            string playerIdHex = "0xb4e21f9a";
+            string assetIdHex = "0x3e4a6f8d";
             byte collectionId = 1;
             uint score = 50;
             uint genesis = 0;
 
-            var playerId = BitConverter.ToUInt64(Utils.HexToBytes(playerIdHex));
+            var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
             var player = new Player(playerId);
 
             // Arrange
@@ -154,7 +154,7 @@ namespace Ajuna.SAGE.Game.Test
                 .AddTransition(identifier, [rule], default, function)
                 .Build();
 
-            var assetId = BitConverter.ToUInt64(Utils.HexToBytes(assetIdHex));
+            var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
                 new(assetId, collectionId, score, genesis, [])

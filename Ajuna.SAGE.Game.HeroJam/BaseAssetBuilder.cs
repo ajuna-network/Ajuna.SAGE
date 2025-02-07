@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 {
     public class BaseAssetBuilder
     {
-        private ulong _id;
+        private uint _id;
         private readonly byte _collectionId;
         private readonly AssetType _assetType;
         private readonly AssetSubType _assetSubType;
@@ -18,9 +18,9 @@ namespace Ajuna.SAGE.Game.HeroJam
         private StateType _stateType = StateType.None;
         private uint _stateChangeBlockNumber = 0;
 
-        public BaseAssetBuilder(ulong? id, byte collectionId, AssetType assetType, AssetSubType assetSubType)
+        public BaseAssetBuilder(uint? id, byte collectionId, AssetType assetType, AssetSubType assetSubType)
         {
-            _id = id ?? GenerateRandomId();
+            _id = id ?? Utils.GenerateRandomId();
             _collectionId = collectionId;
             _assetType = assetType;
             _assetSubType = assetSubType;
@@ -29,15 +29,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         public BaseAssetBuilder(byte collectionId, AssetType assetType, AssetSubType assetSubType)
             : this(null, collectionId, assetType, assetSubType) { }
 
-        private ulong GenerateRandomId()
-        {
-            var id = new byte[8];
-            RandomNumberGenerator.Fill(id);
-
-            return BitConverter.ToUInt64(id, 0);
-        }
-
-        public BaseAssetBuilder SetId(ulong id)
+        public BaseAssetBuilder SetId(uint id)
         {
             _id = id;
             return this;

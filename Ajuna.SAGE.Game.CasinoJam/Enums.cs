@@ -52,6 +52,7 @@
         Player = 1,
         Machine = 2,
         Tracker = 3,
+        Seat = 4,
         // *** DO NOT PASS 15 INDEX ***
     }
 

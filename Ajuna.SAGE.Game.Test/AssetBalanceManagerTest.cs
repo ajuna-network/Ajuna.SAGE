@@ -1,14 +1,16 @@
+using Ajuna.SAGE.Game.Manager;
+
 namespace Ajuna.SAGE.Game.Test
 {
     [TestFixture]
     public class AssetBalanceMangerTest
     {
-        private AssetBalanceManager _assetBalanceManager;
+        private BalanceManager _assetBalanceManager;
 
         [SetUp]
         public void Setup()
         {
-            _assetBalanceManager = new AssetBalanceManager();
+            _assetBalanceManager = new BalanceManager();
         }
 
         [Test]

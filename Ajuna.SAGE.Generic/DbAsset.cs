@@ -4,7 +4,7 @@ namespace Ajuna.SAGE.Model
 {
     public class DbAsset
     {
-        public ulong Id { get; set; }
+        public uint Id { get; set; }
         public byte CollectionId { get; set; }
         public uint Score { get; set; }
         public uint Genesis { get; set; }

@@ -165,11 +165,11 @@ namespace Ajuna.SAGE.Game
         /// Generate a random id
         /// </summary>
         /// <returns></returns>
-        public static ulong GenerateRandomId()
+        public static uint GenerateRandomId()
         {
-            var id = new byte[8];
+            var id = new byte[4];
             RandomNumberGenerator.Fill(id);
-            return BitConverter.ToUInt64(id);
+            return BitConverter.ToUInt32(id);
         }
     }
 }

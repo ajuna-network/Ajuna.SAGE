@@ -5,7 +5,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 {
     public class BaseAsset : Asset
     {
-        public BaseAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public BaseAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
@@ -49,7 +49,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
         // X..XXX.. ........ ........ ....XXXX
-        public HeroAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public HeroAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         {
             AssetType = AssetType.Hero;
@@ -134,7 +134,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class ItemAsset : BaseAsset
     {
-        public ItemAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public ItemAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         { 
             AssetType = AssetType.Item;
@@ -147,7 +147,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class MapAsset : ItemAsset
     {
-        public MapAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public MapAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         {
             AssetSubType = (AssetSubType) ItemSubType.Map;
@@ -178,7 +178,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class DisassemblableAsset : BaseAsset
     {
-        public DisassemblableAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public DisassemblableAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         { }
 
@@ -216,7 +216,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class ConsumableAsset : BaseAsset
     {
-        public ConsumableAsset(ulong id, byte collectionId, uint score, uint genesis)
+        public ConsumableAsset(uint id, byte collectionId, uint score, uint genesis)
             : base(id, collectionId, score, genesis)
         { }
 

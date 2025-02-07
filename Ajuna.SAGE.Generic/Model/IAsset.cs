@@ -5,12 +5,12 @@ namespace Ajuna.SAGE.Game.Model
     /// <summary>
     /// Asset interface
     /// </summary>
-    public interface IAsset : IEquatable<IAsset>
+    public interface IAsset : IEquatable<IAsset>, ILockable
     {
         /// <summary>
         /// Identifier
         /// </summary>
-        ulong Id { get; set; }
+        uint Id { get; set; }
 
         /// <summary>
         /// Collection identifier
@@ -43,5 +43,6 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="asset"></param>
         /// <returns></returns>
         bool SameTypeAs(IAsset asset);
+
     }
 }

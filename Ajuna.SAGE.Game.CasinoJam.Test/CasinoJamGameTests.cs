@@ -1,6 +1,7 @@
 using Ajuna.SAGE.Game.CasinoJam;
 using Ajuna.SAGE.Game;
 using Ajuna.SAGE.Game.Model;
+using Ajuna.SAGE.Game.CasinoJam.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam.Test
 {

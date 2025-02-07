@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.Model;
+﻿using Ajuna.SAGE.Game.Manager;
+using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.Test")]
@@ -11,7 +12,7 @@ namespace Ajuna.SAGE.Game
         IEnumerable<IAsset> assets,
         byte[] randomHash,
         uint blockNumber,
-        IAssetBalanceManager assetBalances)
+        IBalanceManager assetBalances)
         where TRules : ITransitionRule;
 
     public class Engine<TIdentifier, TRules>
@@ -21,11 +22,11 @@ namespace Ajuna.SAGE.Game
         private readonly IBlockchainInfoProvider _blockchainInfo;
         public IBlockchainInfoProvider BlockchainInfoProvider => _blockchainInfo;
 
-        private readonly Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> _verifyFunction;
+        private readonly Func<IPlayer, TRules, IAsset[], uint, IBalanceManager, bool> _verifyFunction;
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)> _transitions;
 
-        private readonly AssetBalanceManager _assetBalanceManager;
+        private readonly BalanceManager _assetBalanceManager;
         // only for testing
         public uint? AssetBalance(ulong id) => _assetBalanceManager.AssetBalance(id);
 
@@ -33,12 +34,12 @@ namespace Ajuna.SAGE.Game
         /// Game
         /// </summary>
         /// <param name="seed"></param>
-        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> verifyFunction)
+        public Engine(IBlockchainInfoProvider blockchainInfo, Func<IPlayer, TRules, IAsset[], uint, IBalanceManager, bool> verifyFunction)
         {
             _blockchainInfo = blockchainInfo;
             _verifyFunction = verifyFunction;
             _transitions = new Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? fee, TransitionFunction<TRules> Function)>();
-            _assetBalanceManager = new AssetBalanceManager();
+            _assetBalanceManager = new BalanceManager();
         }
 
         /// <summary>
@@ -85,7 +86,13 @@ namespace Ajuna.SAGE.Game
             // duplicate check
             if (assets.Distinct().Count() != assets.Length)
             {
-                throw new NotSupportedException("Trying to Forge duplicates.");
+                throw new NotSupportedException("Trying to transition duplicates.");
+            }
+
+            // lockable check
+            if (assets.Any(p => p.IsLockable))
+            {
+                throw new NotSupportedException("Trying to transition lockable.");
             }
 
             if (!_transitions.TryGetValue(identifier, out (TRules[] rules, ITransitioFee? fee, TransitionFunction<TRules> function) tuple))

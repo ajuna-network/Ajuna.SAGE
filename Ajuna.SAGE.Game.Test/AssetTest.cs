@@ -12,7 +12,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithByteArrayDna()
         {
             // Arrange
-            ulong id = 1234;
+            uint id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
@@ -35,7 +35,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithHexStringDna()
         {
             // Arrange
-            ulong id = 1234;
+            uint id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
@@ -52,7 +52,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_AssetConstructor_WithDefaults()
         {
             // Arrange
-            ulong id = 1234;
+            uint id = 1234;
             byte collectionId = 1;
             uint score = 100;
             uint genesis = 0;
@@ -74,7 +74,7 @@ namespace Ajuna.SAGE.Tests
         public void Test_Asset_Empty()
         {
             // Arrange
-            ulong id = 1234;
+            uint id = 1234;
             byte collectionId = 1;
 
             // Act
@@ -98,9 +98,9 @@ namespace Ajuna.SAGE.Tests
             uint genesis = 0;
 
             // Arrange
-            ulong id1 = 1234;
-            ulong id2 = 1234;
-            ulong id3 = 4321;
+            uint id1 = 1234;
+            uint id2 = 1234;
+            uint id3 = 4321;
 
             Asset asset1 = new Asset(id1, collectionId, score, genesis, []);
             Asset asset2 = new Asset(id2, collectionId, score, genesis, []);

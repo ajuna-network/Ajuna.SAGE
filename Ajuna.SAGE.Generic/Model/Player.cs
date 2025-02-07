@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.Model
     public class Player : IPlayer, IEquatable<Player>
     {
         /// <inheritdoc/>
-        public ulong Id { get; set; }
+        public uint Id { get; set; }
 
         /// <inheritdoc/>
         public ICollection<IAsset>? Assets { get; set; }
@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Game.Model
         /// Player constructor
         /// </summary>
         /// <param name="id"></param>
-        public Player(ulong id, uint balance = 0)
+        public Player(uint id, uint balance = 0)
         {
             Id = id;
             Assets = [];

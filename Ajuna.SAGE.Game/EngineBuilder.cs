@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.Model;
+﻿using Ajuna.SAGE.Game.Manager;
+using Ajuna.SAGE.Game.Model;
 using Ajuna.SAGE.Game.Model;
 
 namespace Ajuna.SAGE.Game
@@ -14,7 +15,7 @@ namespace Ajuna.SAGE.Game
 
         private readonly Dictionary<TIdentifier, (TRules[] Rules, ITransitioFee? Fee, TransitionFunction<TRules> Function)> _transitions;
 
-        private Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> _verifyFunction;
+        private Func<IPlayer, TRules, IAsset[], uint, IBalanceManager, bool> _verifyFunction;
 
         /// <summary>
         /// Engine Builder
@@ -44,7 +45,7 @@ namespace Ajuna.SAGE.Game
         /// </summary>
         /// <param name="verifyFunction"></param>
         /// <returns></returns>
-        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, IAsset[], uint, IAssetBalanceManager, bool> verifyFunction)
+        public EngineBuilder<TIdentifier, TRules> SetVerifyFunction(Func<IPlayer, TRules, IAsset[], uint, IBalanceManager, bool> verifyFunction)
         {
             _verifyFunction = verifyFunction;
             return this;

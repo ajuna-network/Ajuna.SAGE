@@ -1,4 +1,6 @@
-﻿using Ajuna.SAGE.Game.Model;
+﻿using Ajuna.SAGE.Game.CasinoJam.Model;
+using Ajuna.SAGE.Game.Manager;
+using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
@@ -31,7 +33,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         ///
         /// </summary>
         /// <returns></returns>
-        internal static Func<IPlayer, CasinoJamRule, IAsset[], uint, IAssetBalanceManager, bool> GetVerifyFunction()
+        internal static Func<IPlayer, CasinoJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
         {
             return (p, r, a, b, m) =>
             {

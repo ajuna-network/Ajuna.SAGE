@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.Model;
+﻿using Ajuna.SAGE.Game.Manager;
+using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.HeroJam.Test")]
@@ -31,7 +32,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         ///
         /// </summary>
         /// <returns></returns>
-        private static Func<IPlayer, HeroJamRule, IAsset[], uint, IAssetBalanceManager, bool> GetVerifyFunction()
+        private static Func<IPlayer, HeroJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
         {
             return (p, r, a, b, m) =>
             {

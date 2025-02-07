@@ -102,9 +102,9 @@ namespace Ajuna.SAGE.WebAPI.Test
         {
             var transitionRequest = new TransitionRequest
             {
-                PlayerId = 2UL,
+                PlayerId = 2U,
                 Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
-                AssetIds = Array.Empty<ulong>()
+                AssetIds = Array.Empty<uint>()
             };
 
             // Act
@@ -146,9 +146,9 @@ namespace Ajuna.SAGE.WebAPI.Test
         {
             var transitionRequest = new TransitionRequest
             {
-                PlayerId = 2UL,
+                PlayerId = 2U,
                 Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
-                AssetIds = new ulong[] { 1 }
+                AssetIds = new uint[] { 1 }
             };
 
             // Act
@@ -166,9 +166,9 @@ namespace Ajuna.SAGE.WebAPI.Test
         {
             var transitionRequest = new TransitionRequest
             {
-                PlayerId = 2UL,
+                PlayerId = 2U,
                 Identifier = HeroJamIdentifier.Create(AssetType.Hero, AssetSubType.None),
-                AssetIds = Array.Empty<ulong>()
+                AssetIds = Array.Empty<uint>()
             };
 
             // Act
