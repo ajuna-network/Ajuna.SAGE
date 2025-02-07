@@ -271,8 +271,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// <returns></returns>
         internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetCreatePlayerTransition()
         {
-            var identifier = CasinoJamIdentifier.Create(AssetType.Player, AssetSubType.None);
-            byte matchType = (byte)AssetType.Player << 4 + (byte)AssetSubType.None;
+            var identifier = CasinoJamIdentifier.Create(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte matchType = (byte)AssetType.Player << 4 + (byte)(AssetSubType)PlayerSubType.Human;
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 0u),
@@ -284,9 +284,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
             TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 // initiate the player
-                var asset = new PlayerAsset(b);
+                var human = new HumanAsset(b);
+                var tracker = new TrackerAsset(b);
 
-                return [asset];
+                return [human, tracker];
             };
 
             return (identifier, rules, fee, function);
@@ -312,10 +313,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
             TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
                 // initiate the bandit machine
-                var asset = new BanditAsset(b);
-                asset.Value1Factor = TokenType.T_1;
-                asset.Value1Multiplier = MultiplierType.V1;
-                return [asset];
+                var bandit = new BanditAsset(b)
+                {
+                    MaxSpins = 4,
+                    Value1Factor = TokenType.T_1,
+                    Value1Multiplier = MultiplierType.V1
+                };
+                return [bandit];
             };
 
             return (identifier, rules, fee, function);
@@ -329,37 +333,43 @@ namespace Ajuna.SAGE.Game.CasinoJam
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(MultiplierType valueType)
         {
             var identifier = CasinoJamIdentifier.Gamble(0x00, valueType);
-            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
+            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Human;
+            byte trackerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Tracker;
             byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
 
             CasinoJamRule[] rules = [
-                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
-                new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
-                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 3),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, trackerAt, banditAt, 0x00 ]),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0), // own Player
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1), // own Tracker
             ];
 
             ITransitioFee? fee = default;
 
             TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
-                var player = new PlayerAsset(a.ElementAt(0));
-                var bandit = new BanditAsset(a.ElementAt(1));
+                var player = new HumanAsset(a.ElementAt(0));
+                var tracker = new TrackerAsset(a.ElementAt(1));
+                var bandit = new BanditAsset(a.ElementAt(2));
 
-                bandit.SlotAResult = 0;
-                bandit.SlotBResult = 0;
-                bandit.SlotCResult = 0;
-                bandit.SlotDResult = 0;
+                var result = new IAsset[] { player, tracker, bandit };
+
+                // TODO: (verify) that max spins resides on bandit asset, and implies cleanup of the tracker asset
+                tracker.LastReward = 0;
+                for (byte i = 0; i < bandit.MaxSpins; i++)
+                {
+                    tracker.SetSlot(i, 0);
+                }
 
                 var playFee = (uint)valueType;
 
                 // player needs to be able to pay fee and bandit needs to be able to receive reward
                 if (!m.CanWithdraw(player.Id, playFee, out _) || !m.CanDeposit(bandit.Id, playFee, out _))
                 {
-                    return [player, bandit];
+                    return result;
                 }
 
                 var spinTimes = (byte)valueType;
-
                 var value1 = (uint)Math.Pow(10, (byte)bandit.Value1Factor) * (byte)bandit.Value1Multiplier;
                 var maxReward2 = (uint)Math.Pow(10, (byte)bandit.Value2Factor) * (byte)bandit.Value2Multiplier;
                 var maxReward3 = (uint)Math.Pow(10, (byte)bandit.Value3Factor) * (byte)bandit.Value3Multiplier;
@@ -375,34 +385,34 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 // TODO: (implement) this should be verified and flagged on the asset
                 if (!m.CanWithdraw(bandit.Id, maxReward, out _))
                 {
-                    return [player, bandit];
+                    return result;
                 }
 
                 // TODO: (implement) this should be verified and flagged on the asset
                 if (!m.CanDeposit(player.Id, maxReward, out _))
                 {
-                    return [player, bandit];
+                    return result;
                 }
 
                 FullSpin spins = CasinoJamUtil.Spins(spinTimes, minReward, jackMaxReward, specMaxReward, h);
-                
+
                 uint reward = 0;
                 try
                 {
-                    reward = checked((uint)spins.SpinResults.Sum(s => s.Reward) 
-                        + spins.JackPotReward 
+                    reward = checked((uint)spins.SpinResults.Sum(s => s.Reward)
+                        + spins.JackPotReward
                         + spins.SpecialReward);
                 }
                 catch (OverflowException)
                 {
                     // TODO: (verify) Overflow detected; handle by aborting the play.
-                    return [player, bandit];
+                    return result;
                 }
 
                 if (!m.CanWithdraw(bandit.Id, reward, out _) || !m.CanDeposit(player.Id, reward, out _))
                 {
                     // TODO: (verify) Bandit is not able to pay the reward
-                    return [player, bandit];
+                    return result;
                 }
 
                 // pay fees now as we know we can
@@ -411,13 +421,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 for (byte i = 0; i < spins.SpinResults.Length; i++)
                 {
-                    bandit.SetSlot(i, spins.SpinResults[i].Packed);
+                    tracker.SetSlot(i, spins.SpinResults[i].Packed);
                 }
 
                 m.Withdraw(bandit.Id, reward);
                 m.Deposit(player.Id, reward);
 
-                return [player, bandit];
+                return result;
             };
 
             return (identifier, rules, fee, function);
@@ -430,7 +440,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetLootTransition(TokenType tokenType)
         {
             var identifier = CasinoJamIdentifier.Loot(tokenType);
-            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.None;
+            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Human;
             byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
 
             var value = (uint)Math.Pow(10, (byte)tokenType);
@@ -445,7 +455,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
             {
-                var player = new PlayerAsset(a.ElementAt(0));
+                var player = new HumanAsset(a.ElementAt(0));
                 var bandit = new BanditAsset(a.ElementAt(1));
 
                 bandit.SlotAResult = 0;

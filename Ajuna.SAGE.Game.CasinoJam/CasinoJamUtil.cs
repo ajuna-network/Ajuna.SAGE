@@ -13,6 +13,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         public static uint Hour => 60 * 60 / BLOCKTIME_SEC;
 
+        public static byte BANDIT_MAX_SPINS = 4;
+
         public static ulong GenerateRandomId()
         {
             var id = new byte[8];

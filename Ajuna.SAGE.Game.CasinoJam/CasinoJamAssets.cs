@@ -44,29 +44,97 @@ namespace Ajuna.SAGE.Game.CasinoJam
             : base(0, genesis)
         {
             AssetType = AssetType.Player;
-            LastReward = 0;
         }
 
         public PlayerAsset(IAsset asset)
             : base(asset)
         { }
 
-        // 00000000 00111111 11112222 22222233
-        // 01234567 89012345 67890123 45678901
-        // ........ XXXX.... ........ ........
+    }
+
+    public class HumanAsset : PlayerAsset
+    {
+        public HumanAsset(uint genesis)
+            : base(genesis)
+        {
+            AssetSubType = (AssetSubType)PlayerSubType.Human;
+        }
+
+        public HumanAsset(IAsset asset)
+            : base(asset)
+        { }
+
+    }
+
+    public class TrackerAsset : PlayerAsset
+    {
+        public TrackerAsset(uint genesis)
+            : base(genesis)
+        {
+            AssetSubType = (AssetSubType)PlayerSubType.Tracker;
+        }
+
+        public TrackerAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        /// <summary>
+        /// SetSlot is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data starting at positions 16 till 22.
+        public void SetSlot(byte index, ushort packed)
+        {
+            if (index > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            byte offset = 16;
+            byte[] bytes = BitConverter.GetBytes(packed);
+            Data[offset + (index * 2)] = bytes[0];
+            Data[offset + (index * 2) + 1] = bytes[1];
+        }
+
+        /// <summary>
+        /// GetSlot is a 16-bit field that encodes:
+        /// Bits 15-12: Slot1 (4 bits)
+        /// Bits 11-8:  Slot2 (4 bits)
+        /// Bits 7-4:   Slot3 (4 bits)
+        /// Bits 3-2:   Bonus1 (2 bits)
+        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Stored in Data starting at positions 16 till 22.
+        public ushort GetSlot(byte index)
+        {
+            if (index > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            var offset = 16;
+            return BitConverter.ToUInt16(Data, offset + (index * 2));
+        }
+
+
+        /// <summary>
+        /// LastReward is a 32-bit field that encodes the last reward value.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ....XXXX ........ ........
+        /// </summary>
         public uint LastReward
         {
-            get => BitConverter.ToUInt32(Data, 8);
+            get => BitConverter.ToUInt32(Data, 12);
             set
             {
                 byte[] bytes = BitConverter.GetBytes(value);
                 for (int i = 0; i < 4; i++)
                 {
-                    Data[8 + i] = bytes[i];
+                    Data[12 + i] = bytes[i];
                 }
             }
         }
-
     }
 
     public class MachineAsset : BaseAsset
@@ -142,11 +210,24 @@ namespace Ajuna.SAGE.Game.CasinoJam
             : base(genesis)
         {
             AssetSubType = (AssetSubType)MachineSubType.Bandit;
+            MaxSpins = 4;
         }
 
         public BanditAsset(IAsset asset)
             : base(asset)
         { }
+
+        /// <summary>
+        /// Amount of maximum spins allowed.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .......L ........ ........
+        /// </summary>
+        public byte MaxSpins
+        {
+            get => Data.Read(15, ByteType.Low);
+            set => Data?.Set(15, ByteType.Low, value);
+        }
 
         /// <summary>
         /// SetSlot is a 16-bit field that encodes:

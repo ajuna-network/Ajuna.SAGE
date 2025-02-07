@@ -51,6 +51,7 @@
         None = 0,
         Player = 1,
         Machine = 2,
+        Tracker = 3,
         // *** DO NOT PASS 15 INDEX ***
     }
 
@@ -62,7 +63,9 @@
 
     public enum PlayerSubType
     {
-        None = 0
+        None = 0,
+        Human = 1,
+        Tracker = 2
         // *** DO NOT PASS 15 INDEX ***
     }
 
