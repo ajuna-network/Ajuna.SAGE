@@ -75,7 +75,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test, Order(2)]
-        public void Test_CreateMachineTransition_Bandit()
+        public void Test_CreateMachineTransition()
         {
             Assert.That(_user.Assets?.Count, Is.EqualTo(2));
             // initial balance
@@ -161,7 +161,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
@@ -200,10 +200,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance));
 
-            var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotAResult);
-            var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotBResult);
-            var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotCResult);
-            var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedBandit.SlotDResult);
+            var slotAResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(0));
+            var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(1));
+            var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(2));
+            var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(3));
             Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("000-00"));
@@ -251,16 +251,102 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
         [Test, Order(6)]
-        public void Test_GambleTransition_Once()
+        public void Test_RentTransition()
         {
             Assert.That(_user.Assets?.Count, Is.EqualTo(3));
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(1_000));
 
+            var machine = new MachineAsset(_user.Assets.ElementAt(2));
+
+            Assert.That(machine.SeatLinked, Is.EqualTo(0));
+
+            var identifier = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+
+            IAsset[]? inputAssets = [machine];
+
+            var transitionResult = _engine.Transition(_user, identifier, inputAssets, out IAsset[] outputAssets);
+
+            // transition succeded
+            Assert.That(transitionResult, Is.True);
+
+            // Do player transition
+            _user.Transition(inputAssets, outputAssets);
+
+            // Verify that the hero was created
+            Assert.That(outputAssets, Is.Not.Null);
+            Assert.That(outputAssets.Length, Is.EqualTo(2));
+            Assert.That(outputAssets[0], Is.InstanceOf<MachineAsset>());
+            Assert.That(outputAssets[1], Is.InstanceOf<SeatAsset>());
+
+            // Cast to MachineAsset and check the properties
+            MachineAsset updatedMachine = new MachineAsset(outputAssets[0]);
+
+            Assert.That(updatedMachine, Is.Not.Null);
+            Assert.That(updatedMachine.SeatLinked, Is.EqualTo(1));
+
+            // Cast to SeatAsset and check the properties
+            SeatAsset seat = new SeatAsset(outputAssets[1]);
+
+            Assert.That(seat, Is.Not.Null);
+            Assert.That(seat.MachineId, Is.EqualTo(updatedMachine.Id));
+
+        }
+
+        [Test, Order(7)]
+        public void Test_ReserveTransition()
+        {
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
+            // initial balance
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+
+            var human = new HumanAsset(_user.Assets.ElementAt(0));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
+            var bandit = new BanditAsset(_user.Assets.ElementAt(2));
+            var seat = new SeatAsset(_user.Assets.ElementAt(3));
+
+            var identifier = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+
+            IAsset[]? inputAssets = [human, seat];
+
+            var transitionResult = _engine.Transition(_user, identifier, inputAssets, out IAsset[] outputAssets);
+
+            // transition succeded
+            Assert.That(transitionResult, Is.True);
+
+            // Do player transition
+            _user.Transition(inputAssets, outputAssets);
+
+            // Verify that the hero was created
+            Assert.That(outputAssets, Is.Not.Null);
+            Assert.That(outputAssets.Length, Is.EqualTo(2));
+            Assert.That(outputAssets[0], Is.InstanceOf<HumanAsset>());
+            Assert.That(outputAssets[1], Is.InstanceOf<SeatAsset>());
+
+            // Cast to HumanAsset and check the properties
+            HumanAsset updatedHuman = new HumanAsset(outputAssets[0]);
+
+            Assert.That(updatedHuman, Is.Not.Null);
+
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[1]);
+
+            Assert.That(updatedSeat, Is.Not.Null);
+            Assert.That(updatedSeat.PlayerId, Is.EqualTo(updatedHuman.Id));
+
+        }
+
+        [Test, Order(8)]
+        public void Test_GambleTransition_Once()
+        {
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
+            // initial balance
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
@@ -297,7 +383,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(1));
             var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(2));
             var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(3));
-            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("131-33"));
+            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("257-11"));
             Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
@@ -309,17 +395,17 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 1));
         }
 
-        [Test, Order(8)]
+        [Test, Order(9)]
         public void Test_GambleTransition_Twice()
         {
-            Assert.That(_user.Assets?.Count, Is.EqualTo(3));
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(1_000));
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
 
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
@@ -356,8 +442,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(1));
             var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(2));
             var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(3));
-            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("257-11"));
-            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("247-11"));
+            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("763-20"));
+            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("054-30"));
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
 
@@ -368,22 +454,22 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 2));
         }
 
-        [Test, Order(9)]
+        [Test, Order(10)]
         public void Test_GambleTransition_Three()
         {
-            Assert.That(_user.Assets?.Count, Is.EqualTo(3));
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(1_000));
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
 
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
 
-            var identifier = CasinoJamIdentifier.Gamble(TokenType.T_1, CasinoJam.MultiplierType.V3);
+            var identifier = CasinoJamIdentifier.Gamble(TokenType.T_1, MultiplierType.V3);
 
             IAsset[]? inputAssets = [player, tracker, bandit];
 
@@ -406,7 +492,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             HumanAsset updatedPlayer = new HumanAsset(outputAssets[0]);
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(_engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevPlayerBalance - 3));
+            Assert.That(_engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevPlayerBalance - 3 + 1088));
 
             // Cast to TrackerAsset and check the properties
             TrackerAsset updatedTracker = new TrackerAsset(outputAssets[1]);
@@ -415,29 +501,29 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(1));
             var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(2));
             var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(3));
-            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("763-20"));
-            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("054-30"));
-            Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("123-33"));
+            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("074-12"));
+            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("666-11"));
+            Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("042-13"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[2]);
 
             Assert.That(updatedBandit, Is.Not.Null);
-            Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 3));
+            Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 3 -1088));
         }
 
-        [Test, Order(10)]
+        [Test, Order(11)]
         public void Test_GambleTransition_Four()
         {
-            Assert.That(_user.Assets?.Count, Is.EqualTo(3));
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(1000));
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
 
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
@@ -465,7 +551,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             HumanAsset updatedPlayer = new HumanAsset(outputAssets[0]);
 
             Assert.That(updatedPlayer, Is.Not.Null);
-            Assert.That(_engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevPlayerBalance - 4 + 2120));
+            Assert.That(_engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevPlayerBalance - 4 + 2));
 
             // Cast to TrackerAsset and check the properties
             TrackerAsset updatedTracker = new TrackerAsset(outputAssets[1]);
@@ -474,29 +560,29 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var SlotBResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(1));
             var SlotCResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(2));
             var SlotDResult = CasinoJamUtil.UnpackSlotResult(updatedTracker.GetSlot(3));
-            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("074-12"));
-            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("666-11"));
-            Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("042-13"));
-            Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("222-10"));
+            Assert.That($"{slotAResult.slot1}{slotAResult.slot2}{slotAResult.slot3}-{slotAResult.bonus1}{slotAResult.bonus2}", Is.EqualTo("331-02"));
+            Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("577-22"));
+            Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("373-00"));
+            Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("146-10"));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[2]);
 
             Assert.That(updatedBandit, Is.Not.Null);
-            Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 4 - 2120));
+            Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 4 - 2));
         }
 
-        [Test, Order(11)]
+        [Test, Order(12)]
         public void Test_LootTransition()
         {
-            Assert.That(_user.Assets?.Count, Is.EqualTo(3));
+            Assert.That(_user.Assets?.Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(1_000));
+            Assert.That(_user.Balance.Value, Is.EqualTo(990));
 
             var player = new HumanAsset(_user.Assets.ElementAt(0));
             var prevPlayerBalance = _engine.AssetBalance(player.Id);
 
-            var tracker = new BanditAsset(_user.Assets.ElementAt(1));
+            var tracker = new TrackerAsset(_user.Assets.ElementAt(1));
 
             var bandit = new BanditAsset(_user.Assets.ElementAt(2));
             var prevBanditBalance = _engine.AssetBalance(bandit.Id);
@@ -532,5 +618,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(_engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance - 1000));
 
         }
+
     }
 }

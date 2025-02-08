@@ -3,7 +3,7 @@
 namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class PlayerAsset : BaseAsset
     {
@@ -16,7 +16,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         public PlayerAsset(IAsset asset)
             : base(asset)
         { }
-
     }
 
     public class HumanAsset : PlayerAsset
@@ -30,7 +29,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         public HumanAsset(IAsset asset)
             : base(asset)
         { }
-
     }
 
     public class TrackerAsset : PlayerAsset
@@ -59,10 +57,7 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            byte offset = 16;
-            byte[] bytes = BitConverter.GetBytes(packed);
-            Data[offset + index * 2] = bytes[0];
-            Data[offset + index * 2 + 1] = bytes[1];
+            Data.SetValue<ushort>(16 + (index * 2), packed);
         }
 
         /// <summary>
@@ -79,10 +74,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            var offset = 16;
-            return BitConverter.ToUInt16(Data, offset + index * 2);
+            return Data.ReadValue<ushort>(16 + (index * 2));
         }
-
 
         /// <summary>
         /// LastReward is a 32-bit field that encodes the last reward value.
@@ -92,16 +85,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         /// </summary>
         public uint LastReward
         {
-            get => BitConverter.ToUInt32(Data, 12);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < 4; i++)
-                {
-                    Data[12 + i] = bytes[i];
-                }
-            }
+            get => Data.ReadValue<uint>(12);
+            set => Data.SetValue<uint>(12, value);
         }
     }
-
 }

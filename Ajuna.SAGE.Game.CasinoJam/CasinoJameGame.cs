@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Game.CasinoJam.Model;
 using Ajuna.SAGE.Game.Manager;
 using Ajuna.SAGE.Game.Model;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
@@ -98,27 +99,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             return true;
                         }
 
-                    case CasinoRuleType.AssetTypeIs:
-                        {
-                            if (a.Length == 0)
-                            {
-                                return false;
-                            }
-
-                            if (r.ValueType == MultiplierType.None)
-                            {
-                                return false;
-                            }
-
-                            if (a.Length <= (byte)r.ValueType)
-                            {
-                                return false;
-                            }
-
-                            var asset = new BaseAsset(a[(byte)r.ValueType]);
-                            return asset.AssetType == (AssetType)BitConverter.ToUInt32(r.RuleValue);
-                        }
-
                     case CasinoRuleType.SameExist:
                         {
                             if (p.Assets == null || p.Assets.Count == 0)
@@ -164,7 +144,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                 }
 
                                 var baseAsset = a[i] as BaseAsset;
-                                if (baseAsset == null || (byte)baseAsset.AssetType != assetType || (byte)baseAsset.AssetSubType != assetSubType)
+                                if (baseAsset == null 
+                                || (byte)baseAsset.AssetType != assetType 
+                                || (assetSubType != (byte)AssetSubType.None && (byte)baseAsset.AssetSubType != assetSubType))
                                 {
                                     return false;
                                 }
@@ -262,6 +244,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 GetLootTransition(TokenType.T_10000),
                 GetLootTransition(TokenType.T_100000),
                 GetLootTransition(TokenType.T_1000000),
+
+                GetRentTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
+                GetReserveTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
             };
 
             return result;
@@ -271,10 +256,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Get Create Player transition set
         /// </summary>
         /// <returns></returns>
-        internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetCreatePlayerTransition()
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetCreatePlayerTransition()
         {
             var identifier = CasinoJamIdentifier.Create(AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            byte matchType = (byte)AssetType.Player << 4 + (byte)(AssetSubType)PlayerSubType.Human;
+            byte matchType = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 0u),
@@ -299,11 +284,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Get Create Machine transition set
         /// </summary>
         /// <returns></returns>
-        internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetCreateMachineTransition(MachineSubType machineSubType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetCreateMachineTransition(MachineSubType machineSubType)
         {
             var assetType = AssetType.Machine;
             var identifier = CasinoJamIdentifier.Create(assetType, (AssetSubType)machineSubType);
-            byte matchType = (byte)((byte)assetType << 4 + (byte)machineSubType);
+            byte matchType = CasinoJamUtil.MatchType(assetType, (AssetSubType)machineSubType);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 0u),
@@ -317,11 +302,124 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 // initiate the bandit machine
                 var bandit = new BanditAsset(b)
                 {
+                    SeatLinked = 0,
+                    SeatLimit = 1,
                     MaxSpins = 4,
                     Value1Factor = TokenType.T_1,
-                    Value1Multiplier = MultiplierType.V1
+                    Value1Multiplier = MultiplierType.V1,
+                    Value2Factor = TokenType.T_1,
+                    Value2Multiplier = MultiplierType.V0,
+                    Value3Factor = TokenType.T_1,
+                    Value3Multiplier = MultiplierType.V0,
                 };
                 return [bandit];
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetRentTransition(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
+        {
+            var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, multiplierType);
+            byte machineAt = CasinoJamUtil.MatchType(AssetType.Machine);
+
+            uint seatFee = CasinoJamUtil.BASE_SEAT_FEE * (uint)multiplierType;
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1u),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, machineAt),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
+                // TODO: (verify) check can add seat is done in transition ???
+            ];
+
+            ITransitioFee? fee = new TransitioFee(seatFee);
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
+            {
+                var machine = new MachineAsset(a.ElementAt(0));
+                
+                // maximum seats linked already reached
+                if (machine.SeatLinked >= machine.SeatLimit)
+                {
+                    return [machine];
+                }
+
+                // add new linked machine
+                machine.SeatLinked++;
+
+                var seat = new SeatAsset(b)
+                {
+                    SeatValidityPeriod = (ushort)(10 * 60 * (byte)multiplierType),
+                    PlayerFee = 1,
+                    PlayerGracePeriod = 30,
+                    ReservationStartBlock = 0,
+                    ReservationDuration = 0,
+                    LastActionBlock = 0,
+                    PlayerActionCount = 0,
+                    PlayerId = 0,
+                    MachineId = machine.Id
+                };
+
+
+                return [machine, seat];
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetReserveTransition(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
+        {
+            var identifier = CasinoJamIdentifier.Reserve(assetType, assetSubType, multiplierType);
+            byte humanAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2u),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, humanAt, seatAt),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
+                // TODO: (verify) check if seat is empty and usable in transition ???
+            ];
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (r, f, a, h, b, m) =>
+            {
+                var human = new HumanAsset(a.ElementAt(0));
+                var seat = new SeatAsset(a.ElementAt(1));
+
+                var result = new IAsset[] { human, seat };
+
+                // seat is already reserved
+                if (seat.PlayerId != 0)
+                {
+                    return result;
+                }
+
+                var reservationFee = seat.PlayerFee * (uint)multiplierType;
+
+                // TODO: (implement) this should be verified and flagged on the asset
+                if (!m.CanWithdraw(human.Id, reservationFee, out _))
+                {
+                    return result;
+                }
+
+                // TODO: (implement) this should be verified and flagged on the asset
+                if (!m.CanDeposit(seat.Id, reservationFee, out _))
+                {
+                    return result;
+                }
+
+                // pay reservation fee now as we know we can
+                m.Withdraw(human.Id, reservationFee);
+                m.Deposit(seat.Id, reservationFee);
+
+                seat.PlayerId = human.Id;
+                seat.ReservationStartBlock = b;
+                seat.ReservationDuration = (ushort)(30 * (ushort)multiplierType);
+                seat.LastActionBlock = 0;
+                seat.PlayerActionCount = 0;
+
+                return result;
             };
 
             return (identifier, rules, fee, function);
@@ -335,9 +433,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetGambleTransition(MultiplierType valueType)
         {
             var identifier = CasinoJamIdentifier.Gamble(0x00, valueType);
-            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Human;
-            byte trackerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Tracker;
-            byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
+            byte playerAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte trackerAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            byte banditAt = CasinoJamUtil.MatchType(AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 3),
@@ -442,15 +540,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetLootTransition(TokenType tokenType)
         {
             var identifier = CasinoJamIdentifier.Loot(tokenType);
-            byte playerAt = ((byte)AssetType.Player << 4) | (byte)PlayerSubType.Human;
-            byte banditAt = ((byte)AssetType.Machine << 4) | (byte)MachineSubType.Bandit;
+            byte playerAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte banditAt = CasinoJamUtil.MatchType(AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             var value = (uint)Math.Pow(10, (byte)tokenType);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
-                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, banditAt, 0x00, 0x00 ]),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, playerAt, banditAt),
             ];
 
             ITransitioFee? fee = default;
@@ -459,11 +557,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
             {
                 var player = new HumanAsset(a.ElementAt(0));
                 var bandit = new BanditAsset(a.ElementAt(1));
-
-                bandit.SlotAResult = 0;
-                bandit.SlotBResult = 0;
-                bandit.SlotCResult = 0;
-                bandit.SlotDResult = 0;
 
                 if (m.CanDeposit(player.Id, value, out _) && m.Withdraw(bandit.Id, value))
                 {
@@ -480,15 +573,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Get Fund AssetType transition set
         /// </summary>
         /// <returns></returns>
-        internal static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetFundTransition(AssetType assetType, TokenType tokenType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetFundTransition(AssetType assetType, TokenType tokenType)
         {
             var identifier = CasinoJamIdentifier.Fund(assetType, tokenType);
-            uint matchType = Convert.ToUInt32(assetType);
+            byte assetTypeAt = CasinoJamUtil.MatchType(assetType);
             uint value = (uint)Math.Pow(10, (byte)tokenType);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1u),
-                new CasinoJamRule(CasinoRuleType.AssetTypeIs, MultiplierType.V0, CasinoRuleOp.MatchType, matchType),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, assetTypeAt),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOfAll),
             ];
 
@@ -505,5 +598,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             return (identifier, rules, fee, function);
         }
+
     }
 }

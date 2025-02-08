@@ -8,12 +8,8 @@
         Fund = 3,
         Gamble = 4,
         Loot = 5,
-        // *** DO NOT PASS 15 INDEX ***
-    }
-
-    public enum CasinoSubAction : byte
-    {
-        None = 0,
+        Rent = 6,
+        Reserve = 7,
         // *** DO NOT PASS 15 INDEX ***
     }
 
@@ -77,6 +73,12 @@
         // *** DO NOT PASS 15 INDEX ***
     }
 
+    public enum SeatSubType : byte
+    {
+        None = 0,
+        // *** DO NOT PASS 15 INDEX ***
+    }
+
     public enum TokenType
     {
         T_1 = 0,
@@ -101,9 +103,10 @@
         V7 = 7,
         V8 = 8,
         V9 = 9,
+
         // ...
         None = 15,
+
         // *** DO NOT PASS 15 INDEX ***
     }
-
 }

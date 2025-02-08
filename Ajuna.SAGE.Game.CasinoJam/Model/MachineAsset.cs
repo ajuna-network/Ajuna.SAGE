@@ -16,6 +16,24 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
+        /// .......H ........ ........ ........
+        public byte SeatLinked
+        {
+            get => Data.Read(7, ByteType.High);
+            set => Data?.Set(7, ByteType.High, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// .......L ........ ........ ........
+        public byte SeatLimit
+        {
+            get => Data.Read(7, ByteType.Low);
+            set => Data?.Set(7, ByteType.Low, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
         /// ........ H....... ........ ........
         public TokenType Value1Factor
         {
@@ -92,136 +110,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         {
             get => Data.Read(15, ByteType.Low);
             set => Data?.Set(15, ByteType.Low, value);
-        }
-
-        /// <summary>
-        /// SetSlot is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data starting at positions 16 till 22.
-        public void SetSlot(byte index, ushort packed)
-        {
-            if (index > 3)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-            byte offset = 16;
-            byte[] bytes = BitConverter.GetBytes(packed);
-            Data[offset + index * 2] = bytes[0];
-            Data[offset + index * 2 + 1] = bytes[1];
-        }
-
-        /// <summary>
-        /// GetSlot is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data starting at positions 16 till 22.
-        public ushort GetSlot(byte index)
-        {
-            if (index > 3)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-            var offset = 16;
-            return BitConverter.ToUInt16(Data, offset + index * 2);
-        }
-
-        /// <summary>
-        /// SlotResult is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data at positions 16 and 17.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XX...... ........
-        /// </summary>
-        public ushort SlotAResult
-        {
-            get => BitConverter.ToUInt16(Data, 16);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                Data[16] = bytes[0];
-                Data[17] = bytes[1];
-            }
-        }
-
-        /// <summary>
-        /// SlotResult is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data at positions 18 and 19.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ..XX.... ........
-        /// </summary>
-        public ushort SlotBResult
-        {
-            get => BitConverter.ToUInt16(Data, 18);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                Data[18] = bytes[0];
-                Data[19] = bytes[1];
-            }
-        }
-
-        /// <summary>
-        /// SlotResult is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data at positions 20 and 21.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ....XX.. ........
-        /// </summary>
-        public ushort SlotCResult
-        {
-            get => BitConverter.ToUInt16(Data, 20);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                Data[20] = bytes[0];
-                Data[21] = bytes[1];
-            }
-        }
-
-        /// <summary>
-        /// SlotResult is a 16-bit field that encodes:
-        /// Bits 15-12: Slot1 (4 bits)
-        /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
-        /// Stored in Data at positions 22 and 23.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ......XX ........
-        /// </summary>
-        public ushort SlotDResult
-        {
-            get => BitConverter.ToUInt16(Data, 22);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                Data[22] = bytes[0];
-                Data[23] = bytes[1];
-            }
         }
 
         /// <summary>

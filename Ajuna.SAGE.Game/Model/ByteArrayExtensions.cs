@@ -107,5 +107,59 @@
 
             return result;
         }
+
+        /// <summary>
+        /// Writes a value of type T into the byte array starting at the given position.
+        /// Supports types: byte, ushort, uint.
+        /// </summary>
+        public static void SetValue<T>(this byte[] bytes, int pos, T value) where T : struct
+        {
+            byte[] arr = typeof(T) switch
+            {
+                Type t when t == typeof(byte) => new byte[] { (byte)(object)value },
+                Type t when t == typeof(ushort) => BitConverter.GetBytes((ushort)(object)value),
+                Type t when t == typeof(uint) => BitConverter.GetBytes((uint)(object)value),
+                _ => throw new NotSupportedException($"Type {typeof(T).Name} is not supported.")
+            };
+
+            if (pos < 0 || pos + arr.Length > bytes.Length)
+            {
+                throw new NotSupportedException("Out of bounds position.");
+            }
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                bytes[pos + i] = arr[i];
+            }
+        }
+
+        /// <summary>
+        /// Reads a value of type T from the byte array starting at the given position.
+        /// Supports types: byte, ushort, uint.
+        /// </summary>
+        public static T ReadValue<T>(this byte[] bytes, int pos) where T : struct
+        {
+            if (pos < 0)
+                throw new NotSupportedException("Out of bounds position.");
+
+            if (typeof(T) == typeof(byte))
+            {
+                return (T)(object)bytes[pos];
+            }
+            else if (typeof(T) == typeof(ushort))
+            {
+                return (T)(object)BitConverter.ToUInt16(bytes, pos);
+            }
+            else if (typeof(T) == typeof(uint))
+            {
+                return (T)(object)BitConverter.ToUInt32(bytes, pos);
+            }
+            else
+            {
+                throw new NotSupportedException($"Type {typeof(T).Name} is not supported.");
+            }
+        }
+
+
     }
 }

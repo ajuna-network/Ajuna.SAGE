@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
 
@@ -12,6 +11,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public const byte BLOCKTIME_SEC = 6;
 
         public static uint Hour => 60 * 60 / BLOCKTIME_SEC;
+
+        public static uint BASE_SEAT_FEE = 10;
 
         public static byte BANDIT_MAX_SPINS = 4;
 
@@ -81,8 +82,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public static uint SingleSpinReward(uint m, SpinResult s)
         {
             /*
-                -- SLOT -----     -- BONUS +4 -  
-                🍊 0: ORANGE      🍒 0: CHERRY 
+                -- SLOT -----     -- BONUS +4 -
+                🍊 0: ORANGE      🍒 0: CHERRY
                 🍋 1: LEMON       🔔 1: CLOCK
                 🍇 2: GRAPE       💰 2: MONEYBAG
                 🍉 3: WATERMELON  💎 3: DIAMOND
@@ -192,6 +193,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 SpecialResult = "",
                 SpecialReward = 0
             }; ;
+        }
+
+        public static byte MatchType(AssetType assetType)
+        {
+            return MatchType(assetType, AssetSubType.None);
+        }
+
+        public static byte MatchType(AssetType assetType, AssetSubType machineSubType)
+        {
+            var highHalfByte = (byte)assetType << 4;
+            var lowHalfByte = (byte)machineSubType;
+            return (byte)(highHalfByte | lowHalfByte);
         }
     }
 }
