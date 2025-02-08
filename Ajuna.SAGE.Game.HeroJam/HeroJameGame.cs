@@ -227,7 +227,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             ITransitioFee fee = new TransitioFee(10);
 
-            TransitionFunction<HeroJamRule> function = (r, f, a, h, b, m) =>
+            TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetGenesis(b)
@@ -263,7 +263,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.SameNotExist, HeroRuleOp.MatchType, matchType),
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, f, a, h, b, m) =>
+            TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
                     .SetGenesis(b)
@@ -300,7 +300,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, f, a, h, b, m) =>
+            TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var hero = (HeroAsset)a.ElementAt(0);
 
@@ -339,7 +339,7 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.CanStateChange, HeroRuleOp.Index, 0)
             ];
 
-            TransitionFunction<HeroJamRule> function = (r, f, a, h, b, m) =>
+            TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var hero = (HeroAsset)a.ElementAt(0);
 
@@ -398,7 +398,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             ITransitioFee fee = default;
 
-            TransitionFunction<HeroJamRule> function = (r, f, a, h, b, m) =>
+            TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var hero = (HeroAsset)a.ElementAt(0);
 

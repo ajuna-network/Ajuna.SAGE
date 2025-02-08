@@ -29,6 +29,19 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         public HumanAsset(IAsset asset)
             : base(asset)
         { }
+
+        /// <summary>
+        /// The identifier of the seat associated with this player.
+        /// Stored as 4 bytes at offset 28.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ ....XXXX
+        /// </summary>
+        public uint SeatId
+        {
+            get => Data.ReadValue<uint>(28);
+            set => Data.SetValue<uint>(28, value);
+        }
     }
 
     public class TrackerAsset : PlayerAsset

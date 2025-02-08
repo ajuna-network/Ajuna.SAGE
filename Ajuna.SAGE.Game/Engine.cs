@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Ajuna.SAGE.Game
 {
     public delegate IEnumerable<IAsset> TransitionFunction<TRules>(
+        IPlayer executor,
         TRules[] rules,
         ITransitioFee? fee,
         IEnumerable<IAsset> assets,
@@ -119,7 +120,7 @@ namespace Ajuna.SAGE.Game
             }
 
             // execute the transition function
-            IEnumerable<IAsset> functionResult = function(rules, fee, assets, randomHash, blockNumber, _assetBalanceManager);
+            IEnumerable<IAsset> functionResult = function(executor, rules, fee, assets, randomHash, blockNumber, _assetBalanceManager);
 
             result = functionResult != null ? [.. functionResult] : [];
 

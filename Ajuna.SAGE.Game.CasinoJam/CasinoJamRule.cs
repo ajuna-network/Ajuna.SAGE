@@ -54,44 +54,44 @@ namespace Ajuna.SAGE.Game.CasinoJam
         }
 
         // New constructors for single bytes (they get encoded into a uint)
-        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte b1)
-            : this(type, valueType, operation, [b1, 0x00, 0x00, 0x00])
+        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte i0)
+            : this(type, valueType, operation, [i0, 0x00, 0x00, 0x00])
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte b1, byte b2)
-            : this(type, valueType, operation, [b1, b2, 0x00, 0x00])
+        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte i0, byte i1)
+            : this(type, valueType, operation, [i0, i1, 0x00, 0x00])
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte b1, byte b2, byte b3)
-            : this(type, valueType, operation, [b1, b2, b3, 0x00])
+        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte i0, byte i1, byte i2)
+            : this(type, valueType, operation, [i0, i1, i2, 0x00])
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte b1, byte b2, byte b3, byte b4)
-            : this(type, valueType, operation, [b1, b2, b3, b4])
+        public CasinoJamRule(CasinoRuleType type, MultiplierType valueType, CasinoRuleOp operation, byte i0, byte i1, byte i2, byte i3)
+            : this(type, valueType, operation, [i0, i1, i2, i3])
         {
         }
 
         // Overloads with default MultiplierType (None)
-        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte b1)
-            : this(type, MultiplierType.None, operation, b1)
+        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte i0)
+            : this(type, MultiplierType.None, operation, i0)
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte b1, byte b2)
-            : this(type, MultiplierType.None, operation, b1, b2)
+        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte i0, byte i1)
+            : this(type, MultiplierType.None, operation, i0, i1)
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte b1, byte b2, byte b3)
-            : this(type, MultiplierType.None, operation, b1, b2, b3)
+        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte i0, byte i1, byte b3)
+            : this(type, MultiplierType.None, operation, i0, i1, b3)
         {
         }
 
-        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte b1, byte b2, byte b3, byte b4)
-            : this(type, MultiplierType.None, operation, b1, b2, b3, b4)
+        public CasinoJamRule(CasinoRuleType type, CasinoRuleOp operation, byte i0, byte i1, byte i2, byte i3)
+            : this(type, MultiplierType.None, operation, i0, i1, i2, i3)
         {
         }
     }
