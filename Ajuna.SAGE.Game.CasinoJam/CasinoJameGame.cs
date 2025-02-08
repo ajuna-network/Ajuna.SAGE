@@ -322,7 +322,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
         {
             var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, multiplierType);
             byte machineAt = CasinoJamUtil.MatchType(AssetType.Machine);
-
             uint seatFee = CasinoJamUtil.BASE_SEAT_FEE * (uint)multiplierType;
 
             CasinoJamRule[] rules = [
@@ -359,7 +358,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     PlayerId = 0,
                     MachineId = machine.Id
                 };
-
 
                 return [machine, seat];
             };
@@ -435,13 +433,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
             var identifier = CasinoJamIdentifier.Gamble(0x00, valueType);
             byte playerAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
             byte trackerAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
             byte banditAt = CasinoJamUtil.MatchType(AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             CasinoJamRule[] rules = [
-                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 3),
-                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, trackerAt, banditAt, 0x00 ]),
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 4),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, [playerAt, trackerAt, seatAt, banditAt ]),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0), // own Player
                 new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1), // own Tracker
+                // TODO: (verify) we currently check if the player owns the seat and it's the correct machine only in the transition 
             ];
 
             ITransitioFee? fee = default;
@@ -450,9 +450,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
             {
                 var player = new HumanAsset(a.ElementAt(0));
                 var tracker = new TrackerAsset(a.ElementAt(1));
-                var bandit = new BanditAsset(a.ElementAt(2));
+                var seat = new SeatAsset(a.ElementAt(2));
+                var bandit = new BanditAsset(a.ElementAt(3));
 
-                var result = new IAsset[] { player, tracker, bandit };
+                var result = new IAsset[] { player, tracker, seat, bandit };
 
                 // TODO: (verify) that max spins resides on bandit asset, and implies cleanup of the tracker asset
                 tracker.LastReward = 0;
