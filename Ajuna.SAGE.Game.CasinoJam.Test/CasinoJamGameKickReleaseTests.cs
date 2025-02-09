@@ -173,9 +173,9 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             // Record balances before the kick.
-            uint? preSeatABalance = Engine.AssetBalance(seatA.Id);
-            uint? preHumanABalance = Engine.AssetBalance(humanA.Id);
-            uint? preHumanBBalance = Engine.AssetBalance(humanB.Id);
+            var preSeatABalance = Engine.AssetBalance(seatA.Id);
+            var preHumanABalance = Engine.AssetBalance(humanA.Id);
+            var preHumanBBalance = Engine.AssetBalance(humanB.Id);
 
             // Set the blockchain block number high so that the reservation is expired (i.e. not within the grace period).
             // (For example, with ReservationStartBlock = 1 and ReservationDuration = 30, a block number of 700 is well past the validity.)
@@ -199,10 +199,9 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedSeat.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset after kick.");
 
             // The reservation fee originally stored on the seat should now have been transferred to the kicker.
-            uint? seatBalanceAfter = Engine.AssetBalance(seatA.Id);
-            uint kickerBalanceAfter = Engine.AssetBalance(humanA.Id) ?? 0;
-            uint fee = preSeatABalance ?? 0;
-            Assert.That(kickerBalanceAfter, Is.EqualTo(preHumanABalance + fee), "Kicker should receive the reservation fee.");
+            var seatBalanceAfter = Engine.AssetBalance(seatA.Id);
+            var updatedHumanABalance = Engine.AssetBalance(humanA.Id);
+            Assert.That(updatedHumanABalance, Is.EqualTo(preHumanABalance + preSeatABalance), "Kicker should receive the reservation fee.");
             Assert.That(seatBalanceAfter, Is.EqualTo(0), "Seat balance should be zero after a kick.");
         }
 
