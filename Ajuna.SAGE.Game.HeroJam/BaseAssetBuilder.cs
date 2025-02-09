@@ -19,18 +19,13 @@ namespace Ajuna.SAGE.Game.HeroJam
         private StateType _stateType = StateType.None;
         private uint _stateChangeBlockNumber = 0;
 
-        public BaseAssetBuilder(uint? id, uint ownerId, byte collectionId, AssetType assetType, AssetSubType assetSubType)
+        public BaseAssetBuilder(uint ownerId, byte collectionId, AssetType assetType, AssetSubType assetSubType)
         {
-            _id = id ?? Utils.GenerateRandomId();
             _ownerId = ownerId;
             _collectionId = collectionId;
             _assetType = assetType;
             _assetSubType = assetSubType;
         }
-
-        public BaseAssetBuilder(uint ownerId, byte collectionId, AssetType assetType, AssetSubType assetSubType)
-            : this(null, ownerId, collectionId, assetType, assetSubType) { }
-
 
         public BaseAssetBuilder SetGenesis(uint genesis)
         {
@@ -46,7 +41,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         public BaseAsset Build()
         {
-            var asset = new BaseAsset(_id, _ownerId, _collectionId, _score, _genesis)
+            var asset = new BaseAsset(0, _ownerId, _collectionId, _score, _genesis)
             {
                 AssetType = _assetType,
                 AssetSubType = _assetSubType,

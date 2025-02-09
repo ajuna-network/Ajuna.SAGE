@@ -220,6 +220,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             var result = new List<(CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>)>
             {
                 GetCreatePlayerTransition(),
+
                 GetDepositTransition(AssetType.Player, TokenType.T_1),
                 GetDepositTransition(AssetType.Player, TokenType.T_10),
                 GetDepositTransition(AssetType.Player, TokenType.T_100),
@@ -255,6 +256,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 GetRentTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
                 GetReserveTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
+
+                GetReleaseTransition(),
+                GetKickTransition(),
             };
 
             return result;
@@ -415,7 +419,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                var reservationDuration = (ushort)(10 * 60 * (byte)multiplierType);
+                var reservationDuration = (ushort)(1 * 30 * (byte)multiplierType);
 
                 // verify if seat is running out of time, with this new reservation
                 var lastBlockOfValidity = seat.Genesis + seat.SeatValidityPeriod;
@@ -485,7 +489,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 var result = new IAsset[] { human, seat };
 
                 // seat is not occupied, player is not seated, or they are not linked to each other.
-                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.SeatId)
+                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.Id || seat.Id != human.SeatId)
                 {
                     return result;
                 }
@@ -526,7 +530,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
 
             CasinoJamRule[] rules = [
-                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2u),
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 3u),
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, humanAt, humanAt, seatAt),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0)
                 // TODO: (verify) check if player is connected to seat and vice versa ???
@@ -543,13 +547,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 var result = new IAsset[] { sniper, human, seat };
 
                 // seat is not occupied, player is not seated, or they are not linked to each other.
-                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.SeatId)
+                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.Id || seat.Id != human.SeatId)
                 {
                     return result;
                 }
 
-                var isReservationValid = (seat.ReservationStartBlock + seat.ReservationDuration) <= b;
-                var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlock + seat.PlayerGracePeriod) > b;
+                var isReservationValid = (seat.ReservationStartBlock + seat.ReservationDuration) >= b;
+                var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlock + seat.PlayerGracePeriod) >= b;
 
                 if (isReservationValid && isGracePeriod)
                 {

@@ -23,6 +23,8 @@ namespace Ajuna.SAGE.Game.Model
 
         public bool IsLockable { get; set; }
 
+        public virtual byte MatchTypeSize { get; set; } = 1;
+
         /// <summary>
         /// Asset constructor
         /// </summary>
@@ -65,7 +67,13 @@ namespace Ajuna.SAGE.Game.Model
         }
 
         /// <inheritdoc/>
-        public virtual byte[] MatchType => Data != null && Data.Length > 3 ? Data.Take(4).ToArray() : [];
+        public virtual byte[] MatchType => Data != null && Data.Length > 3 ? Data.Take(MatchTypeSize).ToArray() : [];
+
+        /// <inheritdoc/>
+        public bool OwnedBy(IAccount account)
+        {
+            return OwnerId == account.Id;
+        }
 
         /// <inheritdoc/>
         public bool SameTypeAs(IAsset other)

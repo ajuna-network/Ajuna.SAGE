@@ -9,6 +9,13 @@ namespace Ajuna.SAGE.Game.Manager
         bool Update(IAsset asset);
         bool Delete(IAsset asset);
         bool Delete(uint id);
+
+        /// <summary>
+        /// Assets of IAccount
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        IEnumerable<IAsset> AssetOf(IAccount account, byte[]? filter);
     }
 
     public class AssetManager : IAssetManager
@@ -58,6 +65,11 @@ namespace Ajuna.SAGE.Game.Manager
         public bool Delete(uint id)
         {
             return _data.Remove(id);
+        }
+
+        public IEnumerable<IAsset> AssetOf(IAccount account, byte[]? filter = null)
+        {
+            return _data.Values.Where(p => p.OwnedBy(account) && (filter == null || p.MatchType.SequenceEqual(filter))).ToList();
         }
     }
 }

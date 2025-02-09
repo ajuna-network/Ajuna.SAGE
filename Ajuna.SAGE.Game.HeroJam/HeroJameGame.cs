@@ -225,11 +225,11 @@ namespace Ajuna.SAGE.Game.HeroJam
                 new HeroJamRule(HeroRuleType.SameNotExist, HeroRuleOp.MatchType, matchType),
             ];
 
-            ITransitioFee fee = new TransitioFee(10);
+            ITransitioFee fee = default;
 
             TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
-                var baseAsset = new BaseAssetBuilder(null, 0, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                var baseAsset = new BaseAssetBuilder(e.Id, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetGenesis(b)
                     .Build();
 
@@ -241,8 +241,6 @@ namespace Ajuna.SAGE.Game.HeroJam
                     StateType = StateType.None,
                     StateChangeBlockNumber = 0,
                 };
-
-                m.Deposit(hero.Id, fee.Fee);
 
                 return [hero];
             };
@@ -265,7 +263,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
-                var baseAsset = new BaseAssetBuilder(null, 0, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
+                var baseAsset = new BaseAssetBuilder(e.Id, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
                     .SetGenesis(b)
                     .Build();
 

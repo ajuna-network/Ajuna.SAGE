@@ -6,129 +6,127 @@ using System.Linq;
 namespace Ajuna.SAGE.Game.HeroJam.Test
 {
     [TestFixture]
-    public class CasinoJamGameKickReleaseTests
+    public class CasinoJamGameKickReleaseTests : CasinoJamBaseTest
     {
         private readonly CasinoJamIdentifier CREATE_PLAYER = CasinoJamIdentifier.Create(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+        private readonly CasinoJamIdentifier FUND_PLAYER_T1000 = CasinoJamIdentifier.Deposit(AssetType.Player, TokenType.T_1000);
         private readonly CasinoJamIdentifier CREATE_MACHINE = CasinoJamIdentifier.Create(AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+        private readonly CasinoJamIdentifier FUND_MACHINE_T1000 = CasinoJamIdentifier.Deposit(AssetType.Machine, TokenType.T_1000);
         private readonly CasinoJamIdentifier RENT_SEAT = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
         private readonly CasinoJamIdentifier RESERVE_SEAT = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+        private readonly CasinoJamIdentifier RELEASE = CasinoJamIdentifier.Release();
+        private readonly CasinoJamIdentifier KICK = CasinoJamIdentifier.Kick();
+        private readonly CasinoJamIdentifier GAMBLE = CasinoJamIdentifier.Gamble(0x00, MultiplierType.V1);
 
-        private IBlockchainInfoProvider _blockchainInfoProvider;
-        private Engine<CasinoJamIdentifier, CasinoJamRule> _engine;
-        private Account _userA; // The owner of the reserved seat.
-        private Account _userB; // A second player who will try to kick.
+        private IAccount _userA; // The owner of the reserved seat.
+        private IAccount _userB; // A second player who will try to kick.
 
         [SetUp]
         public void Setup()
         {
             // Initialize blockchain info, engine, and player.
-            _blockchainInfoProvider = new BlockchainInfoProvider(1234);
-            _engine = CasinoJameGame.Create(_blockchainInfoProvider);
+            IAsset[] outputAssets;
+            IAsset humanA;
+            IAsset humanB;
+            IAsset banditA;
+            IAsset seatA;
+            bool result;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
+            BlockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
 
-            // Create two players with ample balance.
-            _userA = new Account(Utils.GenerateRandomId(), 1_000_000);
-            _userB = new Account(Utils.GenerateRandomId(), 1_000_000);
+            var userA = Engine.AccountManager.Account(Engine.AccountManager.Create());
+            Assert.That(userA, Is.Not.Null);
+            _userA = userA;
+            _userA.Balance.Deposit(1_000_000);
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
+            var userB = Engine.AccountManager.Account(Engine.AccountManager.Create());
+            Assert.That(userB, Is.Not.Null);
+            _userB = userB;
+            _userB.Balance.Deposit(1_000_000);
 
-            // Both players need to have their player assets (human and tracker) created.
-            IAsset[]? inputAssets = null;
+            // ---------------------------------- ***
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            // Create playerA's assets.
-            bool result = _engine.Transition(_userA, CREATE_PLAYER, inputAssets = null, out IAsset[] outputAssetsA);
-            Assert.That(result, Is.True, "Player A creation transition should succeed.");
-            _userA.Transition(inputAssets, outputAssetsA);
+            // _userA -> CREATE_PLAYER 
+            result = Engine.Transition(_userA, CREATE_PLAYER, null, out outputAssets);
+            Assert.That(result, Is.True, "Human creation transition should succeed.");
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
+            // _userA -> FUND_PLAYER 
+            humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            result = Engine.Transition(_userA, FUND_PLAYER_T1000, [humanA], out outputAssets);
+            Assert.That(result, Is.True, "Human funding transition should succeed.");
+            Assert.That(Engine.AssetBalance(humanA.Id), Is.EqualTo(1000));
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            // Create playerB's assets.
-            result = _engine.Transition(_userB, CREATE_PLAYER, inputAssets = null, out IAsset[] outputAssetsB);
-            Assert.That(result, Is.True, "Player B creation transition should succeed.");
-            _userB.Transition(inputAssets, outputAssetsB);
+            // _userB -> CREATE_PLAYER 
+            result = Engine.Transition(_userB, CREATE_PLAYER, null, out outputAssets);
+            Assert.That(result, Is.True, "Human creation transition should succeed.");
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
+            // _userB -> FUND_PLAYER 
+            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            result = Engine.Transition(_userB, FUND_PLAYER_T1000, [humanB], out outputAssets);
+            Assert.That(result, Is.True, "Human funding transition should succeed.");
+            Assert.That(Engine.AssetBalance(humanB.Id), Is.EqualTo(1000));
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            // For player A, we now create a machine asset and then rent a seat.
-            // (This is similar to what is done in Test_RentTransition.)
-
-            result = _engine.Transition(_userA, CREATE_MACHINE, inputAssets = null, out IAsset[] outputMachine);
+            // _userA -> CREATE_MACHINE 
+            result = Engine.Transition(_userA, CREATE_MACHINE, null, out outputAssets);
             Assert.That(result, Is.True, "Machine creation transition should succeed.");
-            _userA.Transition(inputAssets, outputMachine);
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
-
-            // Assume the newly created machine is the last asset in playerA's asset list.
-            var machines = _userA.Query([CasinoJamUtil.MatchType(AssetType.Machine,(AssetSubType)MachineSubType.Bandit)]);
-            Assert.That(machines, Is.Not.Null, "Machines returns not null.");
-            var machine = machines.FirstOrDefault();
-            Assert.That(machine, Is.Not.Null, "Machine asset should be found.");
-
-            // Rent a seat from the machine using multiplier V1.
-            result = _engine.Transition(_userA, RENT_SEAT, inputAssets = [machine], out IAsset[] outputRent);
+            // _userA -> RENT_SEAT 
+            banditA = GetAsset<IAsset>(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            result = Engine.Transition(_userA, RENT_SEAT, [banditA], out outputAssets);
             Assert.That(result, Is.True, "Rent transition should succeed.");
-            _userA.Transition(inputAssets, outputRent);
+            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((seatA as SeatAsset)?.MachineId, Is.EqualTo(banditA.Id));
+            Assert.That((seatA as SeatAsset)?.SeatValidityPeriod, Is.EqualTo(600));
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
-
-            // After renting, assume that the new seat is the last asset.
-            // Now reserve the seat with player A’s human asset.
-
-            // Assume the newly created machine is the last asset in playerA's asset list.
-            var humans = _userB.Query([CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human)]);
-            Assert.That(humans, Is.Not.Null, "Humans returns not null.");
-            var human = humans.FirstOrDefault();
-            Assert.That(human, Is.Not.Null, "Human asset should be found.");
-
-            var seats = _userA.Query([CasinoJamUtil.MatchType(AssetType.Seat, (AssetSubType)SeatSubType.None)]);
-            Assert.That(seats, Is.Not.Null, "Seats returns not null.");
-            var seat = seats.FirstOrDefault();
-            Assert.That(seat, Is.Not.Null, "Seat asset should be found.");
-
-            // Player A’s human asset is at index 0; seat asset is at index 3.
-            IAsset[] reserveInput = [human, seat];
-            result = _engine.Transition(_userB, RESERVE_SEAT, reserveInput, out IAsset[] outputReserve);
+            // _userB -> RESERVE_SEAT
+            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            result = Engine.Transition(_userB, RESERVE_SEAT, [humanB, seatA], out outputAssets);
             Assert.That(result, Is.True, "Reserve transition should succeed.");
-            _userB.Transition(reserveInput, outputReserve);
+            BlockchainInfoProvider.CurrentBlockNumber++;
 
-            _blockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
+            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
-            // At this point, player A’s human asset should have its SeatId set,
-            // and the seat asset should have its PlayerId set.
-            var humanA = new HumanAsset(_userA.Assets.ElementAt(0));
-            var seatA = new SeatAsset(_userA.Assets.ElementAt(3));
-            Assert.That(humanA.SeatId, Is.EqualTo(seatA.Id));
-            Assert.That(seatA.PlayerId, Is.EqualTo(humanA.Id));
+            // At this point, user B’s human asset should have its SeatId set,
+            // and the seat asset from user A should have its PlayerId set.
+            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
         }
 
         [Test, Order(1)]
         public void Test_ReleaseTransition_Success()
         {
-            // Verify that the owner (player A) can release his reserved seat.
-            var humanA = new HumanAsset(_userA.Assets.ElementAt(0));
-            var seatA = new SeatAsset(_userA.Assets.ElementAt(3));
+            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // Record initial asset balances.
-            uint? humanBalanceBefore = _engine.AssetBalance(humanA.Id);
-            uint? seatBalanceBefore = _engine.AssetBalance(seatA.Id);
+            uint? humanBalanceBefore = Engine.AssetBalance(humanB.Id);
+            uint? seatBalanceBefore = Engine.AssetBalance(seatA.Id);
 
-            // Call the release transition.
-            var releaseId = CasinoJamIdentifier.Release();
-            IAsset[] releaseInput = [humanA, seatA];
-            bool result = _engine.Transition(_userA, releaseId, releaseInput, out IAsset[] outputAssets);
+            bool result = Engine.Transition(_userB, RELEASE, [humanB, seatA], out IAsset[] outputAssets);
             Assert.That(result, Is.True, "Release transition should succeed.");
-            _userA.Transition(releaseInput, outputAssets);
 
             // The release function should “clear” the seat reservation.
-            var updatedHuman = new HumanAsset(outputAssets[0]);
-            var updatedSeat = new SeatAsset(outputAssets[1]);
-            Assert.That(updatedHuman.SeatId, Is.EqualTo(0), "Human asset should have SeatId reset.");
-            Assert.That(updatedSeat.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset.");
+            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(0), "Human asset should have SeatId reset.");
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset.");
 
             // The reservation fee (stored in the seat) should be refunded to the human asset.
-            uint? humanBalanceAfter = _engine.AssetBalance(humanA.Id);
-            uint? seatBalanceAfter = _engine.AssetBalance(seatA.Id);
+            uint? humanBalanceAfter = Engine.AssetBalance(humanB.Id);
+            uint? seatBalanceAfter = Engine.AssetBalance(seatA.Id);
             uint fee = seatBalanceBefore ?? 0;
             Assert.That(humanBalanceAfter, Is.EqualTo((humanBalanceBefore ?? 0) + fee), "Human balance should be increased by the fee.");
             Assert.That(seatBalanceAfter, Is.EqualTo(0), "Seat balance should be zero after release.");
@@ -137,16 +135,17 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         [Test, Order(2)]
         public void Test_ReleaseTransition_NonOwner_Failure()
         {
-            // Verify that a player who is not the owner of the seat (player B)
-            // cannot perform a release transition on player A’s reserved seat.
-            var seatA = new SeatAsset(_userA.Assets.ElementAt(3));
+            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // Here we use player B’s human asset instead of player A’s.
-            var wrongHuman = new HumanAsset(_userB.Assets.ElementAt(0));
+            var wrongHuman = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             var releaseId = CasinoJamIdentifier.Release();
             IAsset[] releaseInput = [wrongHuman, seatA];
-            bool result = _engine.Transition(_userB, releaseId, releaseInput, out IAsset[] outputAssets);
+            bool result = Engine.Transition(_userB, releaseId, releaseInput, out IAsset[] outputAssets);
             // The engine’s rules (via the IsOwnerOf rule) should cause the transition to fail.
             Assert.That(result, Is.False, "Release transition should fail when called by a non-owner.");
         }
@@ -154,100 +153,113 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         [Test, Order(3)]
         public void Test_KickTransition_Success()
         {
-            // Verify that player B (the sniper) can kick player A off his reserved seat
-            // when the reservation is expired (or not in grace period).
-            var sniper = new HumanAsset(_userB.Assets.ElementAt(0));
-            var humanA = new HumanAsset(_userA.Assets.ElementAt(0));
-            var seatA = new SeatAsset(_userA.Assets.ElementAt(3));
+            // In this test the seat is reserved by userB’s human asset (the victim).
+            // We simulate that the reservation has expired by setting the blockchain block number high.
+            // Then userA’s human asset (the kicker) calls the Kick transition to remove the victim.
+            //
+            // After a successful kick:
+            //   • the victim’s SeatId is reset to 0,
+            //   • the seat’s PlayerId is reset to 0,
+            //   • and the reservation fee is transferred to the kicker.
 
-            // Pre-check: ensure that seat is still reserved by player A.
-            Assert.That(humanA.SeatId, Is.EqualTo(seatA.Id));
-            Assert.That(seatA.PlayerId, Is.EqualTo(humanA.Id));
+            // Get the victim (userB’s human asset) and the seat.
+            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            // Pre–check: the seat is currently reserved by the victim.
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
-            // Set the blockchain current block to a high value so that the kick conditions hold.
-            // (With a fresh reservation at block 1, the Reserve transition set the following:
-            //  ReservationStartBlock = 1, ReservationDuration = 600, PlayerGracePeriod = 30, LastActionBlock = 0.
-            //  In Kick, isReservationValid becomes (1+600 <= b), so for b>=601 it is true.
-            //  And isGracePeriod becomes (1+0+30 > b), which for b>=601 is false.
-            //  Therefore, the check (isReservationValid && isGracePeriod) is false and the kick proceeds.)
-            _blockchainInfoProvider.CurrentBlockNumber = 700;
-            Assert.That(_blockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(700));
+            // Get the kicker from userA.
+            var humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             // Record balances before the kick.
-            uint? seatBalanceBefore = _engine.AssetBalance(seatA.Id);
-            uint sniperBalanceBefore = _engine.AssetBalance(sniper.Id) ?? 0;
+            uint? preSeatABalance = Engine.AssetBalance(seatA.Id);
+            uint? preHumanABalance = Engine.AssetBalance(humanA.Id);
+            uint? preHumanBBalance = Engine.AssetBalance(humanB.Id);
 
-            // Kick transition expects three assets:
-            // 1. The kicker’s (sniper’s) human asset,
-            // 2. The victim’s human asset (player A’s),
+            // Set the blockchain block number high so that the reservation is expired (i.e. not within the grace period).
+            // (For example, with ReservationStartBlock = 1 and ReservationDuration = 30, a block number of 700 is well past the validity.)
+            BlockchainInfoProvider.CurrentBlockNumber = 700;
+            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(700));
+
+            // The Kick transition requires three assets:
+            // 1. The kicker’s human asset (which must be owned by the caller),
+            // 2. The victim’s human asset,
             // 3. The reserved seat.
-            var kickId = CasinoJamIdentifier.Kick();
-            IAsset[] kickInput = [sniper, humanA, seatA];
-            bool result = _engine.Transition(_userB, kickId, kickInput, out IAsset[] outputAssets);
-            Assert.That(result, Is.True, "Kick transition should succeed when conditions allow.");
-            // Apply the transition. (Note that the transition function returns an updated set of assets;
-            // although player A’s assets are modified, the kick is initiated by player B.)
-            _userB.Transition(kickInput, outputAssets);
 
-            // Extract the updated assets.
-            var updatedHumanA = new HumanAsset(outputAssets[1]);
-            var updatedSeatA = new SeatAsset(outputAssets[2]);
-            // After a successful kick, the victim’s human asset should have its SeatId cleared,
-            // and the seat should no longer be occupied.
-            Assert.That(updatedHumanA.SeatId, Is.EqualTo(0), "Victim's human asset should have SeatId reset after kick.");
-            Assert.That(updatedSeatA.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset after kick.");
+            // The transition is called by the kicker (userA).
+            bool result = Engine.Transition(_userA, KICK, [humanA, humanB, seatA], out IAsset[] outputAssets);
+            Assert.That(result, Is.True, "Kick transition should succeed when reservation is expired.");
 
-            // The reservation fee should have been transferred to the sniper’s asset.
-            uint? seatBalanceAfter = _engine.AssetBalance(seatA.Id);
-            uint sniperBalanceAfter = _engine.AssetBalance(sniper.Id) ?? 0;
-            uint fee = seatBalanceBefore ?? 0;
-            Assert.That(sniperBalanceAfter, Is.EqualTo(sniperBalanceBefore + fee), "Sniper should receive the reservation fee.");
+            // Extract the updated victim and seat.
+            var updatedVictim = new HumanAsset(outputAssets[1]);
+            var updatedSeat = new SeatAsset(outputAssets[2]);
+            // Verify that the victim’s reservation is removed.
+            Assert.That(updatedVictim.SeatId, Is.EqualTo(0), "Victim's human asset should have SeatId reset after kick.");
+            Assert.That(updatedSeat.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset after kick.");
+
+            // The reservation fee originally stored on the seat should now have been transferred to the kicker.
+            uint? seatBalanceAfter = Engine.AssetBalance(seatA.Id);
+            uint kickerBalanceAfter = Engine.AssetBalance(humanA.Id) ?? 0;
+            uint fee = preSeatABalance ?? 0;
+            Assert.That(kickerBalanceAfter, Is.EqualTo(preHumanABalance + fee), "Kicker should receive the reservation fee.");
             Assert.That(seatBalanceAfter, Is.EqualTo(0), "Seat balance should be zero after a kick.");
         }
 
         [Test, Order(4)]
         public void Test_KickTransition_NoKickDuringGrace()
         {
-            // Verify that if the seat is still within its grace period,
-            // the kick transition does not remove the reservation.
-            var sniper = new HumanAsset(_userB.Assets.ElementAt(0));
-            var humanA = new HumanAsset(_userA.Assets.ElementAt(0));
-            var seatA = new SeatAsset(_userA.Assets.ElementAt(3));
+            // In this test we simulate that the reserved seat is still within its grace period.
+            // That is, even though the kick transition is attempted,
+            // the reservation is still valid and the kick function returns the assets unchanged.
+            //
+            // In this scenario:
+            //   • the victim’s human asset remains linked to the seat,
+            //   • the seat’s PlayerId remains unchanged,
+            //   • and no fee is transferred to the kicker.
 
-            // To simulate recent activity, update the seat’s LastActionBlock.
-            // For example, set it high so that the grace period condition holds.
-            // With ReservationStartBlock = 1, if we set LastActionBlock to 600 and PlayerGracePeriod = 30,
-            // then (1 + 600 + 30 = 631). If we set the current block to 610 then:
-            //   isReservationValid: (1+600 <= 610) → (601 <= 610) is true,
-            //   isGracePeriod: (1+600+30 > 610) → (631 > 610) is true.
-            // In this case, the kick function returns early (i.e. does nothing).
-            seatA.LastActionBlock = 600;
+            // Get the victim (userB’s human asset), the seat, and the kicker (userA’s human asset).
+            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var trackerB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var banditA = GetAsset<IAsset>(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
-            _blockchainInfoProvider.CurrentBlockNumber = 610;
-            Assert.That(_blockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(610));
+            // Pre–check: the seat is reserved by the victim.
+            Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
+            Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // Record balances before the attempted kick.
-            uint? seatBalanceBefore = _engine.AssetBalance(seatA.Id);
-            uint sniperBalanceBefore = _engine.AssetBalance(sniper.Id) ?? 0;
+            uint? preSeatABalance = Engine.AssetBalance(seatA.Id);
+            uint? preHumanABalance = Engine.AssetBalance(humanA.Id);
 
-            var kickId = CasinoJamIdentifier.Kick();
-            IAsset[] kickInput = [sniper, humanA, seatA];
-            bool result = _engine.Transition(_userB, kickId, kickInput, out IAsset[] outputAssets);
-            // Even if the rules are met the function returns the assets unchanged.
-            Assert.That(result, Is.True, "Kick transition should return successfully but without changes when in grace period.");
-            _userB.Transition(kickInput, outputAssets);
+            BlockchainInfoProvider.CurrentBlockNumber = 10;
+            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(10));
 
-            // The output assets should show that the victim is still seated.
-            var updatedHumanA = new HumanAsset(outputAssets[1]);
-            var updatedSeatA = new SeatAsset(outputAssets[2]);
-            Assert.That(updatedHumanA.SeatId, Is.EqualTo(seatA.Id), "Victim's human asset should still be linked to the seat.");
-            Assert.That(updatedSeatA.PlayerId, Is.EqualTo(humanA.Id), "Seat asset should still be occupied by the victim.");
+            // Gamble once ... (to update the seat’s LastActionBlock)
+            bool result = Engine.Transition(_userB, GAMBLE, [humanB, trackerB, seatA, banditA], out IAsset[] outputAssets);
+            Assert.That(result, Is.True, "Kick transition should return successfully even when no kick occurs (due to grace period).");
 
-            // Balances remain unchanged.
-            uint? seatBalanceAfter = _engine.AssetBalance(seatA.Id);
-            uint sniperBalanceAfter = _engine.AssetBalance(sniper.Id) ?? 0;
-            Assert.That(seatBalanceAfter, Is.EqualTo(seatBalanceBefore), "Seat balance should remain unchanged.");
-            Assert.That(sniperBalanceAfter, Is.EqualTo(sniperBalanceBefore), "Sniper balance should remain unchanged.");
+            // Set the current block to 610 (within the grace period).
+            BlockchainInfoProvider.CurrentBlockNumber = 20;
+            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(20));
+
+            // Call the Kick transition as the kicker (userA).
+            // Even though the transition rules are met, the function should detect the active grace period and return the assets unchanged.
+            result = Engine.Transition(_userA, KICK, [humanA, humanB, seatA], out outputAssets);
+            Assert.That(result, Is.True, "Kick transition should return successfully even when no kick occurs (due to grace period).");
+
+            // Verify that the victim is still seated.
+            var updatedVictim = new HumanAsset(outputAssets[1]);
+            var updatedSeat = new SeatAsset(outputAssets[2]);
+            Assert.That(updatedVictim.SeatId, Is.EqualTo(seatA.Id), "Victim's human asset should remain linked to the seat.");
+            Assert.That(updatedSeat.PlayerId, Is.EqualTo(humanB.Id), "Seat asset should remain occupied by the victim.");
+
+            // Also, verify that no fee transfer took place.
+            uint? seatBalanceAfter = Engine.AssetBalance(seatA.Id);
+            uint? kickerBalanceAfter = Engine.AssetBalance(humanA.Id);
+            Assert.That(seatBalanceAfter, Is.EqualTo(preSeatABalance), "Seat balance should remain unchanged when kick is prevented by grace period.");
+            Assert.That(kickerBalanceAfter, Is.EqualTo(preHumanABalance), "Kicker balance should remain unchanged when kick is prevented by grace period.");
         }
     }
 }

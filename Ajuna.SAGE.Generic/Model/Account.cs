@@ -43,7 +43,8 @@ namespace Ajuna.SAGE.Game.Model
         /// <inheritdoc/>
         public bool IsOwnerOf(IAsset asset)
         {
-            return Assets != null && Assets.Any(a => a.Equals(asset));
+            //return Assets != null && Assets.Any(a => a.Equals(asset));
+            return Id == asset.OwnerId;
         }
 
         /// <inheritdoc/>

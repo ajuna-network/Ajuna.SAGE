@@ -157,11 +157,11 @@ namespace Ajuna.SAGE.Game
             {
                 foreach (var inputId in inputIds)
                 {
-                    if (outputIds != null && !outputIds.Contains(inputId)) {
+                    if (outputIds != null && outputIds.Contains(inputId))
+                    {
 
                         updateIds.Add(inputId);
-               
-                    }
+                     }
                     else
                     {
                         deleteIds.Add(inputId);
@@ -201,5 +201,6 @@ namespace Ajuna.SAGE.Game
                 _assetManager.Delete(id);
             }
         }
+
     }
 }
