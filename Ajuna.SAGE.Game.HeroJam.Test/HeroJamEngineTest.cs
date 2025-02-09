@@ -9,7 +9,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
         private Engine<HeroJamIdentifier, HeroJamRule> _engine;
 
-        private Player _player;
+        private Account _player;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -17,7 +17,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Initialize objects that are shared across all tests
             _blockchainInfoProvider = new BlockchainInfoProvider(1234);
             _engine = HeroJameGame.Create(_blockchainInfoProvider);
-            _player = new Player(Utils.GenerateRandomId(), 100);
+            _player = new Account(Utils.GenerateRandomId(), 100);
         }
 
         [Test]

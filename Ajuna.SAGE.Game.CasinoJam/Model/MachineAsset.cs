@@ -4,8 +4,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
     public class MachineAsset : BaseAsset
     {
-        public MachineAsset(uint genesis)
-            : base(0, genesis)
+        public MachineAsset(uint ownerId, uint genesis)
+            : base(ownerId, 0, genesis)
         {
             AssetType = AssetType.Machine;
         }
@@ -89,8 +89,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
     public class BanditAsset : MachineAsset
     {
-        public BanditAsset(uint genesis)
-            : base(genesis)
+        public BanditAsset(uint ownerId, uint genesis)
+            : base(ownerId, genesis)
         {
             AssetSubType = (AssetSubType)MachineSubType.Bandit;
             MaxSpins = 4;

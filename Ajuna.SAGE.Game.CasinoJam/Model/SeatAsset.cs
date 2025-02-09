@@ -4,8 +4,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
     public class SeatAsset : BaseAsset
     {
-        public SeatAsset(uint genesis)
-            : base(0, genesis)
+        public SeatAsset(uint ownerId, uint genesis)
+            : base(ownerId, 0, genesis)
         {
             AssetType = AssetType.Seat;
             AssetSubType = AssetSubType.None;
@@ -128,6 +128,15 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         {
             get => Data.ReadValue<uint>(28);
             set => Data.SetValue<uint>(28, value);
+        }
+
+        public void Release()
+        {
+            PlayerId = 0;
+            ReservationStartBlock = 0;
+            ReservationDuration = 0;
+            LastActionBlock = 0;
+            PlayerActionCount = 0;
         }
     }
 }

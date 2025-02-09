@@ -10,6 +10,8 @@
         Withdraw = 5,
         Rent = 6,
         Reserve = 7,
+        Release = 8,
+        Kick = 9,
         // *** DO NOT PASS 15 INDEX ***
     }
 

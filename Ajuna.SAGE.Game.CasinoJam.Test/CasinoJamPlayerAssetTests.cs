@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_HumanAssetType()
         {
             // Create a HumanAsset using a genesis value (e.g., 1)
-            var humanAsset = new HumanAsset(1);
+            var humanAsset = new HumanAsset(0, 1);
 
             // Verify that the asset type is set to Player
             Assert.That(humanAsset.AssetType, Is.EqualTo(AssetType.Player));
@@ -23,7 +23,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_TrackerAssetTypeAndLastReward()
         {
             // Create a TrackerAsset using a genesis value (e.g., 1)
-            var trackerAsset = new TrackerAsset(1);
+            var trackerAsset = new TrackerAsset(0, 1);
 
             // Verify that the asset type is set to Player
             Assert.That(trackerAsset.AssetType, Is.EqualTo(AssetType.Player));
@@ -41,7 +41,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_TrackerAssetSlotOperations()
         {
             // Create a TrackerAsset using a genesis value (e.g., 1)
-            var trackerAsset = new TrackerAsset(1);
+            var trackerAsset = new TrackerAsset(0, 1);
 
             // Define a test slot index and a packed value (16-bit value)
             byte slotIndex = 2;

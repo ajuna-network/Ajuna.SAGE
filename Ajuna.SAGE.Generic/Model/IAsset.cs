@@ -13,6 +13,11 @@ namespace Ajuna.SAGE.Game.Model
         uint Id { get; set; }
 
         /// <summary>
+        /// Owner
+        /// </summary>
+        uint OwnerId { get; set; }
+
+        /// <summary>
         /// Collection identifier
         /// </summary>
         byte CollectionId { get; }

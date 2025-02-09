@@ -32,7 +32,7 @@ namespace Ajuna.SAGE.Game.HeroJam
         ///
         /// </summary>
         /// <returns></returns>
-        private static Func<IPlayer, HeroJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
+        private static Func<IAccount, HeroJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
         {
             return (p, r, a, b, m) =>
             {
@@ -229,7 +229,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
-                var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
+                var baseAsset = new BaseAssetBuilder(null, 0, HeroJamUtil.COLLECTION_ID, AssetType.Hero, AssetSubType.None)
                     .SetGenesis(b)
                     .Build();
 
@@ -265,7 +265,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
             TransitionFunction<HeroJamRule> function = (e, r, f, a, h, b, m) =>
             {
-                var baseAsset = new BaseAssetBuilder(null, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
+                var baseAsset = new BaseAssetBuilder(null, 0, HeroJamUtil.COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Map)
                     .SetGenesis(b)
                     .Build();
 

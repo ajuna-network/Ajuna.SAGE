@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
     {
         private IBlockchainInfoProvider _blockchainInfoProvider;
         private Engine<CasinoJamIdentifier, CasinoJamRule> _engine;
-        private Player _user;
+        private IAccount _user;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -19,7 +19,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             _blockchainInfoProvider = new BlockchainInfoProvider(1234);
             _engine = CasinoJameGame.Create(_blockchainInfoProvider);
             // Create a player with initial balance 100.
-            _user = new Player(Utils.GenerateRandomId(), 1_002_000);
+            var user = _engine.AccountManager.Create();
+
+            _user = _engine.AccountManager.Account(user);
+            _user.Balance.Deposit(1_002_000);
         }
 
         [Test, Order(0)]
@@ -301,6 +304,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var seat = new SeatAsset(_user.Assets.ElementAt(3));
             var prevSeatBalance = _engine.AssetBalance(seat.Id);
+            Assert.That(seat.PlayerActionCount, Is.EqualTo(0));
 
             var identifier = CasinoJamIdentifier.Gamble(TokenType.T_1, MultiplierType.V1);
 
@@ -339,6 +343,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
+
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
+            Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(1));
+            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
@@ -403,6 +412,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("000-00"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
 
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
+            Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(2));
+            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
@@ -465,6 +479,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That($"{SlotBResult.slot1}{SlotBResult.slot2}{SlotBResult.slot3}-{SlotBResult.bonus1}{SlotBResult.bonus2}", Is.EqualTo("666-11"));
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("042-13"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("000-00"));
+
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
+            Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(3));
+            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
@@ -529,6 +548,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That($"{SlotCResult.slot1}{SlotCResult.slot2}{SlotCResult.slot3}-{SlotCResult.bonus1}{SlotCResult.bonus2}", Is.EqualTo("373-00"));
             Assert.That($"{SlotDResult.slot1}{SlotDResult.slot2}{SlotDResult.slot3}-{SlotDResult.bonus1}{SlotDResult.bonus2}", Is.EqualTo("146-10"));
 
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
+            Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(4));
+            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
@@ -575,4 +599,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         }
 
     }
+
+
 }
