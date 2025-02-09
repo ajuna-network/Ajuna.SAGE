@@ -7,7 +7,7 @@ namespace Ajuna.SAGE.Game.Model
     /// <summary>
     /// Player class
     /// </summary>
-    public class Player : IPlayer, IEquatable<Player>
+    public class Account : IAccount, IEquatable<Account>
     {
         /// <inheritdoc/>
         public uint Id { get; set; }
@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Game.Model
         /// Player constructor
         /// </summary>
         /// <param name="id"></param>
-        public Player(uint id, uint balance = 0)
+        public Account(uint id, uint balance = 0)
         {
             Id = id;
             Assets = [];
@@ -30,7 +30,7 @@ namespace Ajuna.SAGE.Game.Model
         }
 
         /// <inheritdoc/>
-        public bool Equals(Player? other)
+        public bool Equals(Account? other)
         {
             if (other == null)
             {
@@ -43,7 +43,21 @@ namespace Ajuna.SAGE.Game.Model
         /// <inheritdoc/>
         public bool IsOwnerOf(IAsset asset)
         {
-            return Assets != null && Assets.Any(a => a.Equals(asset));
+            //return Assets != null && Assets.Any(a => a.Equals(asset));
+            return Id == asset.OwnerId;
+        }
+
+        /// <inheritdoc/>
+        public IAsset[]? Query(byte[] filter)
+        {
+            if (Assets == null)
+            {
+                return null;
+            }
+
+            return Assets
+                .Where(a => a.Data.Length >= filter.Length && a.Data.AsSpan(0, filter.Length).SequenceEqual(filter))
+                .ToArray();
         }
 
         /// <summary>
@@ -89,8 +103,8 @@ namespace Ajuna.SAGE.Game.Model
         /// </summary>
         /// <param name="dbPlayer"></param>
         /// <returns></returns>
-        public static Player MapToDomain(DbPlayer dbPlayer) => 
-            new Player(dbPlayer.Id, dbPlayer.BalanceValue)
+        public static Account MapToDomain(DbPlayer dbPlayer) => 
+            new Account(dbPlayer.Id, dbPlayer.BalanceValue)
             {
                 Assets = dbPlayer.Assets?
                     .Select(DbAsset => Asset.MapToDomain(DbAsset))

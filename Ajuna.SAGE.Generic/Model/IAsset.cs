@@ -13,6 +13,11 @@ namespace Ajuna.SAGE.Game.Model
         uint Id { get; set; }
 
         /// <summary>
+        /// Owner
+        /// </summary>
+        uint OwnerId { get; set; }
+
+        /// <summary>
         /// Collection identifier
         /// </summary>
         byte CollectionId { get; }
@@ -33,12 +38,25 @@ namespace Ajuna.SAGE.Game.Model
         byte[] Data { get; set; }
 
         /// <summary>
+        /// Size of the starting bytes for matchType
+        /// </summary>
+        byte MatchTypeSize { get; set; }
+
+        /// <summary>
         /// Match type for same type as
         /// </summary>
         byte[] MatchType { get; }
 
+
         /// <summary>
-        /// Same type as Asset
+        /// Owned by IAccount
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        bool OwnedBy(IAccount account);
+
+        /// <summary>
+        /// Same type as IAsset
         /// </summary>
         /// <param name="asset"></param>
         /// <returns></returns>

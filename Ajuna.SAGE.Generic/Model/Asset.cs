@@ -11,6 +11,8 @@ namespace Ajuna.SAGE.Game.Model
     {
         public uint Id { get; set; }
 
+        public uint OwnerId { get; set; }
+
         public byte CollectionId { get; }
 
         public uint Score { get; set; }
@@ -21,6 +23,8 @@ namespace Ajuna.SAGE.Game.Model
 
         public bool IsLockable { get; set; }
 
+        public virtual byte MatchTypeSize { get; set; } = 1;
+
         /// <summary>
         /// Asset constructor
         /// </summary>
@@ -29,9 +33,10 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="score"></param>
         /// <param name="genesis"></param>
         /// <param name="data"></param>
-        public Asset(uint id, byte collectionId, uint score, uint genesis, byte[]? data)
+        public Asset(uint id, uint ownerId, byte collectionId, uint score, uint genesis, byte[]? data)
         {
             Id = id;
+            OwnerId = ownerId;
             CollectionId = collectionId;
             Score = score;
             Genesis = genesis;
@@ -44,9 +49,9 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="id"></param>
         /// <param name="collectionId"></param>
         /// <returns></returns>
-        public static Asset Empty(uint id, byte collectionId)
+        public static Asset Empty(uint id, uint ownerId, byte collectionId)
         {
-            Asset avatar = new(id, collectionId, 0, 0, null);
+            Asset avatar = new(id, ownerId, collectionId, 0, 0, null);
             return avatar;
         }
 
@@ -62,7 +67,13 @@ namespace Ajuna.SAGE.Game.Model
         }
 
         /// <inheritdoc/>
-        public virtual byte[] MatchType => Data != null && Data.Length > 3 ? Data.Take(4).ToArray() : [];
+        public virtual byte[] MatchType => Data != null && Data.Length > 3 ? Data.Take(MatchTypeSize).ToArray() : [];
+
+        /// <inheritdoc/>
+        public bool OwnedBy(IAccount account)
+        {
+            return OwnerId == account.Id;
+        }
 
         /// <inheritdoc/>
         public bool SameTypeAs(IAsset other)
@@ -86,6 +97,6 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="dbAsset"></param>
         /// <returns></returns>
         public static Asset MapToDomain(DbAsset dbAsset) =>
-            new(dbAsset.Id, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data);
+            new(dbAsset.Id, dbAsset.OwnerId, dbAsset.CollectionId, dbAsset.Score, dbAsset.Genesis, dbAsset.Data);
     }
 }

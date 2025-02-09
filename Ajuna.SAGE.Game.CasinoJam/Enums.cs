@@ -5,11 +5,13 @@
         None = 0,
         Create = 1,
         Config = 2,
-        Fund = 3,
+        Deposit = 3,
         Gamble = 4,
-        Loot = 5,
+        Withdraw = 5,
         Rent = 6,
         Reserve = 7,
+        Release = 8,
+        Kick = 9,
         // *** DO NOT PASS 15 INDEX ***
     }
 

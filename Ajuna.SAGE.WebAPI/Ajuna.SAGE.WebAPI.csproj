@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Ajuna.SAGE.Game.HeroJam\Ajuna.SAGE.Game.HeroJam.csproj" />
 	  <ProjectReference Include="..\Ajuna.SAGE.Game\Ajuna.SAGE.Game.csproj" />
 	  <ProjectReference Include="..\Ajuna.SAGE.Generic\Ajuna.SAGE.Generic.csproj" />
 	</ItemGroup>

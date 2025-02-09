@@ -32,14 +32,14 @@ namespace Ajuna.SAGE.Game.Test
             uint genesis = 0;
 
             var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
-            var player = new Player(playerId);
+            var player = new Account(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
 
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) =>
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) =>
             {
                 var asset = w.First();
                 asset.Score += 10;
@@ -51,7 +51,7 @@ namespace Ajuna.SAGE.Game.Test
             var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new IAsset[]
             {
-                new Asset(assetId, collectionId, score, genesis, [])
+                new Asset(assetId, 0, collectionId, score, genesis, [])
             };
 
             // Act
@@ -76,18 +76,18 @@ namespace Ajuna.SAGE.Game.Test
             uint genesis = 0;
 
             var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
-            var player = new Player(playerId);
+            var player = new Account(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rules = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 1);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) => w.Select(a => a);
 
             _engine.AddTransition(identifier, [rules], default, function);
 
             var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
-            var duplicateAsset = new Asset(assetId, collectionId, score, genesis, []);
+            var duplicateAsset = new Asset(assetId, 0, collectionId, score, genesis, []);
             var assets = new Asset[] { duplicateAsset, duplicateAsset };
 
             // Act & Assert
@@ -104,14 +104,14 @@ namespace Ajuna.SAGE.Game.Test
             uint genesis = 0;
 
             var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
-            var player = new Player(playerId);
+            var player = new Account(playerId);
 
             // Arrange
             var unsupportedIdentifier = new ActionIdentifier((ActionType)99, (ActionSubType)99);
             var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
-                new Asset(assetId, collectionId, score, genesis,[])
+                new Asset(assetId, 0, collectionId, score, genesis,[])
             };
 
             // Act & Assert
@@ -128,13 +128,13 @@ namespace Ajuna.SAGE.Game.Test
             uint genesis = 0;
 
             var playerId = BitConverter.ToUInt32(Utils.HexToBytes(playerIdHex));
-            var player = new Player(playerId);
+            var player = new Account(playerId);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
             var rule = new ActionRule(ActionRuleType.MinAsset, ActionRuleOp.GreaterEqual, 2);
 
-            TransitionFunction<ActionRule> function = (r, f, w, h, b, m) => w.Select(a => a);
+            TransitionFunction<ActionRule> function = (e, r, f, w, h, b, m) => w.Select(a => a);
 
             var blockchainInfoProvider = new Mock<IBlockchainInfoProvider>();
             blockchainInfoProvider.Setup(b => b.GenerateRandomHash()).Returns(new byte[] { 0x00 });
@@ -157,7 +157,7 @@ namespace Ajuna.SAGE.Game.Test
             var assetId = BitConverter.ToUInt32(Utils.HexToBytes(assetIdHex));
             var assets = new Asset[]
             {
-                new(assetId, collectionId, score, genesis, [])
+                new(assetId, 0, collectionId, score, genesis, [])
             };
 
             // Act

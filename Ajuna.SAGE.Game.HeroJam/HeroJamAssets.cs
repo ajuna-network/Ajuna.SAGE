@@ -5,12 +5,12 @@ namespace Ajuna.SAGE.Game.HeroJam
 {
     public class BaseAsset : Asset
     {
-        public BaseAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        public BaseAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
         public BaseAsset(IAsset asset)
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
+            : base(asset.Id, asset.OwnerId, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
         { }
 
         // 00000000 00111111 11112222 22222233
@@ -49,8 +49,8 @@ namespace Ajuna.SAGE.Game.HeroJam
         // 00000000 00111111 11112222 22222233
         // 01234567 89012345 67890123 45678901
         // X..XXX.. ........ ........ ....XXXX
-        public HeroAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis)
+        public HeroAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis)
         {
             AssetType = AssetType.Hero;
         }
@@ -134,8 +134,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class ItemAsset : BaseAsset
     {
-        public ItemAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis)
+        public ItemAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis)
         { 
             AssetType = AssetType.Item;
         }
@@ -147,8 +147,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class MapAsset : ItemAsset
     {
-        public MapAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis)
+        public MapAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis)
         {
             AssetSubType = (AssetSubType) ItemSubType.Map;
         }
@@ -178,8 +178,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class DisassemblableAsset : BaseAsset
     {
-        public DisassemblableAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis)
+        public DisassemblableAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis)
         { }
 
         public DisassemblableAsset(IAsset asset)
@@ -216,8 +216,8 @@ namespace Ajuna.SAGE.Game.HeroJam
 
     public class ConsumableAsset : BaseAsset
     {
-        public ConsumableAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis)
+        public ConsumableAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis)
         { }
 
         public ConsumableAsset(IAsset asset)

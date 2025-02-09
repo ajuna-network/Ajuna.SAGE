@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_MachineAssetTokenProperties()
         {
             // Create a new MachineAsset using a genesis value (e.g., 1)
-            var machineAsset = new MachineAsset(1);
+            var machineAsset = new MachineAsset(0, 1);
 
             // Test Value1Factor and Value1Multiplier (stored in byte at offset 8)
             machineAsset.Value1Factor = TokenType.T_10;
@@ -35,7 +35,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_BanditAssetProperties()
         {
             // Create a new BanditAsset using a genesis value (e.g., 1)
-            var banditAsset = new BanditAsset(1);
+            var banditAsset = new BanditAsset(0, 1);
 
             // Verify that the BanditAsset is a MachineAsset with subtype Bandit
             Assert.That(banditAsset.AssetType, Is.EqualTo(AssetType.Machine));

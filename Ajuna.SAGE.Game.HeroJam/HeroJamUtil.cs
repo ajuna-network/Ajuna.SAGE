@@ -243,7 +243,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         internal static BaseAsset CreateItem(AssetSubType assetSubType, byte amount)
         {
-            var baseItem = new BaseAssetBuilder(null, COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Meat)
+            var baseItem = new BaseAssetBuilder(0, COLLECTION_ID, AssetType.Item, (AssetSubType)ItemSubType.Meat)
                 .Build();
 
             var assetFlag = new AssetFlags(0);
@@ -267,7 +267,7 @@ namespace Ajuna.SAGE.Game.HeroJam
 
         internal static BaseAsset CreateAnimal(AssetSubType assetSubType, byte amount)
         {
-            var baseItem = new BaseAssetBuilder(null, COLLECTION_ID, AssetType.Animal, assetSubType)
+            var baseItem = new BaseAssetBuilder(0, COLLECTION_ID, AssetType.Animal, assetSubType)
                 .Build();
 
             var assetFlag = new AssetFlags(0);

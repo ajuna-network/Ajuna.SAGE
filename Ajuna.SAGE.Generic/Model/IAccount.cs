@@ -5,7 +5,7 @@ namespace Ajuna.SAGE.Game.Model
     /// <summary>
     /// Player interface
     /// </summary>
-    public interface IPlayer
+    public interface IAccount
     {
         /// <summary>
         /// Id of the player
@@ -23,6 +23,20 @@ namespace Ajuna.SAGE.Game.Model
         /// <param name="asset"></param>
         /// <returns></returns>
         bool IsOwnerOf(IAsset asset);
+
+        /// <summary>
+        /// Query assets
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public IAsset[]? Query(byte[] filter);
+
+        /// <summary>
+        /// Transition
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <param name="outputs"></param>
+        public void Transition(IAsset[]? inputs, IAsset[]? outputs);
 
         /// <summary>
         /// Balance of the player

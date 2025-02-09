@@ -133,7 +133,7 @@ namespace Ajuna.SAGE.WebAPI.Controllers
                 }
             }
 
-            var player = Player.MapToDomain(inDbPlayer);
+            var player = Account.MapToDomain(inDbPlayer);
 
             // TODO: make sure no trade assets
             // TODO: make sure no locked assets
