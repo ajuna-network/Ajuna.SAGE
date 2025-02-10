@@ -27,6 +27,8 @@ The SAGE Game Framework is a modular engine designed for game state management u
 
 The following Entity-Relationship (ER) diagram shows the relationships between the key entities:
 
+![image](https://github.com/user-attachments/assets/368ffdb5-8d40-4f92-aa3c-8674b4698e3c)
+
 ```plantuml
 @startuml ER Diagram
 entity "Account" as Account {
@@ -69,6 +71,8 @@ Engine o-- Transition : "registers"
 ## Transition Execution Flow
 
 The following UML activity diagram illustrates the high-level flow of a state transition within the engine:
+
+![image](https://github.com/user-attachments/assets/6d760344-9fc0-4607-a2cc-b282d3ec0f17)
 
 ```plantuml
 @startuml Activity Diagram for Transition Execution
