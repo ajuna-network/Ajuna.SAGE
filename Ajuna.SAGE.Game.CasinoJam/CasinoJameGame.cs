@@ -101,7 +101,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.SameExist:
                         {
-                            var accountAssets = s.AssetOf(p, null);
+                            var accountAssets = s.AssetOf(p);
                             if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return false;
@@ -112,7 +112,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.SameNotExist:
                         {
-                            var accountAssets = s.AssetOf(p, null);
+                            var accountAssets = s.AssetOf(p);
                             if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return true;

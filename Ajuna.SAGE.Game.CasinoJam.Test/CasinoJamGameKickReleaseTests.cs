@@ -26,10 +26,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             // Initialize blockchain info, engine, and player.
             IAsset[] outputAssets;
-            IAsset humanA;
-            IAsset humanB;
-            IAsset banditA;
-            IAsset seatA;
+            BaseAsset humanA;
+            BaseAsset humanB;
+            BaseAsset banditA;
+            BaseAsset seatA;
             bool result;
 
             BlockchainInfoProvider.CurrentBlockNumber++; // ---------------------------------- ***
@@ -53,7 +53,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             BlockchainInfoProvider.CurrentBlockNumber++;
 
             // _userA -> FUND_PLAYER 
-            humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            humanA = GetAsset(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             result = Engine.Transition(_userA, FUND_PLAYER_T1000, [humanA], out outputAssets);
             Assert.That(result, Is.True, "Human funding transition should succeed.");
             Assert.That(Engine.AssetBalance(humanA.Id), Is.EqualTo(1000));
@@ -65,7 +65,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             BlockchainInfoProvider.CurrentBlockNumber++;
 
             // _userB -> FUND_PLAYER 
-            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             result = Engine.Transition(_userB, FUND_PLAYER_T1000, [humanB], out outputAssets);
             Assert.That(result, Is.True, "Human funding transition should succeed.");
             Assert.That(Engine.AssetBalance(humanB.Id), Is.EqualTo(1000));
@@ -77,28 +77,28 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             BlockchainInfoProvider.CurrentBlockNumber++;
 
             // _userA -> RENT_SEAT 
-            banditA = GetAsset<IAsset>(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            banditA = GetAsset(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
             result = Engine.Transition(_userA, RENT_SEAT, [banditA], out outputAssets);
             Assert.That(result, Is.True, "Rent transition should succeed.");
-            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((seatA as SeatAsset)?.MachineId, Is.EqualTo(banditA.Id));
             Assert.That((seatA as SeatAsset)?.SeatValidityPeriod, Is.EqualTo(600));
             BlockchainInfoProvider.CurrentBlockNumber++;
 
             // _userB -> RESERVE_SEAT
-            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             result = Engine.Transition(_userB, RESERVE_SEAT, [humanB, seatA], out outputAssets);
             Assert.That(result, Is.True, "Reserve transition should succeed.");
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // At this point, user B’s human asset should have its SeatId set,
             // and the seat asset from user A should have its PlayerId set.
-            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
         }
@@ -106,8 +106,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         [Test, Order(1)]
         public void Test_ReleaseTransition_Success()
         {
-            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
@@ -119,8 +119,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(result, Is.True, "Release transition should succeed.");
 
             // The release function should “clear” the seat reservation.
-            humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(0), "Human asset should have SeatId reset.");
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(0), "Seat asset should have PlayerId reset.");
 
@@ -135,13 +135,13 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         [Test, Order(2)]
         public void Test_ReleaseTransition_NonOwner_Failure()
         {
-            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // Here we use player B’s human asset instead of player A’s.
-            var wrongHuman = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var wrongHuman = GetAsset(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             var releaseId = CasinoJamIdentifier.Release();
             IAsset[] releaseInput = [wrongHuman, seatA];
@@ -163,14 +163,14 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             //   • and the reservation fee is transferred to the kicker.
 
             // Get the victim (userB’s human asset) and the seat.
-            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             // Pre–check: the seat is currently reserved by the victim.
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));
             Assert.That((seatA as SeatAsset)?.PlayerId, Is.EqualTo(humanB.Id));
 
             // Get the kicker from userA.
-            var humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var humanA = GetAsset(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             // Record balances before the kick.
             var preSeatABalance = Engine.AssetBalance(seatA.Id);
@@ -218,11 +218,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             //   • and no fee is transferred to the kicker.
 
             // Get the victim (userB’s human asset), the seat, and the kicker (userA’s human asset).
-            var humanB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var trackerB = GetAsset<IAsset>(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var seatA = GetAsset<IAsset>(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
-            var banditA = GetAsset<IAsset>(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var humanA = GetAsset<IAsset>(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var humanB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var trackerB = GetAsset(_userB, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var banditA = GetAsset(_userA, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var humanA = GetAsset(_userA, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             // Pre–check: the seat is reserved by the victim.
             Assert.That((humanB as HumanAsset)?.SeatId, Is.EqualTo(seatA.Id));

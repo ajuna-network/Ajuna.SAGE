@@ -47,20 +47,12 @@ namespace Ajuna.SAGE.Game.Model
         /// </summary>
         byte[] MatchType { get; }
 
-
         /// <summary>
         /// Owned by IAccount
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
         bool OwnedBy(IAccount account);
-
-        /// <summary>
-        /// Same type as IAsset
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <returns></returns>
-        bool SameTypeAs(IAsset asset);
 
     }
 }

@@ -75,22 +75,6 @@ namespace Ajuna.SAGE.Game.Model
             return OwnerId == account.Id;
         }
 
-        /// <inheritdoc/>
-        public bool SameTypeAs(IAsset other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (MatchType.Length == 0 || other.MatchType.Length == 0)
-            {
-                return false;
-            }
-
-            return MatchType.SequenceEqual(other.MatchType); ;
-        }
-
         /// <summary>
         /// Map to domain
         /// </summary>

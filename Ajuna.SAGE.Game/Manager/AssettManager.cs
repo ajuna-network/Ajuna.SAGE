@@ -15,7 +15,7 @@ namespace Ajuna.SAGE.Game.Manager
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        IEnumerable<IAsset> AssetOf(IAccount account, byte[]? filter);
+        IEnumerable<IAsset> AssetOf(IAccount account);
     }
 
     public class AssetManager : IAssetManager
@@ -67,9 +67,10 @@ namespace Ajuna.SAGE.Game.Manager
             return _data.Remove(id);
         }
 
-        public IEnumerable<IAsset> AssetOf(IAccount account, byte[]? filter = null)
+        /// <inheritdoc/>
+        public IEnumerable<IAsset> AssetOf(IAccount account)
         {
-            return _data.Values.Where(p => p.OwnedBy(account) && (filter == null || p.MatchType.SequenceEqual(filter))).ToList();
+            return _data.Values.Where(p => p.OwnedBy(account)).ToList();
         }
     }
 }
