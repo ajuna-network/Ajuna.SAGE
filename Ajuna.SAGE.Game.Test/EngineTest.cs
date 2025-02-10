@@ -19,7 +19,7 @@ namespace Ajuna.SAGE.Game.Test
             _mockBlockchainInfoProvider.Setup(m => m.GenerateRandomHash()).Returns([1, 2, 3, 4]);
             _mockBlockchainInfoProvider.Setup(m => m.CurrentBlockNumber).Returns(100);
 
-            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b, m) => true);
+            _engine = new Engine<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object, (p, r, a, b, m, s) => true);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace Ajuna.SAGE.Game.Test
 
             // Setting up the Engine with custom Verify function
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(blockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m) =>
+                .SetVerifyFunction((p, r, a, b, m, s) =>
                 {
                     if (r.RuleType == (byte)ActionRuleType.MinAsset && r.RuleOp == (byte)ActionRuleOp.GreaterEqual)
                     {

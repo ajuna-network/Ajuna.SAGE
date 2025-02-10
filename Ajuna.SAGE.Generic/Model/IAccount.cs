@@ -13,30 +13,11 @@ namespace Ajuna.SAGE.Game.Model
         uint Id { get; set; }
 
         /// <summary>
-        /// Assets of the player
-        /// </summary>
-        ICollection<IAsset>? Assets { get; set; }
-
-        /// <summary>
         /// Is owner of asset
         /// </summary>
         /// <param name="asset"></param>
         /// <returns></returns>
         bool IsOwnerOf(IAsset asset);
-
-        /// <summary>
-        /// Query assets
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public IAsset[]? Query(byte[] filter);
-
-        /// <summary>
-        /// Transition
-        /// </summary>
-        /// <param name="inputs"></param>
-        /// <param name="outputs"></param>
-        public void Transition(IAsset[]? inputs, IAsset[]? outputs);
 
         /// <summary>
         /// Balance of the player

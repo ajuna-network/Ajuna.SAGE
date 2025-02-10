@@ -34,9 +34,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         ///
         /// </summary>
         /// <returns></returns>
-        internal static Func<IAccount, CasinoJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
+        internal static Func<IAccount, CasinoJamRule, IAsset[], uint, IBalanceManager, IAssetManager, bool> GetVerifyFunction()
         {
-            return (p, r, a, b, m) =>
+            return (p, r, a, b, m, s) =>
             {
                 switch (r.CasinoRuleType)
                 {
@@ -101,22 +101,24 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.SameExist:
                         {
-                            if (p.Assets == null || p.Assets.Count == 0)
+                            var accountAssets = s.AssetOf(p);
+                            if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return false;
                             }
 
-                            return p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
+                            return accountAssets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.SameNotExist:
                         {
-                            if (p.Assets == null || p.Assets.Count == 0)
+                            var accountAssets = s.AssetOf(p);
+                            if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return true;
                             }
 
-                            return !p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
+                            return !accountAssets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.AssetTypesAt:

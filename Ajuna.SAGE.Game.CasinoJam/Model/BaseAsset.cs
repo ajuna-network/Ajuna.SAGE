@@ -37,5 +37,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
         /// <inheritdoc/>
         public override byte[] MatchType => Data != null && Data.Length > 0 ? [Data[0]] : [];
+
     }
 }
