@@ -5,6 +5,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<Company>BloGa Tech AG</Company>
+	<Authors>Cedric Decoster</Authors>
+	<Description>Substrate Asset Game Engine (reference implementation)</Description>
+    <PackageProjectUrl>https://github.com/ajuna-network</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/ajuna-network/Ajuna.SAGE</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
