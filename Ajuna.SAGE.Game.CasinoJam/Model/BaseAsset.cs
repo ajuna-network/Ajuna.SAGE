@@ -7,20 +7,20 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
     /// </summary>
     public class BaseAsset : Asset
     {
-        public BaseAsset(uint score = 0, uint genesis = 0)
-            : base(Utils.GenerateRandomId(), CasinoJamUtil.COLLECTION_ID, score, genesis, new byte[Constants.DNA_SIZE])
+        public BaseAsset(uint ownerId, uint score = 0, uint genesis = 0)
+            : base(Utils.GenerateRandomId(), ownerId, CasinoJamUtil.COLLECTION_ID, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
-        public BaseAsset(byte collectionId, uint score, uint genesis)
-            : base(Utils.GenerateRandomId(), collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        public BaseAsset(uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(Utils.GenerateRandomId(), ownerId, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
-        public BaseAsset(uint id, byte collectionId, uint score, uint genesis)
-            : base(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
+        public BaseAsset(uint id, uint ownerId, byte collectionId, uint score, uint genesis)
+            : base(id, ownerId, collectionId, score, genesis, new byte[Constants.DNA_SIZE])
         { }
 
         public BaseAsset(IAsset asset)
-            : base(asset.Id, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
+            : base(asset.Id, asset.OwnerId, asset.CollectionId, asset.Score, asset.Genesis, asset.Data)
         { }
 
         public AssetType AssetType
@@ -37,5 +37,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
         /// <inheritdoc/>
         public override byte[] MatchType => Data != null && Data.Length > 0 ? [Data[0]] : [];
+
     }
 }

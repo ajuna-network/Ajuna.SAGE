@@ -34,9 +34,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         ///
         /// </summary>
         /// <returns></returns>
-        internal static Func<IPlayer, CasinoJamRule, IAsset[], uint, IBalanceManager, bool> GetVerifyFunction()
+        internal static Func<IAccount, CasinoJamRule, IAsset[], uint, IBalanceManager, IAssetManager, bool> GetVerifyFunction()
         {
-            return (p, r, a, b, m) =>
+            return (p, r, a, b, m, s) =>
             {
                 switch (r.CasinoRuleType)
                 {
@@ -101,22 +101,24 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                     case CasinoRuleType.SameExist:
                         {
-                            if (p.Assets == null || p.Assets.Count == 0)
+                            var accountAssets = s.AssetOf(p);
+                            if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return false;
                             }
 
-                            return p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
+                            return accountAssets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.SameNotExist:
                         {
-                            if (p.Assets == null || p.Assets.Count == 0)
+                            var accountAssets = s.AssetOf(p);
+                            if (accountAssets == null || accountAssets.Count() == 0)
                             {
                                 return true;
                             }
 
-                            return !p.Assets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
+                            return !accountAssets.Any(a => a.MatchType.SequenceEqual(r.RuleValue));
                         }
 
                     case CasinoRuleType.AssetTypesAt:
@@ -220,6 +222,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             var result = new List<(CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>)>
             {
                 GetCreatePlayerTransition(),
+
                 GetDepositTransition(AssetType.Player, TokenType.T_1),
                 GetDepositTransition(AssetType.Player, TokenType.T_10),
                 GetDepositTransition(AssetType.Player, TokenType.T_100),
@@ -255,6 +258,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 GetRentTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
                 GetReserveTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
+
+                GetReleaseTransition(),
+                GetKickTransition(),
             };
 
             return result;
@@ -279,8 +285,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
             TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 // initiate the player
-                var human = new HumanAsset(b);
-                var tracker = new TrackerAsset(b);
+                var human = new HumanAsset(e.Id, b);
+                var tracker = new TrackerAsset(e.Id, b);
 
                 return [human, tracker];
             };
@@ -308,7 +314,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 // initiate the bandit machine
-                var bandit = new BanditAsset(b)
+                var bandit = new BanditAsset(e.Id, b)
                 {
                     SeatLinked = 0,
                     SeatLimit = 1,
@@ -326,6 +332,13 @@ namespace Ajuna.SAGE.Game.CasinoJam
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Rent transition set
+        /// </summary>
+        /// <param name="assetType"></param>
+        /// <param name="assetSubType"></param>
+        /// <param name="multiplierType"></param>
+        /// <returns></returns>
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetRentTransition(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
         {
             var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, multiplierType);
@@ -354,7 +367,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 // add new linked machine
                 machine.SeatLinked++;
 
-                var seat = new SeatAsset(b)
+                var seat = new SeatAsset(e.Id, b)
                 {
                     SeatValidityPeriod = (ushort)(10 * 60 * (byte)multiplierType),
                     PlayerFee = 1,
@@ -374,7 +387,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         }
 
         /// <summary>
-        /// 
+        /// Get Reserve transition set
         /// </summary>
         /// <param name="assetType"></param>
         /// <param name="assetSubType"></param>
@@ -402,8 +415,17 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 var result = new IAsset[] { human, seat };
 
-                // seat is already reserved, or palyer already on an other seat
+                // seat is already reserved, or player already on an other seat
                 if (seat.PlayerId != 0 || human.SeatId != 0)
+                {
+                    return result;
+                }
+
+                var reservationDuration = (ushort)(1 * 30 * (byte)multiplierType);
+
+                // verify if seat is running out of time, with this new reservation
+                var lastBlockOfValidity = seat.Genesis + seat.SeatValidityPeriod;
+                if (b > lastBlockOfValidity - reservationDuration)
                 {
                     return result;
                 }
@@ -429,9 +451,130 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 human.SeatId = seat.Id;
                 seat.PlayerId = human.Id;
                 seat.ReservationStartBlock = b;
-                seat.ReservationDuration = (ushort)(30 * (ushort)multiplierType);
+                seat.ReservationDuration = reservationDuration;
                 seat.LastActionBlock = 0;
                 seat.PlayerActionCount = 0;
+
+                return result;
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        /// <summary>
+        /// Get Reserve transition set
+        /// </summary>
+        /// <param name="assetType"></param>
+        /// <param name="assetSubType"></param>
+        /// <param name="multiplierType"></param>
+        /// <returns></returns>
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetReleaseTransition()
+        {
+            var identifier = CasinoJamIdentifier.Release();
+            byte humanAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2u),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, humanAt, seatAt),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0)
+                // TODO: (verify) check if player is connected to seat and vice versa ???
+            ];
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
+            {
+                var human = new HumanAsset(a.ElementAt(0));
+                var seat = new SeatAsset(a.ElementAt(1));
+
+                var result = new IAsset[] { human, seat };
+
+                // seat is not occupied, player is not seated, or they are not linked to each other.
+                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.Id || seat.Id != human.SeatId)
+                {
+                    return result;
+                }
+
+                var reservationFee = m.AssetBalance(seat.Id);
+
+                if (!reservationFee.HasValue || !m.CanWithdraw(seat.Id, reservationFee.Value, out _))
+                {
+                    return result;
+                }
+
+                // take seat reservation fee back
+                m.Withdraw(seat.Id, reservationFee.Value);
+                // to the player that bought it
+                m.Deposit(human.Id, reservationFee.Value);
+
+                human.Release();
+                seat.Release();
+
+                return result;
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+
+        /// <summary>
+        /// Get Reserve transition set
+        /// </summary>
+        /// <param name="assetType"></param>
+        /// <param name="assetSubType"></param>
+        /// <param name="multiplierType"></param>
+        /// <returns></returns>
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetKickTransition()
+        {
+            var identifier = CasinoJamIdentifier.Kick();
+            byte humanAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 3u),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, humanAt, humanAt, seatAt),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0)
+                // TODO: (verify) check if player is connected to seat and vice versa ???
+            ];
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
+            {
+                var sniper = new HumanAsset(a.ElementAt(0));
+                var human = new HumanAsset(a.ElementAt(1));
+                var seat = new SeatAsset(a.ElementAt(2));
+
+                var result = new IAsset[] { sniper, human, seat };
+
+                // seat is not occupied, player is not seated, or they are not linked to each other.
+                if (seat.PlayerId == 0 || human.SeatId == 0 || seat.PlayerId != human.Id || seat.Id != human.SeatId)
+                {
+                    return result;
+                }
+
+                var isReservationValid = (seat.ReservationStartBlock + seat.ReservationDuration) >= b;
+                var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlock + seat.PlayerGracePeriod) >= b;
+
+                if (isReservationValid && isGracePeriod)
+                {
+                    return result;
+                }
+
+                var reservationFee = m.AssetBalance(seat.Id);
+
+                if (!reservationFee.HasValue || !m.CanWithdraw(seat.Id, reservationFee.Value, out _))
+                {
+                    return result;
+                }
+
+                // take seat reservation fee back
+                m.Withdraw(seat.Id, reservationFee.Value);
+                m.Deposit(sniper.Id, reservationFee.Value);
+
+                human.Release();
+                seat.Release();
 
                 return result;
             };
@@ -544,6 +687,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 m.Withdraw(bandit.Id, reward);
                 m.Deposit(player.Id, reward);
 
+                // action count increase on the seat
+                seat.PlayerActionCount++;
+                seat.LastActionBlock = (ushort) (b - seat.ReservationStartBlock);
+
                 return result;
             };
 
@@ -589,7 +736,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         }
 
         /// <summary>
-        /// Get Fund AssetType transition set
+        /// Get Deposit AssetType transition set
         /// </summary>
         /// <returns></returns>
         private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetDepositTransition(AssetType assetType, TokenType tokenType)

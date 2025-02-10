@@ -22,7 +22,7 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_EngineBuilder_CreatesEngineWithTransitions()
         {
-            var player = new Player(1);
+            var player = new Account(1);
 
             // Arrange
             var identifier = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -36,13 +36,13 @@ namespace Ajuna.SAGE.Game.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m) => true)
+                .SetVerifyFunction((p, r, a, b, m, s) => true)
                 .AddTransition(identifier, new[] { rules }, default, function)
                 .Build();
 
             var assets = new Asset[]
             {
-                new Asset(1, 1, 50, 0, [])
+                new Asset(1, 0, 1, 50, 0, [])
             };
 
             // Act
@@ -60,7 +60,7 @@ namespace Ajuna.SAGE.Game.Test
         [Test]
         public void Test_EngineBuilder_CanAddMultipleTransitions()
         {
-            var player = new Player(1);
+            var player = new Account(1);
 
             // Arrange
             var identifier1 = new ActionIdentifier(ActionType.TypeA, ActionSubType.TypeX);
@@ -84,14 +84,14 @@ namespace Ajuna.SAGE.Game.Test
             };
 
             var engine = new EngineBuilder<ActionIdentifier, ActionRule>(_mockBlockchainInfoProvider.Object)
-                .SetVerifyFunction((p, r, a, b, m) => true)
+                .SetVerifyFunction((p, r, a, b, m, s) => true)
                 .AddTransition(identifier1, [rules1], default, function1)
                 .AddTransition(identifier2, [rules2], default, function2)
                 .Build();
 
             var assets = new Asset[]
             {
-                new(1, 1, 50, 0, [])
+                new(1, 0, 1, 50, 0, [])
             };
 
             // Act

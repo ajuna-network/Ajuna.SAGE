@@ -34,5 +34,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         internal static CasinoJamIdentifier Reserve(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
             => new((byte)CasinoAction.Reserve << 4 | (byte)AssetType.None, (byte)(((byte)assetSubType << 4) + (byte)multiplierType));
+
+        internal static CasinoJamIdentifier Release()
+            => new((byte)CasinoAction.Release << 4 | (byte)AssetType.None, (byte)(((byte)0x00 << 4) + (byte)0x00));
+
+        internal static CasinoJamIdentifier Kick()
+            => new((byte)CasinoAction.Kick << 4 | (byte)AssetType.None, (byte)(((byte)0x00 << 4) + (byte)0x00));
     }
 }

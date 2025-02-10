@@ -5,11 +5,11 @@ CasinoJam is a casino game built on top of the SAGE Game Framework. It leverages
 ## Game Overview
 
 In CasinoJam, every game entity is represented as an asset:
-
+  
 - **Player Assets:**  
   - **HumanAsset:** Represents a human player.
   - **TrackerAsset:** Tracks gameplay data for a player.
-  
+
 - **Machine Asset:**  
   - **BanditAsset:** Represents a slot machine (commonly referred to as "Bandit"). It includes properties like the number of linked seats and limits.
 
@@ -20,7 +20,7 @@ In CasinoJam, every game entity is represented as an asset:
 
 - **Player Creation:**  
   A player creation transition creates both a HumanAsset and a TrackerAsset for a new player.
-  
+
 - **Machine Creation:**  
   A machine creation transition (e.g., creating a BanditAsset) initializes a new slot machine.
 
@@ -125,3 +125,10 @@ CasinoJam leverages the power and flexibility of the SAGE Game Framework to deli
 ## Contact
 
 For questions or suggestions, please open an issue in the GitHub repository or contact [cedric@ajuna.io](mailto:cedric@ajuna.io).
+
+---
+
+Enjoy exploring the power of asset-based state transitions with CasinoJam!
+
+---
+

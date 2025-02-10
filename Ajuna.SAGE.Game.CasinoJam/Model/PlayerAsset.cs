@@ -1,4 +1,5 @@
 ﻿using Ajuna.SAGE.Game.Model;
+using System.Security.Cryptography;
 
 namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
@@ -7,8 +8,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
     /// </summary>
     public class PlayerAsset : BaseAsset
     {
-        public PlayerAsset(uint genesis)
-            : base(0, genesis)
+        public PlayerAsset(uint ownerId, uint genesis)
+            : base(ownerId, 0, genesis)
         {
             AssetType = AssetType.Player;
         }
@@ -20,8 +21,8 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
     public class HumanAsset : PlayerAsset
     {
-        public HumanAsset(uint genesis)
-            : base(genesis)
+        public HumanAsset(uint ownerId, uint genesis)
+            : base(ownerId, genesis)
         {
             AssetSubType = (AssetSubType)PlayerSubType.Human;
         }
@@ -42,12 +43,17 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             get => Data.ReadValue<uint>(28);
             set => Data.SetValue<uint>(28, value);
         }
+
+        public void Release()
+        {
+            SeatId = 0;
+        }
     }
 
     public class TrackerAsset : PlayerAsset
     {
-        public TrackerAsset(uint genesis)
-            : base(genesis)
+        public TrackerAsset(uint ownerId, uint genesis)
+            : base(ownerId, genesis)
         {
             AssetSubType = (AssetSubType)PlayerSubType.Tracker;
         }

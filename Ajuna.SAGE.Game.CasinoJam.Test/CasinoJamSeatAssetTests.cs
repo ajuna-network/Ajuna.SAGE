@@ -9,7 +9,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         public void Test_SeatAssetProperties()
         {
             // Create a new SeatAsset instance using the genesis value (e.g., 1)
-            var seatAsset = new SeatAsset(1);
+            var seatAsset = new SeatAsset(0, 1);
 
             // Test SeatValidityPeriod (2 bytes, stored at offset 4)
             ushort seatValidity = 500;

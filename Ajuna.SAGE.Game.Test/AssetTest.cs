@@ -19,7 +19,7 @@ namespace Ajuna.SAGE.Tests
             byte[] dna = [5, 6, 7, 8];
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, genesis, dna);
+            Asset asset = new Asset(id, 0, collectionId, score, genesis, dna);
 
             // Assert
             Assert.Multiple(() =>
@@ -42,7 +42,7 @@ namespace Ajuna.SAGE.Tests
             string hexStringDna = "05060708";
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, genesis, Utils.HexToBytes(hexStringDna));
+            Asset asset = new Asset(id, 0, collectionId, score, genesis, Utils.HexToBytes(hexStringDna));
 
             // Assert
             Assert.That(asset.Data, Is.EqualTo(Utils.HexToBytes(hexStringDna)), "The DNA should match the value converted from the hex string.");
@@ -58,7 +58,7 @@ namespace Ajuna.SAGE.Tests
             uint genesis = 0;
 
             // Act
-            Asset asset = new Asset(id, collectionId, score, genesis, new byte[Constants.DNA_SIZE]);
+            Asset asset = new Asset(id, 0, collectionId, score, genesis, new byte[Constants.DNA_SIZE]);
 
             // Assert
             Assert.Multiple(() =>
@@ -78,7 +78,7 @@ namespace Ajuna.SAGE.Tests
             byte collectionId = 1;
 
             // Act
-            Asset emptyAsset = Asset.Empty(id, collectionId);
+            Asset emptyAsset = Asset.Empty(id, 0, collectionId);
 
             // Assert
             Assert.Multiple(() =>
@@ -102,9 +102,9 @@ namespace Ajuna.SAGE.Tests
             uint id2 = 1234;
             uint id3 = 4321;
 
-            Asset asset1 = new Asset(id1, collectionId, score, genesis, []);
-            Asset asset2 = new Asset(id2, collectionId, score, genesis, []);
-            Asset asset3 = new Asset(id3, collectionId, score, genesis, []);
+            Asset asset1 = new Asset(id1, 0, collectionId, score, genesis, []);
+            Asset asset2 = new Asset(id2, 0, collectionId, score, genesis, []);
+            Asset asset3 = new Asset(id3, 0, collectionId, score, genesis, []);
 
             // Act & Assert
             Assert.Multiple(() =>
