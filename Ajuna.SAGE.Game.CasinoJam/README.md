@@ -16,6 +16,56 @@ In CasinoJam, every game entity is represented as an asset:
 - **Seat Asset:**  
   Represents a seat that can be reserved by a player. It holds information such as the current occupant (`PlayerId`) and the associated machine (`MachineId`).
 
+
+### Game Flow
+
+´´´´plantuml
+@startuml
+|User|
+start
+:Log in / Access account;
+
+:Check if Player Assets exist?;
+if (Player assets exist?) then (yes)
+  :Proceed;
+else (no)
+  :Create Player Assets\n(HumanAsset + TrackerAsset);
+endif
+
+:Deposit funds into Player Asset;
+:Choose a Machine to play on;
+|Engine|
+if (Machine exists?) then (yes)
+  :Select existing Machine (BanditAsset);
+else (no)
+  :Create Machine (BanditAsset);
+endif
+|User|
+
+:Rent a Seat on the chosen Machine;
+:Reserve Seat (link SeatAsset with HumanAsset);
+:Confirm Reservation & pay fee;
+
+:Place a Gamble;
+|Engine|
+:Execute Slot Machine Spin;
+:Calculate Reward based on spins;
+:Update balances\n(for Player & Machine);
+|User|
+
+:Decide whether to continue playing?;
+if (Continue Playing?) then (yes)
+  :Place another Gamble;
+  -> [loop] repeat gamble steps;
+else (no)
+  :Release Seat (cancel reservation);
+  :Withdraw funds (transfer winnings to account);
+endif
+
+stop
+@enduml
+´´´
+
 ## Key Transitions and Mechanics
 
 - **Player Creation:**  
@@ -34,6 +84,64 @@ In CasinoJam, every game entity is represented as an asset:
   - **Reserve:** A player may reserve a seat (SeatAsset), linking their HumanAsset via a `SeatId`.
   - **Release:** Allows a player to cancel their reservation, resetting the linkage and refunding any reservation fee.
   - **Kick:** If a reservation expires or falls outside a grace period, another player can kick the occupant to claim the reservation fee.
+
+ ### Sequence Diagram
+
+´´´´plantuml
+@startuml
+actor User
+participant "GameEngine" as Engine
+participant "AccountManager" as AccountMgr
+participant "AssetManager" as AssetMgr
+participant "BalanceManager" as BalanceMgr
+participant "BlockchainInfoProvider" as Blockchain
+
+== Login and Initialization ==
+User -> Engine: Login / Initiate Transition
+Engine -> AccountMgr: Get (or Create) Account for User
+AccountMgr --> Engine: Return Account
+
+Engine -> AssetMgr: Check for existing Player Assets
+alt No Player Assets Exist
+    Engine -> AssetMgr: Create Player Assets\n(HumanAsset + TrackerAsset)
+    AssetMgr --> Engine: Return new Assets
+end
+
+== Deposit Funds ==
+User -> Engine: Request Deposit (e.g., Deposit Transition)
+Engine -> BalanceMgr: Process Deposit for Player Asset
+BalanceMgr --> Engine: Updated Asset Balance
+
+== Machine Selection ==
+User -> Engine: Select Machine for Play
+Engine -> AssetMgr: Check for existing Machine (BanditAsset)
+alt Machine not found
+    Engine -> AssetMgr: Create Machine (BanditAsset)
+    AssetMgr --> Engine: Return new Machine
+end
+
+== Rent Seat ==
+User -> Engine: Rent Seat on Machine (Rent Transition)
+Engine -> AssetMgr: Create/Update SeatAsset\n(Link Seat to HumanAsset)
+Engine -> BalanceMgr: Process Reservation Fee\n(Withdraw from Human, Deposit to Seat)
+BalanceMgr --> Engine: Updated Balances
+
+== Gamble ==
+User -> Engine: Place Gamble (Gamble Transition)
+Engine -> Blockchain: Get current block number & Random Hash
+Engine -> AssetMgr: Execute Gamble Transition\n(Perform Spin, Calculate Reward)
+Engine -> BalanceMgr: Transfer Funds\n(Withdraw from Machine, Deposit to Player)
+BalanceMgr --> Engine: Updated Balances
+Engine --> User: Return updated Assets and Balances
+
+== Release/Withdraw ==
+User -> Engine: Request Release Seat or Withdraw Funds
+Engine -> AssetMgr: Process Release Seat Transition
+Engine -> BalanceMgr: Process Withdrawal Transition
+Engine --> User: Return final updated state
+
+@enduml
+´´´
 
 ## Asset Relationship Overview
 
