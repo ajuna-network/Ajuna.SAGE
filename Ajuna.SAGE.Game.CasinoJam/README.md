@@ -160,6 +160,8 @@ The core assets in CasinoJam are interconnected as follows:
 
 Below is a PlantUML diagram that visually represents these relationships:
 
+![image](https://github.com/user-attachments/assets/e1e7849b-776d-4557-af1e-593addbfa14a)
+
 ```plantuml
 @startuml
 skinparam rectangle {
