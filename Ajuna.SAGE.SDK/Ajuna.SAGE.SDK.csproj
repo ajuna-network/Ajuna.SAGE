@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Substrate.AjunaSolo.NET\Substrate.AjunaSolo.NET.NetApiExt\Substrate.AjunaSolo.NET.NetApiExt.csproj" />
+  </ItemGroup>
+
+</Project>

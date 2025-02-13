@@ -1,7 +1,6 @@
 ﻿using Ajuna.SAGE.Game.CasinoJam.Model;
 using Ajuna.SAGE.Game.Manager;
 using Ajuna.SAGE.Game.Model;
-using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
@@ -42,29 +41,16 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 {
                     case CasinoRuleType.AssetCount:
                         {
-                            switch (r.CasinoRuleOp)
+                            return r.CasinoRuleOp switch
                             {
-                                case CasinoRuleOp.EQ:
-                                    return a.Length == BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.GE:
-                                    return a.Length >= BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.GT:
-                                    return a.Length > BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.LT:
-                                    return a.Length < BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.LE:
-                                    return a.Length <= BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.NE:
-                                    return a.Length != BitConverter.ToUInt32(r.RuleValue);
-
-                                default:
-                                    return false;
-                            }
+                                CasinoRuleOp.EQ => a.Length == BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.GE => a.Length >= BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.GT => a.Length > BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.LT => a.Length < BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.LE => a.Length <= BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.NE => a.Length != BitConverter.ToUInt32(r.RuleValue),
+                                _ => false,
+                            };
                         }
 
                     case CasinoRuleType.IsOwnerOf:
@@ -182,29 +168,16 @@ namespace Ajuna.SAGE.Game.CasinoJam
                                 return false;
                             }
 
-                            switch (r.CasinoRuleOp)
+                            return r.CasinoRuleOp switch
                             {
-                                case CasinoRuleOp.EQ:
-                                    return balance.Value == BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.GE:
-                                    return balance.Value >= BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.GT:
-                                    return balance.Value > BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.LT:
-                                    return balance.Value < BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.LE:
-                                    return balance.Value <= BitConverter.ToUInt32(r.RuleValue);
-
-                                case CasinoRuleOp.NE:
-                                    return balance.Value != BitConverter.ToUInt32(r.RuleValue);
-
-                                default:
-                                    return false;
-                            }
+                                CasinoRuleOp.EQ => balance.Value == BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.GE => balance.Value >= BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.GT => balance.Value > BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.LT => balance.Value < BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.LE => balance.Value <= BitConverter.ToUInt32(r.RuleValue),
+                                CasinoRuleOp.NE => balance.Value != BitConverter.ToUInt32(r.RuleValue),
+                                _ => false,
+                            };
                         }
 
                     default:
