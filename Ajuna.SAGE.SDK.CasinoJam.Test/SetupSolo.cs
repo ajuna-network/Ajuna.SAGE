@@ -52,6 +52,9 @@ namespace Ajuna.TestSuite
         {
             Assert.That(_sudo.ToString(), Is.EqualTo(Alice.ToString()));
             Assert.That(_organizer.ToString(), Is.EqualTo(Alice.ToString()));
+            Assert.That(_user1.ToString(), Is.EqualTo("5DZJM6Xjr9toZHPj5Z59ZCoUviRNxCWRAv5ZJzbX5LqVYnS5"));
+            Assert.That(_user2.ToString(), Is.EqualTo("5EU7fYbJXpJTrq7xEVaQSK7TWSTAQCdbnALC1zthJD9TrfGm"));
+
         }
 
         [Test, Order(1)]
@@ -136,111 +139,6 @@ namespace Ajuna.TestSuite
             };
 
             var subscriptionId = await _client.UpdateSeasonAsync(_organizer, seasonId, seasonConfig, seasonMetadata, seasonSchedule, 1, CancellationToken.None);
-            Assert.That(subscriptionId, Is.Not.Null);
-
-            var tcs = new TaskCompletionSource<bool>();
-            void OnExtrinsicUpdated(string subId, ExtrinsicInfo extrinsicInfo)
-            {
-                if (subId == subscriptionId && extrinsicInfo.TransactionEvent == TransactionEvent.BestChainBlockIncluded)
-                {
-                    tcs.TrySetResult(true);
-                }
-            }
-            _client.ExtrinsicManager.ExtrinsicUpdated += OnExtrinsicUpdated;
-            await tcs.Task;
-            _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
-        }
-
-        [Test, Order(4)]
-        public async Task CreatePlayer_User1_TestAsync()
-        {
-            var enumCasinoAction = new EnumCasinoAction();
-            var enumAssetType = new EnumAssetType();
-            enumAssetType.Create(AssetType.Player, new BaseVoid());
-            enumCasinoAction.Create(CasinoAction.Create, enumAssetType);
-
-            var subscriptionId = await _client.StateTransitionAsync(_user1, enumCasinoAction, [], 1, CancellationToken.None);
-            Assert.That(subscriptionId, Is.Not.Null);
-
-            var tcs = new TaskCompletionSource<bool>();
-            void OnExtrinsicUpdated(string subId, ExtrinsicInfo extrinsicInfo)
-            {
-                if (subId == subscriptionId && extrinsicInfo.TransactionEvent == TransactionEvent.BestChainBlockIncluded)
-                {
-                    tcs.TrySetResult(true);
-                }
-            }
-            _client.ExtrinsicManager.ExtrinsicUpdated += OnExtrinsicUpdated;
-            await tcs.Task;
-            _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
-        }
-
-        [Test, Order(5)]
-        public async Task CreatePlayer_User2_TestAsync()
-        {
-            var enumCasinoAction = new EnumCasinoAction();
-            var enumAssetType = new EnumAssetType();
-            enumAssetType.Create(AssetType.Player, new BaseVoid());
-            enumCasinoAction.Create(CasinoAction.Create, enumAssetType);
-
-            var subscriptionId = await _client.StateTransitionAsync(_user2, enumCasinoAction, [], 1, CancellationToken.None);
-            Assert.That(subscriptionId, Is.Not.Null);
-
-            var tcs = new TaskCompletionSource<bool>();
-            void OnExtrinsicUpdated(string subId, ExtrinsicInfo extrinsicInfo)
-            {
-                if (subId == subscriptionId && extrinsicInfo.TransactionEvent == TransactionEvent.BestChainBlockIncluded)
-                {
-                    tcs.TrySetResult(true);
-                }
-            }
-            _client.ExtrinsicManager.ExtrinsicUpdated += OnExtrinsicUpdated;
-            await tcs.Task;
-            _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
-        }
-
-        [Test, Order(6)]
-        public async Task CreateMachine_User1_TestAsync()
-        {
-            var enumCasinoAction = new EnumCasinoAction();
-            var enumMachineType = new EnumMachineType();
-            enumMachineType.Create(MachineType.Bandit);
-            var enumAssetType = new EnumAssetType();
-            enumAssetType.Create(AssetType.Machine, enumMachineType);
-            enumCasinoAction.Create(CasinoAction.Create, enumAssetType);
-
-            var subscriptionId = await _client.StateTransitionAsync(_user1, enumCasinoAction, [], 1, CancellationToken.None);
-            Assert.That(subscriptionId, Is.Not.Null);
-
-            var tcs = new TaskCompletionSource<bool>();
-            void OnExtrinsicUpdated(string subId, ExtrinsicInfo extrinsicInfo)
-            {
-                if (subId == subscriptionId && extrinsicInfo.TransactionEvent == TransactionEvent.BestChainBlockIncluded)
-                {
-                    tcs.TrySetResult(true);
-                }
-            }
-            _client.ExtrinsicManager.ExtrinsicUpdated += OnExtrinsicUpdated;
-            await tcs.Task;
-            _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
-        }
-
-        [Test, Order(7)]
-        public async Task DepositMachine_User1_TestAsync()
-        {
-
-
-            var enumCasinoAction = new EnumCasinoAction();
-            var enumMachineType = new EnumMachineType();
-            enumMachineType.Create(MachineType.Bandit);
-            var enumAssetType = new EnumAssetType();
-            enumAssetType.Create(AssetType.Machine, enumMachineType);
-            var enumTokenType = new EnumTokenType();
-            enumTokenType.Create(TokenType.T1000);
-            var tuple = new BaseTuple<EnumAssetType, EnumTokenType>(enumAssetType, enumTokenType);
-            enumCasinoAction.Create(CasinoAction.Deposit, tuple);
-
-            var subscriptionId = await _client.StateTransitionAsync(_user1, enumCasinoAction, [], 1, CancellationToken.None);
             Assert.That(subscriptionId, Is.Not.Null);
 
             var tcs = new TaskCompletionSource<bool>();

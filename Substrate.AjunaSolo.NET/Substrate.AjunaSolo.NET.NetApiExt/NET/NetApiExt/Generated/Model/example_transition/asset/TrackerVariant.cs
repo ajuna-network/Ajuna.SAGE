@@ -23,7 +23,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class TrackerVariant : BaseType
     {
-        
+
         /// <summary>
         /// >> slot_a_result
         /// </summary>
