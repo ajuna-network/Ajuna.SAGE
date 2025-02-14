@@ -192,6 +192,24 @@ CasinoJam comes with a comprehensive suite of tests covering:
 
 These tests simulate full game scenarios, ensuring that all transitions update asset states and balances correctly.
 
+## Simple ASCII Art for CasinoJam
+
+```
+4x |
+   v
++-------------+--------+ 
+¦  7   3   5  | 2   1  ¦ -->       0$  
+¦  7   7   7  | 5   5  ¦ -->    1400$  
+¦  7   4   6  | 3   2  ¦ -->       0$  
++----------------+-----¦ 
+¦ Bonus Spin:  8 |  4x | -->
++----------------+-----¦ 
+¦ JACKPOT   1'623'000$ ¦ --> 
++======================+
+| PAY.OUT   0'000'000$ | <==   _______
++======================+
+```
+
 ## Getting Started
 
 ### Prerequisites
