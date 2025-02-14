@@ -133,9 +133,9 @@ namespace Ajuna.TestSuite
         [Test, Order(4)]
         public async Task DepositMachine_User1_TestAsync()
         {
-            var user1Assets = await GetAccountAssetsAsync(_user1, null);
-            var machine = user1Assets.Where(p => p.Variant.AssetVariant == AssetVariant.Machine).FirstOrDefault();
-            Assert.That(machine, Is.Not.Null);
+            var user_1_assets = await GetAccountAssetsAsync(_user1, null);
+            var mach_1 = user_1_assets.Where(p => p.Variant.AssetVariant == AssetVariant.Machine).FirstOrDefault();
+            Assert.That(mach_1, Is.Not.Null);
 
             var enumCasinoAction = new EnumCasinoAction();
             var enumMachineType = new EnumMachineType();
@@ -147,7 +147,7 @@ namespace Ajuna.TestSuite
             var tuple = new BaseTuple<EnumAssetType, EnumTokenType>(enumAssetType, enumTokenType);
             enumCasinoAction.Create(CasinoAction.Deposit, tuple);
 
-            var subscriptionId = await _client.StateTransitionAsync(_user1, enumCasinoAction, [machine.Id], 1, CancellationToken.None);
+            var subscriptionId = await _client.StateTransitionAsync(_user1, enumCasinoAction, [mach_1.Id], 1, CancellationToken.None);
             Assert.That(subscriptionId, Is.Not.Null);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -195,26 +195,26 @@ namespace Ajuna.TestSuite
         public async Task DepositPlayer_User2_TestAsync()
         {
             // make sure to use the right user.
-            var user = _user2;
+            var user_2 = _user2;
 
-            var user1Assets = await GetAccountAssetsAsync(user, null);
-            var human = user1Assets.Where(p => 
+            var user_1_assets = await GetAccountAssetsAsync(user_2, null);
+            var human_1 = user_1_assets.Where(p => 
                    p.Variant.AssetVariant == AssetVariant.Player 
                 && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Human)
                 .FirstOrDefault();
-            Assert.That(human, Is.Not.Null);
+            Assert.That(human_1, Is.Not.Null);
 
             var enumAssetType = new EnumAssetType();
             enumAssetType.Create(AssetType.Player, new BaseVoid());
 
             var enumTokenType = new EnumTokenType();
-            enumTokenType.Create(TokenType.T100);
+            enumTokenType.Create(TokenType.T1000);
 
             var enumCasinoAction = new EnumCasinoAction();
             enumCasinoAction.Create(CasinoAction.Deposit, 
                 new BaseTuple<EnumAssetType, EnumTokenType>(enumAssetType, enumTokenType));
 
-            var subscriptionId = await _client.StateTransitionAsync(user, enumCasinoAction, [human.Id], 1, CancellationToken.None);
+            var subscriptionId = await _client.StateTransitionAsync(user_2, enumCasinoAction, [human_1.Id], 1, CancellationToken.None);
             Assert.That(subscriptionId, Is.Not.Null);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -234,20 +234,19 @@ namespace Ajuna.TestSuite
         public async Task ReserveSeat_User2_TestAsync()
         {
             // make sure to use the right user.
-            var user = _user1; // TODO: change to an other player!!
+            var user_2 = _user2; // TODO: change to an other player!!
 
-            var user1Assets = await GetAccountAssetsAsync(user, null);
-            var human = user1Assets.Where(p =>
+            var user_2_assets = await GetAccountAssetsAsync(user_2, null);
+            var human_2 = user_2_assets.Where(p =>
                    p.Variant.AssetVariant == AssetVariant.Player
                 && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Human)
                 .FirstOrDefault();
-            Assert.That(human, Is.Not.Null);
+            Assert.That(human_2, Is.Not.Null);
 
             // take seat from user 2
-            var seat = (await GetAccountAssetsAsync(_user1, null)).Where(p =>
-                   p.Variant.AssetVariant == AssetVariant.Seat)
-                .FirstOrDefault();
-            Assert.That(seat, Is.Not.Null);
+            var user_1_assets = await GetAccountAssetsAsync(_user1, null);
+            var seat_2 = GetSeat(user_1_assets);
+            Assert.That(seat_2, Is.Not.Null);
 
             var enumMultiplierType = new EnumMultiplierType();
             enumMultiplierType.Create(MultiplierType.V1);
@@ -255,7 +254,7 @@ namespace Ajuna.TestSuite
             var enumCasinoAction = new EnumCasinoAction();
             enumCasinoAction.Create(CasinoAction.Reserve, enumMultiplierType);
 
-            var subscriptionId = await _client.StateTransitionAsync(user, enumCasinoAction, [human.Id, seat.Id], 1, CancellationToken.None);
+            var subscriptionId = await _client.StateTransitionAsync(user_2, enumCasinoAction, [human_2.Id, seat_2.Id], 1, CancellationToken.None);
             Assert.That(subscriptionId, Is.Not.Null);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -271,50 +270,45 @@ namespace Ajuna.TestSuite
             _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
         }
 
-        [Test, Order(6)]
-        public async Task Gamble_User1_TestAsync()
+        [Test, Order(7)]
+        public async Task Gamble_User2_TestAsync()
         {
             // make sure to use the right user.
-            var user = _user1; // TODO: change to an other player!!
+            var user_2 = _user2;
 
-            var user1Assets = await GetAccountAssetsAsync(user, null);
-            var human = user1Assets.Where(p =>
-                   p.Variant.AssetVariant == AssetVariant.Player
-                && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Human)
-                .FirstOrDefault();
-            Assert.That(human, Is.Not.Null);
+            var user_2_assets = await GetAccountAssetsAsync(user_2, null);
 
-            var tracker = user1Assets.Where(p =>
-                   p.Variant.AssetVariant == AssetVariant.Player
-                && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Tracker)
-                .FirstOrDefault();
-            Assert.That(tracker, Is.Not.Null);
+            var huma_2 = GetPlayerHuman(user_2_assets);
+            Assert.That(huma_2, Is.Not.Null);
 
-            var seat = user1Assets.Where(p =>
-               p.Variant.AssetVariant == AssetVariant.Seat)
-                .FirstOrDefault();
-            Assert.That(seat, Is.Not.Null);
+            var track_2 = GetPlayerTracker(user_2_assets);
+            Assert.That(track_2, Is.Not.Null);
 
-            var machine = user1Assets.Where(p =>
-               p.Variant.AssetVariant == AssetVariant.Machine)
-                .FirstOrDefault();
-            Assert.That(machine, Is.Not.Null);
+            // take seat from user 2
+            var user_1_assets = await GetAccountAssetsAsync(_user1, null);
+
+            var seat_1 = GetSeat(user_1_assets);
+            Assert.That(seat_1, Is.Not.Null);
+
+            // take machine from user 2
+            var mach_1 = GetMachine(user_1_assets);
+            Assert.That(mach_1, Is.Not.Null);
 
             var enumMultiplierType = new EnumMultiplierType();
-            enumMultiplierType.Create(MultiplierType.V1);
+            enumMultiplierType.Create(MultiplierType.V4);
 
             var enumCasinoAction = new EnumCasinoAction();
             enumCasinoAction.Create(CasinoAction.Gamble, enumMultiplierType);
 
-            var trackerVariant = tracker.Variant.PlayerVariantSharp?.TrackerVariant;
-            Assert.That(trackerVariant, Is.Not.Null);
-            Assert.That(trackerVariant.SlotAResult, Is.EqualTo(0));
-            Assert.That(trackerVariant.SlotBResult, Is.EqualTo(0));
-            Assert.That(trackerVariant.SlotCResult, Is.EqualTo(0));
-            Assert.That(trackerVariant.SlotDResult, Is.EqualTo(0));
-            Assert.That(trackerVariant.LastReward, Is.EqualTo(0));
+            var track_2_variant = track_2.Variant.PlayerVariantSharp?.TrackerVariant;
+            Assert.That(track_2_variant, Is.Not.Null);
+            Assert.That(track_2_variant.SlotAResult, Is.EqualTo(0));
+            Assert.That(track_2_variant.SlotBResult, Is.EqualTo(0));
+            Assert.That(track_2_variant.SlotCResult, Is.EqualTo(0));
+            Assert.That(track_2_variant.SlotDResult, Is.EqualTo(0));
+            Assert.That(track_2_variant.LastReward, Is.EqualTo(0));
 
-            var subscriptionId = await _client.StateTransitionAsync(user, enumCasinoAction, [human.Id, tracker.Id, seat.Id, machine.Id], 1, CancellationToken.None);
+            var subscriptionId = await _client.StateTransitionAsync(user_2, enumCasinoAction, [huma_2.Id, track_2.Id, seat_1.Id, mach_1.Id], 1, CancellationToken.None);
             Assert.That(subscriptionId, Is.Not.Null);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -329,20 +323,66 @@ namespace Ajuna.TestSuite
             await tcs.Task;
             _client.ExtrinsicManager.ExtrinsicUpdated -= OnExtrinsicUpdated;
 
-            tracker = user1Assets.Where(p =>
+            track_2 = user_2_assets.Where(p =>
                p.Variant.AssetVariant == AssetVariant.Player
             && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Tracker)
             .FirstOrDefault();
-            Assert.That(tracker, Is.Not.Null);
+            Assert.That(track_2, Is.Not.Null);
 
-            trackerVariant = tracker.Variant.PlayerVariantSharp?.TrackerVariant;
-            Assert.That(trackerVariant, Is.Not.Null);
-            Assert.That(trackerVariant.SlotAResult, Is.Not.EqualTo(0));
-            Assert.That(trackerVariant.SlotBResult, Is.Not.EqualTo(0));
-            Assert.That(trackerVariant.SlotCResult, Is.Not.EqualTo(0));
-            Assert.That(trackerVariant.SlotDResult, Is.Not.EqualTo(0));
-            Assert.That(trackerVariant.LastReward, Is.Not.EqualTo(0));
+            track_2_variant = track_2.Variant.PlayerVariantSharp?.TrackerVariant;
+            Assert.That(track_2_variant, Is.Not.Null);
+            Assert.That(track_2_variant.SlotAResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotBResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotCResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotDResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.LastReward, Is.Not.EqualTo(0));
         }
+
+        [Test, Order(8)]
+        public async Task Gamble_User2_Check_TestAsync()
+        {
+            // make sure to use the right user.
+            var user_2 = _user2;
+
+            var user_2_assets = await GetAccountAssetsAsync(user_2, null);
+
+            var huma_2 = GetPlayerHuman(user_2_assets);
+            Assert.That(huma_2, Is.Not.Null);
+
+            var track_2 = GetPlayerTracker(user_2_assets);
+            Assert.That(track_2, Is.Not.Null);
+
+            track_2 = user_2_assets.Where(p =>
+               p.Variant.AssetVariant == AssetVariant.Player
+            && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Tracker)
+            .FirstOrDefault();
+            Assert.That(track_2, Is.Not.Null);
+
+            var track_2_variant = track_2.Variant.PlayerVariantSharp?.TrackerVariant;
+            Assert.That(track_2_variant, Is.Not.Null);
+            Assert.That(track_2_variant.SlotAResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotBResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotCResult, Is.Not.EqualTo(0));
+            Assert.That(track_2_variant.SlotDResult, Is.Not.EqualTo(0));
+            //Assert.That(track_2_variant.LastReward, Is.Not.EqualTo(0));
+        }
+
+        private AssetSharp? GetPlayerHuman(List<AssetSharp> userAssets) => 
+            userAssets.Where(p => p.Variant.AssetVariant == AssetVariant.Player
+                                && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Human)
+                                .FirstOrDefault();
+
+        private AssetSharp? GetPlayerTracker(List<AssetSharp> userAssets) =>
+            userAssets.Where(p => p.Variant.AssetVariant == AssetVariant.Player
+                        && p.Variant.PlayerVariantSharp?.PlayerVariant == PlayerVariant.Tracker)
+                        .FirstOrDefault();
+        private AssetSharp? GetSeat(List<AssetSharp> userAssets) =>
+            userAssets.Where(p => p.Variant.AssetVariant == AssetVariant.Seat)
+                        .FirstOrDefault();
+
+        private AssetSharp? GetMachine(List<AssetSharp> userAssets) =>
+            userAssets.Where(p => p.Variant.AssetVariant == AssetVariant.Machine)
+                        .FirstOrDefault();
 
         private async Task<List<AssetSharp>> GetAccountAssetsAsync(Account user, string blockhash)
         {

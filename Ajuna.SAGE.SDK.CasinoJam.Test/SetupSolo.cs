@@ -133,8 +133,8 @@ namespace Ajuna.TestSuite
 
             var seasonSchedule = new SeasonScheduleSharp()
             {
-                EarlyStart = currentBlocknumber.Value + 10,
-                Start = currentBlocknumber.Value + 20,
+                EarlyStart = currentBlocknumber.Value + 5,
+                Start = currentBlocknumber.Value + 10,
                 End = null,
             };
 
