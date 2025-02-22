@@ -770,11 +770,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
             {
                 var asset = new BaseAsset(a.ElementAt(0));
 
-                // make sure to not withdraw during a reservation
-                if (asset.AssetType == AssetType.Seat)
+                // make sure to not withdraw as long as a seat is linked to a machine
+                if (asset.AssetType == AssetType.Machine)
                 {
-                    var seat = new SeatAsset(asset);
-                    if (seat.PlayerId != 0)
+                    var machine = new MachineAsset(asset);
+                    if (machine.SeatLinked > 0)
                     {
                         return [asset];
                     }
