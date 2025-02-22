@@ -16,6 +16,18 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         { }
 
         /// <summary>
+        /// Release/Initialize the seat.
+        /// </summary>
+        public void Release()
+        {
+            PlayerId = 0;
+            ReservationStartBlock = 0;
+            ReservationDuration = ReservationDuration.None;
+            LastActionBlock = 0;
+            PlayerActionCount = 0;
+        }
+
+        /// <summary>
         /// Seat Validity Period, Usage: Genesis + Rent Duration in blocks = Block of Seat Validity End
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
@@ -128,15 +140,6 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         {
             get => Data.ReadValue<uint>(28);
             set => Data.SetValue<uint>(28, value);
-        }
-
-        public void Release()
-        {
-            PlayerId = 0;
-            ReservationStartBlock = 0;
-            ReservationDuration = 0;
-            LastActionBlock = 0;
-            PlayerActionCount = 0;
         }
     }
 }

@@ -10,8 +10,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         public const byte BLOCKTIME_SEC = 6;
 
-        public const uint BASE_SEAT_FEE = 10;
-
         public const byte BANDIT_MAX_SPINS = 4;
 
         public const uint BASE_RESERVATION_TIME = 5 * BLOCKS_PER_MINUTE; // 5 Minutes
@@ -19,6 +17,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         public const uint BLOCKS_PER_DAY = 24 * BLOCKS_PER_HOUR;
         public const uint BLOCKS_PER_HOUR = 60 * BLOCKS_PER_MINUTE;
         public const uint BLOCKS_PER_MINUTE = 10;
+
+        public const uint BASE_RENT_FEE = 10;
+        public const uint SEAT_USAGE_FEE_PERC = 1;
 
         /// <summary>
         /// Packs the slot machine result into a 16-bit unsigned integer.

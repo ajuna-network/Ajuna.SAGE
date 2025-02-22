@@ -40,5 +40,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         internal static CasinoJamIdentifier Kick()
             => new((byte)CasinoAction.Kick << 4 | (byte)AssetType.None, (byte)(((byte)0x00 << 4) + (byte)0x00));
+
+        internal static CasinoJamIdentifier Return()
+            => new((byte)CasinoAction.Return << 4 | (byte)AssetType.None, (byte)(((byte)0x00 << 4) + (byte)0x00));
     }
 }

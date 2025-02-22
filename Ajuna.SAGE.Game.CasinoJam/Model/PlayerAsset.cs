@@ -44,6 +44,9 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             set => Data.SetValue<uint>(28, value);
         }
 
+        /// <summary>
+        /// Release the seat.
+        /// </summary>
         public void Release()
         {
             SeatId = 0;

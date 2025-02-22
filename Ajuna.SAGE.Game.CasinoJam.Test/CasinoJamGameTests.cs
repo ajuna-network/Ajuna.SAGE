@@ -504,6 +504,48 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(_user.Balance.Value, Is.EqualTo(prevUserBalance + 1_000));
         }
+
+        [Test, Order(14)]
+        public void Test_ReleaseTransition()
+        {
+            Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
+            // initial balance
+            Assert.That(_user.Balance.Value, Is.EqualTo(1_900));
+
+            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+
+            var prevHumanBalance = Engine.AssetBalance(human.Id);
+            var prevBanditBalance = Engine.AssetBalance(bandit.Id);
+            var prevSeatBalance = Engine.AssetBalance(seat.Id);
+
+            var identifier = CasinoJamIdentifier.Release();
+            var transitionResult = Engine.Transition(_user, identifier, [human, seat], out IAsset[] outputAssets);
+            Assert.That(transitionResult, Is.True);
+
+            // Verify that the hero was created
+            Assert.That(outputAssets, Is.Not.Null);
+            Assert.That(outputAssets.Length, Is.EqualTo(2));
+            Assert.That(outputAssets[0], Is.InstanceOf<BaseAsset>());
+
+            // Cast to HumanAsset and check the properties
+            HumanAsset updatedPlayer = new HumanAsset(outputAssets[0]);
+            Assert.That(updatedPlayer, Is.Not.Null);
+            Assert.That(updatedPlayer.SeatId, Is.EqualTo(0));
+            Assert.That(Engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevHumanBalance + 1));
+
+            // Cast to SeatAsset and check the properties
+            SeatAsset updatedSeat = new SeatAsset(outputAssets[1]);
+            Assert.That(updatedSeat, Is.Not.Null);
+            Assert.That(updatedSeat.PlayerId, Is.EqualTo(0));
+            Assert.That(updatedSeat.ReservationStartBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.ReservationDuration, Is.EqualTo(ReservationDuration.None));
+            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(0));
+            Assert.That(Engine.AssetBalance(updatedSeat.Id), Is.EqualTo(prevSeatBalance - 1));
+        }
     }
 
     public class CasinoJamBaseTest

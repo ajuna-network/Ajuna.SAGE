@@ -233,7 +233,10 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 GetReserveTransition(AssetType.Seat, AssetSubType.None, ReservationDuration.Mins5),
 
                 GetReleaseTransition(),
+                
                 GetKickTransition(),
+                                
+                GetReturnTransition(),
             };
 
             return result;
@@ -316,7 +319,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         {
             var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, rentDuration);
             byte machineAt = CasinoJamUtil.MatchType(AssetType.Machine);
-            uint seatFee = CasinoJamUtil.GetRentDurationFees(CasinoJamUtil.BASE_SEAT_FEE, rentDuration);
+            uint seatFee = CasinoJamUtil.GetRentDurationFees(CasinoJamUtil.BASE_RENT_FEE, rentDuration);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1u),
@@ -354,6 +357,73 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 };
 
                 return [machine, seat];
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        /// <summary>
+        /// Get Return transition set
+        /// </summary>
+        /// <param name="assetType"></param>
+        /// <param name="assetSubType"></param>
+        /// <param name="multiplierType"></param>
+        /// <returns></returns>
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetReturnTransition()
+        {
+            var identifier = CasinoJamIdentifier.Return();
+            byte machineAt = CasinoJamUtil.MatchType(AssetType.Machine);
+            byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
+
+            CasinoJamRule[] rules = [
+                new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 2u),
+                new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, machineAt, seatAt),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0),
+                new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1),
+                // TODO: (verify) check can add seat is done in transition ???
+            ];
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
+            {
+                var machine = new MachineAsset(a.ElementAt(0));
+                var seat = new SeatAsset(a.ElementAt(1));
+
+                // maximum seats linked already reached
+                if (seat.MachineId == 0 || seat.MachineId != machine.Id)
+                {
+                    return [machine, seat];
+                }
+
+                // something must have been wrong since a linked seat is not accounted
+                if (machine.SeatLinked == 0)
+                {
+                    return [machine, seat];
+                }
+
+                // seat is still occupied
+                if (seat.PlayerId != 0)
+                {
+                    return [machine, seat];
+                }
+
+                // remove linked machine
+                machine.SeatLinked--;
+
+                var seatBalance = m.AssetBalance(seat.Id);
+
+                if (seatBalance.HasValue && m.CanWithdraw(seat.Id, seatBalance.Value, out uint currentBalance) && currentBalance > 0)
+                {
+                    uint withdrawAmount = Math.Min(seatBalance.Value, currentBalance);
+                    if (m.Withdraw(seat.Id, withdrawAmount))
+                    {
+                        e.Balance.Deposit(withdrawAmount);
+                    }
+                }
+
+                // don't return the seat as he should be destroyed.
+                return [machine];
             };
 
             return (identifier, rules, fee, function);
@@ -467,17 +537,26 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                var reservationFee = m.AssetBalance(seat.Id);
+                var seatBalance = m.AssetBalance(seat.Id);
+                if (!seatBalance.HasValue)
+                {
+                    return result;
+                }
 
-                if (!reservationFee.HasValue || !m.CanWithdraw(seat.Id, reservationFee.Value, out _))
+                // have a small fee for the seat usage, which stays on the seat
+                var fullReservationFee = CasinoJamUtil.GetReservationDurationFees(seat.PlayerFee, seat.ReservationDuration);
+                var usageFee = CasinoJamUtil.SEAT_USAGE_FEE_PERC * fullReservationFee / 100;
+                var reservationFee = fullReservationFee - usageFee;
+
+                if (!m.CanWithdraw(seat.Id, reservationFee, out _))
                 {
                     return result;
                 }
 
                 // take seat reservation fee back
-                m.Withdraw(seat.Id, reservationFee.Value);
+                m.Withdraw(seat.Id, reservationFee);
                 // to the player that bought it
-                m.Deposit(human.Id, reservationFee.Value);
+                m.Deposit(human.Id, reservationFee);
 
                 human.Release();
                 seat.Release();
@@ -690,6 +769,16 @@ namespace Ajuna.SAGE.Game.CasinoJam
             TransitionFunction<CasinoJamRule> function = (e, r, f, a, h, b, m) =>
             {
                 var asset = new BaseAsset(a.ElementAt(0));
+
+                // make sure to not withdraw during a reservation
+                if (asset.AssetType == AssetType.Seat)
+                {
+                    var seat = new SeatAsset(asset);
+                    if (seat.PlayerId != 0)
+                    {
+                        return [asset];
+                    }
+                }
 
                 if (m.CanWithdraw(asset.Id, value, out uint currentBalance) && currentBalance > 0)
                 {
