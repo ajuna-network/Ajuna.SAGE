@@ -111,4 +111,37 @@
 
         // *** DO NOT PASS 15 INDEX ***
     }
+
+    public enum RentDuration
+    {
+        None = 0,
+        Day1 = 1,
+        Days2 = 2,
+        Days3 = 3,
+        Days5 = 4,
+        Days7 = 5,
+        Days14 = 6,
+        Days28 = 7,
+        Days56 = 8,
+        Days112 = 9,
+        // *** DO NOT PASS 15 INDEX ***
+    }
+
+    public enum ReservationDuration
+    {
+        None = 0,
+        Mins5 = 1,
+        Mins10 = 2,
+        Mins15 = 3,
+        Mins30 = 4,
+        Mins45 = 5,
+        Hour1 = 6,
+        Hours2 = 7,
+        Hours3 = 8,
+        Hours4 = 9,
+        Hours6 = 10,
+        Hours8 = 11,
+        Hours12 = 12,
+        // *** DO NOT PASS 15 INDEX ***
+    }
 }

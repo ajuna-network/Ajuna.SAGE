@@ -141,7 +141,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That((machine as MachineAsset)?.SeatLinked, Is.EqualTo(0));
 
-            var identifier = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+            var identifier = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, RentDuration.Day1);
             var transitionResult = Engine.Transition(_user, identifier, [machine], out IAsset[] outputAssets);
             Assert.That(transitionResult, Is.True);
 
@@ -164,7 +164,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(seat.MachineId, Is.EqualTo(updatedMachine.Id));
 
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
-            Assert.That(_user.Balance.Value, Is.EqualTo(1_990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(1_900));
         }
 
         [Test, Order(5)]
@@ -172,7 +172,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(1_990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(1_900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
@@ -196,7 +196,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(Engine.AssetBalance(asset.Id), Is.EqualTo(1_000));
 
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
         }
 
         [Test, Order(6)]
@@ -204,7 +204,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
@@ -214,7 +214,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevSeatBalance = Engine.AssetBalance(seat.Id);
 
-            var identifier = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+            var identifier = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, ReservationDuration.Mins5);
             var transitionResult = Engine.Transition(_user, identifier, [human, seat], out IAsset[] outputAssets);
             Assert.That(transitionResult, Is.True);
 
@@ -245,7 +245,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
@@ -305,7 +305,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
@@ -363,7 +363,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
@@ -421,7 +421,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
             var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
@@ -479,7 +479,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         {
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
-            Assert.That(_user.Balance.Value, Is.EqualTo(990));
+            Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
             var prevUserBalance = _user.Balance.Value;
 

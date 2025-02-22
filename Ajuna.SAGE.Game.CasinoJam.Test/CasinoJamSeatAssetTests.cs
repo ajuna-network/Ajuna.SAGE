@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.CasinoJam.Model;
+﻿using Ajuna.SAGE.Game.CasinoJam;
+using Ajuna.SAGE.Game.CasinoJam.Model;
 
 namespace Ajuna.SAGE.Game.HeroJam.Test
 {
@@ -12,9 +13,9 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var seatAsset = new SeatAsset(0, 1);
 
             // Test SeatValidityPeriod (2 bytes, stored at offset 4)
-            ushort seatValidity = 500;
-            seatAsset.SeatValidityPeriod = seatValidity;
-            Assert.That(seatAsset.SeatValidityPeriod, Is.EqualTo(seatValidity));
+            RentDuration rentDuration = RentDuration.Day1;
+            seatAsset.RentDuration = rentDuration;
+            Assert.That(seatAsset.RentDuration, Is.EqualTo(rentDuration));
 
             // Test PlayerGracePeriod (1 byte, stored at offset 11)
             byte gracePeriod = 15;
@@ -27,7 +28,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(seatAsset.ReservationStartBlock, Is.EqualTo(reservationStartBlock));
 
             // Test ReservationDuration (2 bytes, stored at offset 16)
-            ushort reservationDuration = 50;
+            ReservationDuration reservationDuration = ReservationDuration.Mins5;
             seatAsset.ReservationDuration = reservationDuration;
             Assert.That(seatAsset.ReservationDuration, Is.EqualTo(reservationDuration));
 

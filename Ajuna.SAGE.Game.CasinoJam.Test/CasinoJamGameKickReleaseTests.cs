@@ -12,8 +12,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         private readonly CasinoJamIdentifier FUND_PLAYER_T1000 = CasinoJamIdentifier.Deposit(AssetType.Player, TokenType.T_1000);
         private readonly CasinoJamIdentifier CREATE_MACHINE = CasinoJamIdentifier.Create(AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
         private readonly CasinoJamIdentifier FUND_MACHINE_T1000 = CasinoJamIdentifier.Deposit(AssetType.Machine, TokenType.T_1000);
-        private readonly CasinoJamIdentifier RENT_SEAT = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
-        private readonly CasinoJamIdentifier RESERVE_SEAT = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, MultiplierType.V1);
+        private readonly CasinoJamIdentifier RENT_SEAT = CasinoJamIdentifier.Rent(AssetType.Seat, AssetSubType.None, RentDuration.Day1);
+        private readonly CasinoJamIdentifier RESERVE_SEAT = CasinoJamIdentifier.Reserve(AssetType.Seat, AssetSubType.None, ReservationDuration.Mins5);
         private readonly CasinoJamIdentifier RELEASE = CasinoJamIdentifier.Release();
         private readonly CasinoJamIdentifier KICK = CasinoJamIdentifier.Kick();
         private readonly CasinoJamIdentifier GAMBLE = CasinoJamIdentifier.Gamble(0x00, MultiplierType.V1);
@@ -82,7 +82,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(result, Is.True, "Rent transition should succeed.");
             seatA = GetAsset(_userA, AssetType.Seat, (AssetSubType)SeatSubType.None);
             Assert.That((seatA as SeatAsset)?.MachineId, Is.EqualTo(banditA.Id));
-            Assert.That((seatA as SeatAsset)?.SeatValidityPeriod, Is.EqualTo(600));
+            Assert.That((seatA as SeatAsset)?.RentDuration, Is.EqualTo(RentDuration.Day1));
             BlockchainInfoProvider.CurrentBlockNumber++;
 
             // _userB -> RESERVE_SEAT

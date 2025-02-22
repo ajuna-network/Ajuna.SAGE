@@ -229,8 +229,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 GetWithdrawTransition(AssetType.Machine, (AssetSubType)MachineSubType.Bandit, TokenType.T_100000),
                 GetWithdrawTransition(AssetType.Machine, (AssetSubType)MachineSubType.Bandit, TokenType.T_1000000),
 
-                GetRentTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
-                GetReserveTransition(AssetType.Seat, AssetSubType.None, MultiplierType.V1),
+                GetRentTransition(AssetType.Seat, AssetSubType.None, RentDuration.Day1),
+                GetReserveTransition(AssetType.Seat, AssetSubType.None, ReservationDuration.Mins5),
 
                 GetReleaseTransition(),
                 GetKickTransition(),
@@ -312,11 +312,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// <param name="assetSubType"></param>
         /// <param name="multiplierType"></param>
         /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetRentTransition(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetRentTransition(AssetType assetType, AssetSubType assetSubType, RentDuration rentDuration)
         {
-            var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, multiplierType);
+            var identifier = CasinoJamIdentifier.Rent(assetType, assetSubType, rentDuration);
             byte machineAt = CasinoJamUtil.MatchType(AssetType.Machine);
-            uint seatFee = CasinoJamUtil.BASE_SEAT_FEE * (uint)multiplierType;
+            uint seatFee = CasinoJamUtil.GetRentDurationFees(CasinoJamUtil.BASE_SEAT_FEE, rentDuration);
 
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 1u),
@@ -342,11 +342,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 var seat = new SeatAsset(e.Id, b)
                 {
-                    SeatValidityPeriod = (ushort)(10 * 60 * (byte)multiplierType),
+                    RentDuration = rentDuration,
                     PlayerFee = 1,
                     PlayerGracePeriod = 30,
                     ReservationStartBlock = 0,
-                    ReservationDuration = 0,
+                    ReservationDuration = ReservationDuration.None,
                     LastActionBlock = 0,
                     PlayerActionCount = 0,
                     PlayerId = 0,
@@ -366,9 +366,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// <param name="assetSubType"></param>
         /// <param name="multiplierType"></param>
         /// <returns></returns>
-        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetReserveTransition(AssetType assetType, AssetSubType assetSubType, MultiplierType multiplierType)
+        private static (CasinoJamIdentifier, CasinoJamRule[], ITransitioFee?, TransitionFunction<CasinoJamRule>) GetReserveTransition(AssetType assetType, AssetSubType assetSubType, ReservationDuration reservationDuration)
         {
-            var identifier = CasinoJamIdentifier.Reserve(assetType, assetSubType, multiplierType);
+            var identifier = CasinoJamIdentifier.Reserve(assetType, assetSubType, reservationDuration);
             byte humanAt = CasinoJamUtil.MatchType(AssetType.Player, (AssetSubType)PlayerSubType.Human);
             byte seatAt = CasinoJamUtil.MatchType(AssetType.Seat);
 
@@ -394,16 +394,14 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                var reservationDuration = (ushort)(1 * 30 * (byte)multiplierType);
-
                 // verify if seat is running out of time, with this new reservation
-                var lastBlockOfValidity = seat.Genesis + seat.SeatValidityPeriod;
-                if (b > lastBlockOfValidity - reservationDuration)
+                var lastBlockOfValidity = seat.Genesis + CasinoJamUtil.GetRentDurationBlocks(seat.RentDuration);
+                if (b > lastBlockOfValidity - CasinoJamUtil.GetReservationDurationBlocks(reservationDuration))
                 {
                     return result;
                 }
 
-                var reservationFee = seat.PlayerFee * (uint)multiplierType;
+                var reservationFee = CasinoJamUtil.GetReservationDurationFees(seat.PlayerFee, reservationDuration);
 
                 // TODO: (implement) this should be verified and flagged on the asset
                 if (!m.CanWithdraw(human.Id, reservationFee, out _))
@@ -527,7 +525,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                var isReservationValid = (seat.ReservationStartBlock + seat.ReservationDuration) >= b;
+                var isReservationValid = (seat.ReservationStartBlock + CasinoJamUtil.GetReservationDurationBlocks(seat.ReservationDuration)) >= b;
                 var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlock + seat.PlayerGracePeriod) >= b;
 
                 if (isReservationValid && isGracePeriod)

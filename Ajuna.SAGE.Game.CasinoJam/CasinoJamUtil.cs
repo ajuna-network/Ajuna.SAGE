@@ -10,11 +10,15 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
         public const byte BLOCKTIME_SEC = 6;
 
-        public static uint Hour => 60 * 60 / BLOCKTIME_SEC;
+        public const uint BASE_SEAT_FEE = 10;
 
-        public static uint BASE_SEAT_FEE = 10;
+        public const byte BANDIT_MAX_SPINS = 4;
 
-        public static byte BANDIT_MAX_SPINS = 4;
+        public const uint BASE_RESERVATION_TIME = 5 * BLOCKS_PER_MINUTE; // 5 Minutes
+
+        public const uint BLOCKS_PER_DAY = 24 * BLOCKS_PER_HOUR;
+        public const uint BLOCKS_PER_HOUR = 60 * BLOCKS_PER_MINUTE;
+        public const uint BLOCKS_PER_MINUTE = 10;
 
         /// <summary>
         /// Packs the slot machine result into a 16-bit unsigned integer.
@@ -206,5 +210,128 @@ namespace Ajuna.SAGE.Game.CasinoJam
             var lowHalfByte = (byte)machineSubType;
             return (byte)(highHalfByte | lowHalfByte);
         }
+
+        /// <summary>
+        /// ReservationDuration in blocks
+        /// </summary>
+        /// <param name="reservationDuration"></param>
+        /// <returns></returns>
+        public static uint GetReservationDurationBlocks(ReservationDuration reservationDuration)
+        {
+            uint multiplier = 0;
+            switch (reservationDuration)
+            {
+                case ReservationDuration.None:
+                    multiplier = 0;
+                    break;
+                case ReservationDuration.Mins5:
+                    multiplier = 1;
+                    break;
+                case ReservationDuration.Mins10:
+                    multiplier = 10 / 5;
+                    break;
+                case ReservationDuration.Mins15:
+                    multiplier = 15 / 5;
+                    break;
+                case ReservationDuration.Mins30:
+                    multiplier = 30 / 5;
+                    break;
+                case ReservationDuration.Mins45:
+                    multiplier = 45 / 5;
+                    break;
+                case ReservationDuration.Hour1:
+                    multiplier = (1 * 60) / 5;
+                    break;
+                case ReservationDuration.Hours2:
+                    multiplier = (2* 60) / 5;
+                    break;
+                case ReservationDuration.Hours3:
+                    multiplier = (3 * 60) / 5;
+                    break;
+                case ReservationDuration.Hours4:
+                    multiplier = (4 * 60) / 5;
+                    break;
+                case ReservationDuration.Hours6:
+                    multiplier = (6 * 60) / 5;
+                    break;
+                case ReservationDuration.Hours8:
+                    multiplier = (8 * 60) / 5;
+                    break;
+                case ReservationDuration.Hours12:
+                    multiplier = (12 * 60) / 5;
+                    break;
+            }
+
+            return multiplier * CasinoJamUtil.BASE_RESERVATION_TIME;
+        }
+
+        /// <summary>
+        /// TODO: Verify Fees!
+        /// </summary>
+        /// <param name="playerFee"></param>
+        /// <param name="reservationDuration"></param>
+        /// <returns></returns>
+        public static uint GetReservationDurationFees(ushort playerFee, ReservationDuration reservationDuration)
+        {
+            return playerFee * (uint)reservationDuration;
+        }
+
+        /// <summary>
+        /// RentDuration in blocks
+        /// </summary>
+        /// <param name="rentDuration"></param>
+        /// <returns></returns>
+        public static uint GetRentDurationBlocks(RentDuration rentDuration)
+        {
+            uint multiplier = 0;
+            switch (rentDuration)
+            {
+                case RentDuration.None:
+                    multiplier = 0;
+                    break;
+                case RentDuration.Day1:
+                    multiplier = 1;
+                    break;
+                case RentDuration.Days2:
+                    multiplier = 2;
+                    break;
+                case RentDuration.Days3:
+                    multiplier = 3;
+                    break;
+                case RentDuration.Days5:
+                    multiplier = 5;
+                    break;
+                case RentDuration.Days7:
+                    multiplier = 7;
+                    break;
+                case RentDuration.Days14:
+                    multiplier = 14;
+                    break;
+                case RentDuration.Days28:
+                    multiplier = 28;
+                    break;
+                case RentDuration.Days56:
+                    multiplier = 56;
+                    break;
+                case RentDuration.Days112:
+                    multiplier = 112;
+                    break;
+            }
+
+            return multiplier * CasinoJamUtil.BLOCKS_PER_DAY;
+        }
+
+        /// <summary>
+        /// TODO: Verify Fees!
+        /// </summary>
+        /// <param name="bASE_SEAT_FEE"></param>
+        /// <param name="rentDuration"></param>
+        /// <returns></returns>
+        public static uint GetRentDurationFees(uint bASE_SEAT_FEE, RentDuration rentDuration)
+        {
+            return bASE_SEAT_FEE * (uint)bASE_SEAT_FEE;
+        }
+
+
     }
 }

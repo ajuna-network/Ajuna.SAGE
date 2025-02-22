@@ -16,15 +16,15 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         { }
 
         /// <summary>
-        /// Seat Validity Period, Usage: Genesis + Validity Period = Block of Seat Validity End
+        /// Seat Validity Period, Usage: Genesis + Rent Duration in blocks = Block of Seat Validity End
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ....XX.. ........ ........ ........
+        /// .......X ........ ........ ........
         /// </summary>
-        public ushort SeatValidityPeriod
+        public RentDuration RentDuration
         {
-            get => Data.ReadValue<ushort>(4);
-            set => Data.SetValue<ushort>(4, value);
+            get => (RentDuration)Data.ReadValue<byte>(7);
+            set => Data.SetValue<byte>(7, (byte)value);
         }
 
         /// <summary>
@@ -68,16 +68,16 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
 
         /// <summary>
         /// Reservation Duration.
-        /// Usage: ReservationStartBlock + ReservationDuration = Block when the reservation ends.
-        /// Stored as 2 bytes at offset 16.
+        /// Usage: ReservationStartBlock + (ReservationDuration in Blocks) = Block when the reservation ends.
+        /// Stored as 1 byte at offset 16.
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XX...... ........
+        /// ........ ........ X....... ........
         /// </summary>
-        public ushort ReservationDuration
+        public ReservationDuration ReservationDuration
         {
-            get => Data.ReadValue<ushort>(16);
-            set => Data.SetValue<ushort>(16, value);
+            get => (ReservationDuration)Data.ReadValue<byte>(16);
+            set => Data.SetValue<byte>(16, (byte)value);
         }
 
         /// <summary>
