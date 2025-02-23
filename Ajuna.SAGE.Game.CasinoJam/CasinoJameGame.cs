@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.CasinoJam.Model;
+﻿using Ajuna.SAGE.Game.CasinoJam.Machines;
+using Ajuna.SAGE.Game.CasinoJam.Model;
 using Ajuna.SAGE.Game.Manager;
 using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
@@ -704,7 +705,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                FullSpin spins = CasinoJamUtil.Spins(spinTimes, minReward, jackMaxReward, specMaxReward, h);
+                FullSpin spins = Bandit.Spins(spinTimes, minReward, jackMaxReward, specMaxReward, h);
 
                 uint reward = 0;
                 try

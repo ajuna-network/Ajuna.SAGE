@@ -4,7 +4,7 @@
 
 namespace Ajuna.SAGE.Game.CasinoJam
 {
-    public class CasinoJamUtil
+    public partial class CasinoJamUtil
     {
         public const byte COLLECTION_ID = 1;
 
@@ -73,131 +73,6 @@ namespace Ajuna.SAGE.Game.CasinoJam
             int bonus1 = (slotResult >> 2) & 0x03;
             int bonus2 = slotResult & 0x03;
             return (slot1, slot2, slot3, bonus1, bonus2);
-        }
-
-        /// <summary>
-        /// Calculates the reward for a slot machine result.
-        /// </summary>
-        /// <param name="slot1"></param>
-        /// <param name="slot2"></param>
-        /// <param name="slot3"></param>
-        /// <param name="bonus1"></param>
-        /// <param name="bonus2"></param>
-        /// <returns></returns>
-        public static uint SingleSpinReward(uint m, SpinResult s)
-        {
-            /*
-                -- SLOT -----     -- BONUS +4 -
-                🍊 0: ORANGE      🍒 0: CHERRY
-                🍋 1: LEMON       🔔 1: CLOCK
-                🍇 2: GRAPE       💰 2: MONEYBAG
-                🍉 3: WATERMELON  💎 3: DIAMOND
-                🍒 4: CHERRY
-                🔔 5: CLOCK
-                💰 6: MONEYBAG
-                💎 7: DIAMOND
-
-            */
-
-            var sss = $"{s.Slot1}{s.Slot2}{s.Slot3}";
-
-            uint sFactor = sss switch
-            {
-                "000" => 2 * m,
-                "111" => 4 * m,
-                "222" => 8 * m,
-                "333" => 16 * m,
-                "444" => 1 * m,
-                "555" => 32 * m,
-                "666" => 64 * m,
-                "777" => 128 * m,
-                "888" => 256 * m,
-                "999" => 512 * m,
-                _ => 0,
-            };
-
-            var bb = $"{s.Bonus1 + 4}{s.Bonus1 + 4}";
-
-            uint bFactor = bb switch
-            {
-                "44" => 1,
-                "55" => 2,
-                "66" => 4,
-                "77" => 8,
-                _ => 0,
-            };
-
-            var isFullLine = s.Slot1 == s.Slot2 && s.Slot2 == s.Slot3 && s.Slot3 == s.Bonus1 && s.Bonus1 == s.Bonus2;
-
-            uint reward = sFactor;
-            if (isFullLine)
-            {
-                reward = sFactor * (128 / bFactor);
-            }
-            else if (sFactor > 0 && bFactor > 0)
-            {
-                reward = sFactor + (512 * bFactor);
-            }
-
-            if (reward == 0)
-            {
-                switch (bb)
-                {
-                    case "44":
-                        // CHERRY
-                        reward = 1;
-                        break;
-
-                    case "55":
-                        // CLOCK
-                        break;
-
-                    case "66":
-                        // MONEYBAG
-                        break;
-
-                    case "77":
-                        // DIAMOND
-                        break;
-                }
-            }
-
-            return reward;
-        }
-
-        internal static FullSpin Spins(byte spinTimes, uint minSpinReward, uint jackMaxReward, uint specMaxReward, byte[] h)
-        {
-            // Ensure spinsToDo is within our allowed range.
-            if (spinTimes < 1 || spinTimes > 4)
-            {
-                throw new ArgumentOutOfRangeException(nameof(spinTimes), "Number of spins must be between 1 and 4.");
-            }
-            // Prepare lists to collect spin outcomes.
-            List<SpinResult> spinResultsList = [];
-
-            for (int i = 0; i < spinTimes; i++)
-            {
-                var offset = (uint)(i * 5);
-                var spinResult = new SpinResult(
-                    slot1: (byte)(h[0 + offset] % 8),
-                    slot2: (byte)(h[1 + offset] % 8),
-                    slot3: (byte)(h[2 + offset] % 8),
-                    bonus1: (byte)(h[3 + offset] % 4),
-                    bonus2: (byte)(h[4 + offset] % 4));
-
-                spinResult.Reward = SingleSpinReward(minSpinReward, spinResult);
-
-                spinResultsList.Add(spinResult);
-            }
-
-            return new FullSpin
-            {
-                SpinResults = spinResultsList.ToArray(),
-                JackPotResult = "",
-                JackPotReward = 0,
-                SpecialResult = "",
-                SpecialReward = 0
-            }; ;
         }
 
         public static byte MatchType(AssetType assetType)
