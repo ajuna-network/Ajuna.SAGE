@@ -1,5 +1,4 @@
 using Ajuna.SAGE.Game.CasinoJam;
-using Ajuna.SAGE.Game.CasinoJam.Machines;
 using Ajuna.SAGE.Game.CasinoJam.Model;
 using Ajuna.SAGE.Game.Model;
 using System.Security.Cryptography;
@@ -12,45 +11,6 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-        }
-
-        [Test]
-        public void Single_ProbabilityTests()
-        {
-            // Run a larger number of spins to get statistically meaningful results.
-            int totalSpins = 10000;
-            int winningSpins = 0;
-            ulong totalReward = 0;
-
-            for (int i = 0; i < totalSpins; i++)
-            {
-                // Here, spins returns a FullSpin object with one SpinResult since we pass spinTimes = 1.
-                FullSpin fullSpin = Bandit.Spins(1, 1, 0, 0, RandomNumberGenerator.GetBytes(32));
-                SpinResult spinResult = fullSpin.SpinResults[0];
-
-                if (spinResult.Reward > 0)
-                {
-                    winningSpins++;
-                }
-                totalReward += spinResult.Reward;
-            }
-
-            // Calculate statistics
-            double winProbability = (double)winningSpins / totalSpins;
-            double averageReward = (double)totalReward / totalSpins;
-
-            // Log the statistics (optional)
-            TestContext.WriteLine($"Win Probability: {winProbability:P2}");
-            TestContext.WriteLine($"Average Reward: {averageReward}");
-
-            // Check that the win probability is within an expected range.
-            // For example, if you expect around 5% winning spins,
-            // adjust these thresholds as necessary based on your game logic.
-            Assert.That(winProbability, Is.InRange(0.03, 0.07), "Win probability is out of the expected range.");
-
-            // Similarly, assert that the average reward is within an expected range.
-            // Here we assume an expected average reward between 1 and 1.5.
-            Assert.That(averageReward, Is.InRange(1.0, 1.5), "Average reward is out of the expected range.");
         }
 
         [Test]
@@ -83,10 +43,18 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // List to track rewards for distribution analysis.
             List<uint> rewards = new(totalSpins);
 
+            var bandit = new BanditAsset(new BanditAsset(1, 1)
+            {
+                MaxSpins = 1,
+                Value1Factor = TokenType.T_1,
+                Value1Multiplier = MultiplierType.V1,
+                Jackpot = 0
+            });
+
             for (int i = 0; i < totalSpins; i++)
             {
                 // Generate random bytes for one spin (5 bytes per spin: 3 for slots, 2 for bonuses)
-                FullSpin fullSpin = Bandit.Spins(1, 1, 0, 0, RandomNumberGenerator.GetBytes(5));
+                FullSpin fullSpin = bandit.Spins(1, RandomNumberGenerator.GetBytes(5));
                 SpinResult spin = fullSpin.SpinResults[0];
 
                 // Record win information

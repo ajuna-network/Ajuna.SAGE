@@ -30,32 +30,38 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Bits 3-2:   Bonus1 (0-3)
         /// Bits 1-0:   Bonus2 (0-3)
         /// </summary>
-        /// <param name="slot1">Slot A1 value (0-15)</param>
-        /// <param name="slot2">Slot A2 value (0-15)</param>
-        /// <param name="slot3">Slot A3 value (0-15)</param>
-        /// <param name="bonus1">Bonus AS1 value (0-3)</param>
-        /// <param name="bonus2">Bonus AS2 value (0-3)</param>
+        /// <param name="s1">Slot A1 value (0-15)</param>
+        /// <param name="s2">Slot A2 value (0-15)</param>
+        /// <param name="s3">Slot A3 value (0-15)</param>
+        /// <param name="b1">Bonus AS1 value (0-3)</param>
+        /// <param name="b2">Bonus AS2 value (0-3)</param>
         /// <returns>A ushort containing the packed values.</returns>
-        public static ushort PackSlotResult(byte slot1, byte slot2, byte slot3, byte bonus1, byte bonus2)
+        public static (ushort,byte) PackSlotResult(byte s1, byte s2, byte s3, byte b1, byte b2)
         {
-            if (slot1 < 0 || slot1 > 15)
-                throw new ArgumentOutOfRangeException(nameof(slot1));
-            if (slot2 < 0 || slot2 > 15)
-                throw new ArgumentOutOfRangeException(nameof(slot2));
-            if (slot3 < 0 || slot3 > 15)
-                throw new ArgumentOutOfRangeException(nameof(slot3));
-            if (bonus1 < 0 || bonus1 > 3)
-                throw new ArgumentOutOfRangeException(nameof(bonus1));
-            if (bonus2 < 0 || bonus2 > 3)
-                throw new ArgumentOutOfRangeException(nameof(bonus2));
+            if (s1 < 0 || s1 > 15)
+                throw new ArgumentOutOfRangeException(nameof(s1));
+            if (s2 < 0 || s2 > 15)
+                throw new ArgumentOutOfRangeException(nameof(s2));
+            if (s3 < 0 || s3 > 15)
+                throw new ArgumentOutOfRangeException(nameof(s3));
+            if (b1 < 0 || b1 > 15)
+                throw new ArgumentOutOfRangeException(nameof(b1));
+            if (b2 < 0 || b2 > 15)
+                throw new ArgumentOutOfRangeException(nameof(b2));
 
-            ushort result = 0;
-            result |= (ushort)((slot1 & 0x0F) << 12); // Bits 15-12
-            result |= (ushort)((slot2 & 0x0F) << 8);  // Bits 11-8
-            result |= (ushort)((slot3 & 0x0F) << 4);  // Bits 7-4
-            result |= (ushort)((bonus1 & 0x03) << 2);  // Bits 3-2
-            result |= (ushort)(bonus2 & 0x03);         // Bits 1-0
-            return result;
+            byte s4 = 0x00;
+
+            ushort sl = 0;
+            sl |= (ushort)((s1 & 0x0F) << 12); // Bits 15-12
+            sl |= (ushort)((s2 & 0x0F) << 8);  // Bits 11-8
+            sl |= (ushort)((s3 & 0x0F) << 4);  // Bits 7-4
+            //sl |= (ushort)((s4 & 0x0F) << 0);  // Bits 3-0
+
+            byte bn = 0;
+            bn |= (byte)((b1 & 0x0F) << 4); // Bits 7-4
+            bn |= (byte)((b2 & 0x0F) << 0); // Bits 3-0
+
+            return (sl, bn);
         }
 
         /// <summary>
@@ -63,16 +69,19 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// Returns a tuple with:
         /// (Slot1, Slot2, Slot3, Bonus1, Bonus2)
         /// </summary>
-        /// <param name="slotResult">The packed 16-bit slot result.</param>
+        /// <param name="sr">The packed 16-bit slot result.</param>
         /// <returns>A tuple of integers representing the unpacked values.</returns>
-        public static (int slot1, int slot2, int slot3, int bonus1, int bonus2) UnpackSlotResult(ushort slotResult)
+        public static (int slot1, int slot2, int slot3, int bonus1, int bonus2) UnpackSlotResult((ushort, byte) packed)
         {
-            int slot1 = (slotResult >> 12) & 0x0F;
-            int slot2 = (slotResult >> 8) & 0x0F;
-            int slot3 = (slotResult >> 4) & 0x0F;
-            int bonus1 = (slotResult >> 2) & 0x03;
-            int bonus2 = slotResult & 0x03;
-            return (slot1, slot2, slot3, bonus1, bonus2);
+            var sr = packed.Item1;
+            int s1 = (sr >> 12) & 0x0F;
+            int s2 = (sr >> 8) & 0x0F;
+            int s3 = (sr >> 4) & 0x0F;
+            //int s4 = (sr >> 0) & 0x0F;
+            var br = packed.Item2;
+            int b1 = (br >> 4) & 0x0F;
+            int b2 = (br >> 0) & 0x0F;
+            return (s1, s2, s3, b1, b2);
         }
 
         public static byte MatchType(AssetType assetType)

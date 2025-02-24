@@ -19,7 +19,7 @@
 
         public uint Reward { get; set; }
 
-        public ushort Packed => CasinoJamUtil.PackSlotResult(Slot1, Slot2, Slot3, Bonus1, Bonus2);
+        public (ushort,byte) Packed => CasinoJamUtil.PackSlotResult(Slot1, Slot2, Slot3, Bonus1, Bonus2);
     }
 
     public class FullSpin

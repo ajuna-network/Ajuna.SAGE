@@ -43,18 +43,27 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Create a TrackerAsset using a genesis value (e.g., 1)
             var trackerAsset = new TrackerAsset(0, 1);
 
-            // Define a test slot index and a packed value (16-bit value)
-            byte slotIndex = 2;
-            ushort packedValue = 0xABCD;  // Example value
+            byte slotIndex0 = 0;
+            (ushort, byte) packed0 = (0x4567, 0xDC);
+            trackerAsset.SetSlot(slotIndex0, packed0);
 
-            // Set the slot at the given index
-            trackerAsset.SetSlot(slotIndex, packedValue);
+            byte slotIndex1 = 1;
+            (ushort, byte) packed1 = (0x1234, 0xAB);
+            trackerAsset.SetSlot(slotIndex1, packed1);
 
-            // Retrieve the slot value using GetSlot
-            ushort retrievedValue = trackerAsset.GetSlot(slotIndex);
+            byte slotIndex2 = 2;
+            (ushort, byte) packed2 = (0xABCD, 0x12);
+            trackerAsset.SetSlot(slotIndex2, packed2);
+
+            byte slotIndex3 = 3;
+            (ushort, byte) packed3 = (0x9876, 0x45);
+            trackerAsset.SetSlot(slotIndex3, packed3);
 
             // Verify that the set and retrieved slot values match
-            Assert.That(retrievedValue, Is.EqualTo(packedValue));
+            Assert.That(trackerAsset.GetSlot(slotIndex0), Is.EqualTo(packed0));
+            Assert.That(trackerAsset.GetSlot(slotIndex1), Is.EqualTo(packed1));
+            Assert.That(trackerAsset.GetSlot(slotIndex2), Is.EqualTo(packed2));
+            Assert.That(trackerAsset.GetSlot(slotIndex3), Is.EqualTo(packed3));
         }
     }
 }

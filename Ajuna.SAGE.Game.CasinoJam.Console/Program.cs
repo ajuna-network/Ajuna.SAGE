@@ -1,4 +1,4 @@
-﻿using Ajuna.SAGE.Game.CasinoJam.Machines;
+﻿using Ajuna.SAGE.Game.CasinoJam.Model;
 using System.Security.Cryptography;
 
 namespace Ajuna.SAGE.Game.CasinoJam
@@ -11,7 +11,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(GetWeights(10)));
 
-            Probabilities(100_000_000);
+            Probabilities(1_000_000);
         }
 
         public static void Probabilities(int totalSpins)
@@ -57,10 +57,18 @@ namespace Ajuna.SAGE.Game.CasinoJam
             // List to track rewards for distribution analysis.
             List<uint> rewards = new(totalSpins);
 
+            var bandit = new BanditAsset(1, 1)
+            {
+                MaxSpins = 4,
+                Value1Factor = TokenType.T_1,
+                Value1Multiplier = MultiplierType.V1,
+                Jackpot = 0
+            };
+
             for (int i = 0; i < totalSpins; i++)
             {
                 // Generate random bytes for one spin (5 bytes per spin: 3 for slots, 2 for bonuses)
-                FullSpin fullSpin = Bandit.Spins(1, 1, 0, 0, RandomNumberGenerator.GetBytes(5));
+                FullSpin fullSpin = bandit.Spins(1, RandomNumberGenerator.GetBytes(5));
                 SpinResult spin = fullSpin.SpinResults[0];
 
                 var slotsMatch = spin.Slot1 != 0 && spin.Slot1 == spin.Slot2 && spin.Slot2 == spin.Slot3;

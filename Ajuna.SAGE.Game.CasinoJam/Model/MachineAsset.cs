@@ -86,48 +86,4 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             set => Data?.Set(10, ByteType.Low, (byte)value);
         }
     }
-
-    public class BanditAsset : MachineAsset
-    {
-        public BanditAsset(uint ownerId, uint genesis)
-            : base(ownerId, genesis)
-        {
-            AssetSubType = (AssetSubType)MachineSubType.Bandit;
-            MaxSpins = 4;
-        }
-
-        public BanditAsset(IAsset asset)
-            : base(asset)
-        { }
-
-        /// <summary>
-        /// Amount of maximum spins allowed.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ .......L ........ ........
-        /// </summary>
-        public byte MaxSpins
-        {
-            get => Data.Read(15, ByteType.Low);
-            set => Data?.Set(15, ByteType.Low, value);
-        }
-
-        /// <summary>
-        /// Jackpot is a 32-bit field that encodes the jackpot value.
-        /// Stored in Data at positions 24 and 25.
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ XX......
-        /// </summary>
-        public uint Jackpot
-        {
-            get => BitConverter.ToUInt16(Data, 24);
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                Data[24] = bytes[0];
-                Data[25] = bytes[1];
-            }
-        }
-    }
 }

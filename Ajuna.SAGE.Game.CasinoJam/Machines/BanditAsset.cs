@@ -1,36 +1,66 @@
-﻿using Ajuna.SAGE.Game.CasinoJam.Model;
-using System.Diagnostics;
-using System.Numerics;
-using System;
+﻿using Ajuna.SAGE.Game.Model;
 
-namespace Ajuna.SAGE.Game.CasinoJam.Machines
+namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
-    public class Bandit
+    public partial class BanditAsset : MachineAsset
     {
-        public const ushort MAX_SPIN_REWARD = 8192;
-
-        public BanditAsset Asset { get; set; }
-
-        public byte MaxSpins => Asset.MaxSpins;
-        public uint MinSpinReward => (uint)Math.Pow(10, (byte)Asset.Value1Factor) * (byte)Asset.Value1Multiplier;
-        public uint MinSpiJackpot => Asset.Jackpot;
-
-        /// <summary>
-        /// Bandit constructor.
-        /// </summary>
-        /// <param name="asset"></param>
-        public Bandit(BanditAsset asset)
+        public BanditAsset(uint ownerId, uint genesis)
+            : base(ownerId, genesis)
         {
-            Asset = asset;
+            AssetSubType = (AssetSubType)MachineSubType.Bandit;
+            MaxSpins = 4;
         }
 
+        public BanditAsset(IAsset asset)
+            : base(asset)
+        { }
+
+        /// <summary>
+        /// Amount of maximum spins allowed.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .......L ........ ........
+        /// </summary>
+        public byte MaxSpins
+        {
+            get => Data.Read(15, ByteType.Low);
+            set => Data?.Set(15, ByteType.Low, value);
+        }
+
+        /// <summary>
+        /// Jackpot is a 32-bit field that encodes the jackpot value.
+        /// Stored in Data at positions 24 and 25.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ XX......
+        /// </summary>
+        public uint Jackpot
+        {
+            get => BitConverter.ToUInt16(Data, 24);
+            set
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                Data[24] = bytes[0];
+                Data[25] = bytes[1];
+            }
+        }
+    }
+
+    public partial class BanditAsset
+    {
+        public const ushort SINGLE_SPIN_MAX_REWARD = 8192;
+
+        public uint SingleSpinStake => (uint)Math.Pow(10, (byte)Value1Factor) * (byte)Value1Multiplier;
+        public uint JackPotMaxReward => (uint)Math.Pow(10, (byte)Value2Factor) * (byte)Value2Multiplier;
+        public uint SpecialMaxReward => (uint)Math.Pow(10, (byte)Value3Factor) * (byte)Value3Multiplier;
+        
         /// <summary>
         /// SingleSpinReward calculates the reward for a single spin.
         /// </summary>
         /// <param name="m">Minimum Reardd</param>
         /// <param name="s">Spin Result</param>
         /// <returns></returns>
-        public static uint SingleSpinReward(uint m, SpinResult s)
+        public uint SingleSpinReward(uint m, SpinResult s)
         {
 
             uint sFactor = 0;
@@ -38,15 +68,15 @@ namespace Ajuna.SAGE.Game.CasinoJam.Machines
             {
                 sFactor = s.Slot1 switch
                 {
-                    0 =>    0,
-                    1 =>    5 * m,
-                    2 =>   10 * m,
-                    3 =>   25 * m,
-                    4 =>   50 * m,
-                    5 =>  100 * m,
-                    6 =>  200 * m,
-                    7 =>  500 * m,
-                    8 =>  750 * m,
+                    0 => 0,
+                    1 => 5 * m,
+                    2 => 10 * m,
+                    3 => 25 * m,
+                    4 => 50 * m,
+                    5 => 100 * m,
+                    6 => 200 * m,
+                    7 => 500 * m,
+                    8 => 750 * m,
                     9 => 1500 * m,
                     _ => 0,
                 };
@@ -95,13 +125,18 @@ namespace Ajuna.SAGE.Game.CasinoJam.Machines
             return reward;
         }
 
-        public static FullSpin Spins(byte spinTimes, uint minSpinReward, uint jackMaxReward, uint specMaxReward, byte[] h)
+        public FullSpin Spins(byte spinTimes, byte[] h)
         {
+            var minSpinReward = SingleSpinStake;
+            uint jackMaxReward = JackPotMaxReward;
+            uint specMaxReward = SpecialMaxReward;
+
             // Ensure spinsToDo is within our allowed range.
             if (spinTimes < 1 || spinTimes > 4)
             {
                 throw new ArgumentOutOfRangeException(nameof(spinTimes), "Number of spins must be between 1 and 4.");
             }
+
             // Prepare lists to collect spin outcomes.
             List<SpinResult> spinResultsList = [];
 
@@ -161,6 +196,18 @@ namespace Ajuna.SAGE.Game.CasinoJam.Machines
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Calculate the maximum reward for a given number of spins.
+        /// </summary>
+        /// <param name="spinTimes"></param>
+        /// <returns></returns>
+        public uint GetMaxMachineMaxReward(byte spinTimes)
+        {
+            var spinMaxReward = SingleSpinStake * SINGLE_SPIN_MAX_REWARD;
+            var specMaxReward = SpecialMaxReward;
+            return (spinMaxReward * spinTimes) + specMaxReward;
         }
     }
 }

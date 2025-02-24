@@ -1,5 +1,4 @@
-﻿using Ajuna.SAGE.Game.CasinoJam.Machines;
-using Ajuna.SAGE.Game.CasinoJam.Model;
+﻿using Ajuna.SAGE.Game.CasinoJam.Model;
 using Ajuna.SAGE.Game.Manager;
 using Ajuna.SAGE.Game.Model;
 using System.Runtime.CompilerServices;
@@ -669,7 +668,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 tracker.LastReward = 0;
                 for (byte i = 0; i < bandit.MaxSpins; i++)
                 {
-                    tracker.SetSlot(i, 0);
+                    tracker.SetSlot(i, (0, 0));
                 }
 
                 var playFee = (uint)valueType;
@@ -681,17 +680,9 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 }
 
                 var spinTimes = (byte)valueType;
-                var value1 = (uint)Math.Pow(10, (byte)bandit.Value1Factor) * (byte)bandit.Value1Multiplier;
-                var maxReward2 = (uint)Math.Pow(10, (byte)bandit.Value2Factor) * (byte)bandit.Value2Multiplier;
-                var maxReward3 = (uint)Math.Pow(10, (byte)bandit.Value3Factor) * (byte)bandit.Value3Multiplier;
 
                 // calculate minimum of funds required for the bandit to pay the fix max rewards possible
-                uint minReward = value1;
-                uint jackMaxReward = maxReward2;
-                uint specMaxReward = maxReward3;
-
-                var spinMaxReward = minReward * 8192;
-                var maxReward = (spinMaxReward * spinTimes) + specMaxReward;
+                var maxReward = bandit.GetMaxMachineMaxReward(spinTimes);
 
                 // TODO: (implement) this should be verified and flagged on the asset
                 if (!m.CanWithdraw(bandit.Id, maxReward, out _))
@@ -705,7 +696,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     return result;
                 }
 
-                FullSpin spins = Bandit.Spins(spinTimes, minReward, jackMaxReward, specMaxReward, h);
+                // do spins now
+                FullSpin spins = bandit.Spins(spinTimes, h);
 
                 uint reward = 0;
                 try
