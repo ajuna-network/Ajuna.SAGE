@@ -44,19 +44,19 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             var trackerAsset = new TrackerAsset(0, 1);
 
             byte slotIndex0 = 0;
-            (ushort, byte) packed0 = (0x4567, 0xDC);
+            byte[]  packed0 = [0x45, 0x67, 0xDC];
             trackerAsset.SetSlot(slotIndex0, packed0);
 
             byte slotIndex1 = 1;
-            (ushort, byte) packed1 = (0x1234, 0xAB);
+            byte[] packed1 = [0x12, 0x34, 0xAB];
             trackerAsset.SetSlot(slotIndex1, packed1);
 
             byte slotIndex2 = 2;
-            (ushort, byte) packed2 = (0xABCD, 0x12);
+            byte[] packed2 = [0xAB, 0xCD, 0x12];
             trackerAsset.SetSlot(slotIndex2, packed2);
 
             byte slotIndex3 = 3;
-            (ushort, byte) packed3 = (0x9876, 0x45);
+            byte[] packed3 = [0x98, 0x76, 0x45];
             trackerAsset.SetSlot(slotIndex3, packed3);
 
             // Verify that the set and retrieved slot values match

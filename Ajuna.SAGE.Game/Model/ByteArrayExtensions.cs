@@ -116,7 +116,7 @@
         {
             byte[] arr = typeof(T) switch
             {
-                Type t when t == typeof(byte) => new byte[] { (byte)(object)value },
+                Type t when t == typeof(byte) => [(byte)(object)value],
                 Type t when t == typeof(ushort) => BitConverter.GetBytes((ushort)(object)value),
                 Type t when t == typeof(uint) => BitConverter.GetBytes((uint)(object)value),
                 _ => throw new NotSupportedException($"Type {typeof(T).Name} is not supported.")

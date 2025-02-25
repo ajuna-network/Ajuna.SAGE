@@ -18,18 +18,18 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         /// SetSlot is a 16-bit field that encodes:
         /// Bits 15-12: Slot1 (4 bits)
         /// Bits 11-8:  Slot2 (4 bits)
-        /// Bits 7-4:   Slot3 (4 bits)
-        /// Bits 3-2:   Bonus1 (2 bits)
-        /// Bits 1-0:   Bonus2 (2 bits)
+        /// Bits 7-4:   Slot3 (4 bits) 
+        /// Bits 3-0:   Slot3 (4 bits) 
+        /// Bits 7-4:   Bonus1 (2 bits)
+        /// Bits 3-0:   Bonus2 (2 bits)
         /// Stored in Data starting at positions 16 till 22.
-        public void SetSlot(byte index, (ushort, byte) packed)
+        public void SetSlot(byte index, byte[] packed)
         {
             if (index > 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            Data.SetValue<ushort>(16 + (index * 3), packed.Item1);
-            Data.SetValue<byte>(18 + (index * 3), packed.Item2);
+            Data.Set(16 + (index * 3), packed);
         }
 
         /// <summary>
@@ -40,15 +40,13 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         /// Bits 3-2:   Bonus1 (2 bits)
         /// Bits 1-0:   Bonus2 (2 bits)
         /// Stored in Data starting at positions 16 till 22.
-        public (ushort, byte) GetSlot(byte index)
+        public byte[] GetSlot(byte index)
         {
             if (index > 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            var sl = Data.ReadValue<ushort>(16 + (index * 3));
-            var bn = Data.ReadValue<byte>(18 + (index * 3));
-            return (sl, bn);
+            return Data.Read(16 + (index * 3), 3);
         }
 
         /// <summary>

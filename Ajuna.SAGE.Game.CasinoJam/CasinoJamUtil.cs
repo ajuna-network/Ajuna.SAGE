@@ -36,7 +36,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// <param name="b1">Bonus AS1 value (0-3)</param>
         /// <param name="b2">Bonus AS2 value (0-3)</param>
         /// <returns>A ushort containing the packed values.</returns>
-        public static (ushort,byte) PackSlotResult(byte s1, byte s2, byte s3, byte b1, byte b2)
+        public static byte[] PackSlotResult(byte s1, byte s2, byte s3, byte b1, byte b2)
         {
             if (s1 < 0 || s1 > 15)
                 throw new ArgumentOutOfRangeException(nameof(s1));
@@ -51,17 +51,19 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
             byte s4 = 0x00;
 
-            ushort sl = 0;
-            sl |= (ushort)((s1 & 0x0F) << 12); // Bits 15-12
-            sl |= (ushort)((s2 & 0x0F) << 8);  // Bits 11-8
-            sl |= (ushort)((s3 & 0x0F) << 4);  // Bits 7-4
-            //sl |= (ushort)((s4 & 0x0F) << 0);  // Bits 3-0
+            byte p0 = 0;
+            p0 |= (byte)((s1 & 0x0F) << 4); // Bits 7-4
+            p0 |= (byte)((s2 & 0x0F) << 0); // Bits 3-0
 
-            byte bn = 0;
-            bn |= (byte)((b1 & 0x0F) << 4); // Bits 7-4
-            bn |= (byte)((b2 & 0x0F) << 0); // Bits 3-0
+            byte p1 = 0;
+            p1 |= (byte)((s3 & 0x0F) << 4); // Bits 7-4
+            p1 |= (byte)((s4 & 0x0F) << 0); // Bits 3-0
 
-            return (sl, bn);
+            byte p2 = 0;
+            p2 |= (byte)((b1 & 0x0F) << 4); // Bits 7-4
+            p2 |= (byte)((b2 & 0x0F) << 0); // Bits 3-0
+
+            return [p0, p1, p2];
         }
 
         /// <summary>
@@ -71,16 +73,19 @@ namespace Ajuna.SAGE.Game.CasinoJam
         /// </summary>
         /// <param name="sr">The packed 16-bit slot result.</param>
         /// <returns>A tuple of integers representing the unpacked values.</returns>
-        public static (int slot1, int slot2, int slot3, int bonus1, int bonus2) UnpackSlotResult((ushort, byte) packed)
+        public static (int slot1, int slot2, int slot3, int bonus1, int bonus2) UnpackSlotResult(byte[] p)
         {
-            var sr = packed.Item1;
-            int s1 = (sr >> 12) & 0x0F;
-            int s2 = (sr >> 8) & 0x0F;
-            int s3 = (sr >> 4) & 0x0F;
-            //int s4 = (sr >> 0) & 0x0F;
-            var br = packed.Item2;
-            int b1 = (br >> 4) & 0x0F;
-            int b2 = (br >> 0) & 0x0F;
+            var p0 = p[0];
+            int s1 = (p0 >> 4) & 0x0F;
+            int s2 = (p0 >> 0) & 0x0F;
+
+            var p1 = p[1];
+            int s3 = (p1 >> 4) & 0x0F;
+            int s4 = (p1 >> 0) & 0x0F;
+
+            var p2 = p[2];
+            int b1 = (p2 >> 4) & 0x0F;
+            int b2 = (p2 >> 0) & 0x0F;
             return (s1, s2, s3, b1, b2);
         }
 

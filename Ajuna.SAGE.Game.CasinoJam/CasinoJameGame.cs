@@ -668,7 +668,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 tracker.LastReward = 0;
                 for (byte i = 0; i < bandit.MaxSpins; i++)
                 {
-                    tracker.SetSlot(i, (0, 0));
+                    tracker.SetSlot(i, [0, 0, 0]);
                 }
 
                 var playFee = (uint)valueType;
