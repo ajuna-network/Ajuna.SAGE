@@ -146,7 +146,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             Console.WriteLine($"\n- ONE PAIR ----- [{(double)onePairCount / totalSpins,8:P4}] {onePairCount,10} Spins {onePairRewards,10:N0} Rewards");
             foreach (var kvp in onePair)
             {
-                var s = SymbolMap(kvp.Key);
+                var s = BanditAsset.SymbolMap(kvp.Key);
                 var avg = (int)(kvp.Value[0] > 0 ? (double)kvp.Value[1] / kvp.Value[0] : 0);
                 Console.WriteLine($" ⚪⚪⚪|{s}{s} ... [{(double)kvp.Value[0] / totalSpins,8:P4}] {kvp.Value[0],10} Spins {kvp.Value[1],10} Rewards {avg,6} Ø");
             }
@@ -154,7 +154,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             Console.WriteLine($"\n- THREE KIND --- [{(double)threeKindCount / totalSpins,8:P4}] {threeKindCount,10} Spins {threeKindRewards,10:N0} Rewards");
             foreach (var kvp in threeKind)
             {
-                var s = SymbolMap(kvp.Key);
+                var s = BanditAsset.SymbolMap(kvp.Key);
                 var avg = (int)(kvp.Value[0] > 0 ? (double)kvp.Value[1] / kvp.Value[0] : 0);
                 Console.WriteLine($" {s}{s}{s}|⚪⚪ ... [{(double)kvp.Value[0] / totalSpins,8:P4}] {kvp.Value[0],10} Spins {kvp.Value[1],10} Rewards {avg,6} Ø");
             }
@@ -168,8 +168,8 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 if (sKey == 0 || sKey > 9 || bKey == 0 || bKey > 9 || sKey == bKey)
                     continue;
 
-                var s = SymbolMap(sKey);
-                var b = SymbolMap(bKey);
+                var s = BanditAsset.SymbolMap(sKey);
+                var b = BanditAsset.SymbolMap(bKey);
                 var avg = (int)(kvp.Value[0] > 0 ? (double)kvp.Value[1] / kvp.Value[0] : 0);
                 Console.WriteLine($" {s}{s}{s}|{b}{b} ... [{(double)kvp.Value[0] / totalSpins,8:P4}] {kvp.Value[0],10} Spins {kvp.Value[1],10} Rewards {avg,6} Ø");
             }
@@ -177,7 +177,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             Console.WriteLine($"\n- ROYAL FLASH -- [{(double)royalFlushCount / totalSpins,8:P4}] {royalFlushCount,10} Spins {royalFlushRewards,10:N0} Rewards");
             foreach (var kvp in royalFlush)
             {
-                var s = SymbolMap(kvp.Key);
+                var s = BanditAsset.SymbolMap(kvp.Key);
                 var avg = (int)(kvp.Value[0] > 0 ? (double)kvp.Value[1] / kvp.Value[0] : 0);
                 Console.WriteLine($" {s}{s}{s}|{s}{s} ... [{(double)kvp.Value[0] / totalSpins,8:P4}] {kvp.Value[0],10} Spins {kvp.Value[1],10} Rewards {avg,6} Ø");
             }
@@ -186,35 +186,11 @@ namespace Ajuna.SAGE.Game.CasinoJam
             Console.WriteLine($"\n- SYMBOL PROB.     {totalOccurances,13:N0}");
             foreach (var kvp in symbolOccurance)
             {
-                var s = SymbolMap(kvp.Key);
+                var s = BanditAsset.SymbolMap(kvp.Key);
                 Console.WriteLine($" {s} = [{(double)kvp.Value / totalOccurances,8:P4}] = {kvp.Value,13:N0} Occurances");
             }
 
             Console.WriteLine($"\n{onePairRewards + threeKindRewards + fullHouseRewards + royalFlushRewards} Accumulated Rewards");
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private static string SymbolMap(byte v)
-        {
-            return v switch
-            {
-                0 => "⚪",// ⚪ 0: BLANK
-                1 => "🍒",// 🍒 1: CHERRY
-                2 => "🍋",// 🍋 2: LEMON
-                3 => "🍊",// 🍊 3: ORANGE
-                4 => "🍑",// 🍑 4: PLUM
-                5 => "🍉",// 🍉 5: WATERMELON
-                6 => "🍇",// 🍇 6: GRAPE
-                7 => "🔔",// 🔔 7: BELL
-                8 => "💰",// 💰 8: BAR
-                9 => "💎",// 💎 9: DIAMOND
-                _ => throw new NotImplementedException($"Not implemented Symbol for {v}!"),
-            };
         }
 
         /// <summary>

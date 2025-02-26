@@ -53,7 +53,14 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         public uint SingleSpinStake => (uint)Math.Pow(10, (byte)Value1Factor) * (byte)Value1Multiplier;
         public uint JackPotMaxReward => (uint)Math.Pow(10, (byte)Value2Factor) * (byte)Value2Multiplier;
         public uint SpecialMaxReward => (uint)Math.Pow(10, (byte)Value3Factor) * (byte)Value3Multiplier;
-        
+
+        public static string SymbolMap(int i) => symbolDisplay[i];
+        public static string[] symbolDisplay =
+        [
+            "⚪", "🍒", "🍋", "🍊", "🍑",
+            "🍉", "🍇", "🔔", "💰", "💎"
+        ];
+
         /// <summary>
         /// SingleSpinReward calculates the reward for a single spin.
         /// </summary>

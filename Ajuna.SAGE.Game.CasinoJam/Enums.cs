@@ -72,7 +72,10 @@
     public enum MachineSubType
     {
         None = 0,
-        Bandit = 1
+        Bandit = 1,
+        Roulette = 2,
+        BlackJack = 3,
+        GuessNumber = 4
         // *** DO NOT PASS 15 INDEX ***
     }
 
