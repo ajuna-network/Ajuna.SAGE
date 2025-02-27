@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config.p
     
     
     /// <summary>
-    /// >> 372 - Composite[pallet_sage.config.player.PlayerConfig]
+    /// >> 374 - Composite[pallet_sage.config.player.PlayerConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class PlayerConfig : BaseType

@@ -43,7 +43,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_grandpa
     }
     
     /// <summary>
-    /// >> 127 - Variant[pallet_grandpa.StoredState]
+    /// >> 129 - Variant[pallet_grandpa.StoredState]
     /// </summary>
     public sealed class EnumStoredState : BaseEnumRust<StoredState>
     {

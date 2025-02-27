@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_seasons
     
     
     /// <summary>
-    /// >> 81 - Composite[pallet_ajuna_seasons.types.SeasonMetadata]
+    /// >> 83 - Composite[pallet_ajuna_seasons.types.SeasonMetadata]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class SeasonMetadata : BaseType

@@ -43,7 +43,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime
     }
     
     /// <summary>
-    /// >> 240 - Variant[ajuna_solo_runtime.OriginCaller]
+    /// >> 242 - Variant[ajuna_solo_runtime.OriginCaller]
     /// </summary>
     public sealed class EnumOriginCaller : BaseEnumRust<OriginCaller>
     {

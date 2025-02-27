@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_democracy.typ
     
     
     /// <summary>
-    /// >> 287 - Composite[pallet_democracy.types.ReferendumStatus]
+    /// >> 289 - Composite[pallet_democracy.types.ReferendumStatus]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class ReferendumStatus : BaseType

@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_consensus_grandpa
     }
     
     /// <summary>
-    /// >> 132 - Variant[sp_consensus_grandpa.Equivocation]
+    /// >> 134 - Variant[sp_consensus_grandpa.Equivocation]
     /// </summary>
     public sealed class EnumEquivocation : BaseEnumRust<Equivocation>
     {

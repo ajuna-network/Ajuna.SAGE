@@ -180,7 +180,7 @@ namespace Substrate.AjunaSolo.NET.RestClient.Test.Generated
          result.GoldenDuckConfig = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournament.config.EnumGoldenDuckConfig();
          result.GoldenDuckConfig = this.GetTestValue9();
          result.MaxPlayers = this.GetTestValueU32();
-         result.Ranker = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker();
+         result.Ranker = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker();
          result.Ranker = this.GetTestValue10();
          return result;
       }
@@ -200,11 +200,11 @@ namespace Substrate.AjunaSolo.NET.RestClient.Test.Generated
          // NOT IMPLEMENTED >> Initialize Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournament.config.EnumGoldenDuckConfig
          return result;
       }
-      public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker GetTestValue10()
+      public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker GetTestValue10()
       {
-         Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker result;
-         result = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker();
-         // NOT IMPLEMENTED >> Initialize Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker
+         Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker result;
+         result = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker();
+         // NOT IMPLEMENTED >> Initialize Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker
          return result;
       }
       public Substrate.NetApi.Model.Types.Base.BaseTuple<Substrate.NetApi.Model.Types.Primitive.U32, Substrate.NetApi.Model.Types.Primitive.U32> GetTestValue11()

@@ -27,6 +27,7 @@
         AssetTypesAt = 6,
         BalanceOf = 7,
         IsOwnerOfAll = 8,
+        HasCooldownOf = 9,
         // *** DO NOT PASS 15 INDEX ***
     }
 
@@ -75,7 +76,6 @@
         Bandit = 1,
         Roulette = 2,
         BlackJack = 3,
-        GuessNumber = 4
         // *** DO NOT PASS 15 INDEX ***
     }
 

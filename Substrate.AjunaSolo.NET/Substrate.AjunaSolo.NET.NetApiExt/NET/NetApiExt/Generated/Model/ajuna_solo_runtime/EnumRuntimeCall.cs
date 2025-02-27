@@ -133,7 +133,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime
     }
     
     /// <summary>
-    /// >> 180 - Variant[ajuna_solo_runtime.RuntimeCall]
+    /// >> 182 - Variant[ajuna_solo_runtime.RuntimeCall]
     /// </summary>
     public sealed class EnumRuntimeCall : BaseEnumRust<RuntimeCall>
     {

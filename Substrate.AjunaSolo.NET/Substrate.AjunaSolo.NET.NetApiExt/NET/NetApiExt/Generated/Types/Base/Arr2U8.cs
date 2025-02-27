@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Types.Base
     
     
     /// <summary>
-    /// >> 200 - Array
+    /// >> 202 - Array
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Array)]
     public sealed class Arr2U8 : BaseType

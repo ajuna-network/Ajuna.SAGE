@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_scheduler
     
     
     /// <summary>
-    /// >> 301 - Composite[pallet_scheduler.Scheduled]
+    /// >> 303 - Composite[pallet_scheduler.Scheduled]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Scheduled : BaseType

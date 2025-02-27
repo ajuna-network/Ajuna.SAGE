@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     }
     
     /// <summary>
-    /// >> 269 - Variant[pallet_sage.config.UnlockTarget]
+    /// >> 271 - Variant[pallet_sage.config.UnlockTarget]
     /// </summary>
     public sealed class EnumUnlockTarget : BaseEnumRust<UnlockTarget>
     {

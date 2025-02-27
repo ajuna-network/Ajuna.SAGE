@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     
     
     /// <summary>
-    /// >> 357 - Composite[example_transition.asset.HumanVariant]
+    /// >> 359 - Composite[example_transition.asset.HumanVariant]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class HumanVariant : BaseType

@@ -18,16 +18,16 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     
     
     /// <summary>
-    /// >> 362 - Composite[example_transition.asset.SeatVariant]
+    /// >> 364 - Composite[example_transition.asset.SeatVariant]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class SeatVariant : BaseType
     {
         
         /// <summary>
-        /// >> seat_validity_period
+        /// >> rent_duration
         /// </summary>
-        public Substrate.NetApi.Model.Types.Primitive.U16 SeatValidityPeriod { get; set; }
+        public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumRentDuration RentDuration { get; set; }
         /// <summary>
         /// >> player_fee
         /// </summary>
@@ -43,7 +43,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
         /// <summary>
         /// >> reservation_duration
         /// </summary>
-        public Substrate.NetApi.Model.Types.Primitive.U16 ReservationDuration { get; set; }
+        public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumReservationDuration ReservationDuration { get; set; }
         /// <summary>
         /// >> last_action_block
         /// </summary>
@@ -71,7 +71,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
         public override byte[] Encode()
         {
             var result = new List<byte>();
-            result.AddRange(SeatValidityPeriod.Encode());
+            result.AddRange(RentDuration.Encode());
             result.AddRange(PlayerFee.Encode());
             result.AddRange(PlayerGracePeriod.Encode());
             result.AddRange(ReservationStartBlock.Encode());
@@ -87,15 +87,15 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
         public override void Decode(byte[] byteArray, ref int p)
         {
             var start = p;
-            SeatValidityPeriod = new Substrate.NetApi.Model.Types.Primitive.U16();
-            SeatValidityPeriod.Decode(byteArray, ref p);
+            RentDuration = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumRentDuration();
+            RentDuration.Decode(byteArray, ref p);
             PlayerFee = new Substrate.NetApi.Model.Types.Primitive.U16();
             PlayerFee.Decode(byteArray, ref p);
             PlayerGracePeriod = new Substrate.NetApi.Model.Types.Primitive.U8();
             PlayerGracePeriod.Decode(byteArray, ref p);
             ReservationStartBlock = new Substrate.NetApi.Model.Types.Primitive.U32();
             ReservationStartBlock.Decode(byteArray, ref p);
-            ReservationDuration = new Substrate.NetApi.Model.Types.Primitive.U16();
+            ReservationDuration = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumReservationDuration();
             ReservationDuration.Decode(byteArray, ref p);
             LastActionBlock = new Substrate.NetApi.Model.Types.Primitive.U16();
             LastActionBlock.Decode(byteArray, ref p);

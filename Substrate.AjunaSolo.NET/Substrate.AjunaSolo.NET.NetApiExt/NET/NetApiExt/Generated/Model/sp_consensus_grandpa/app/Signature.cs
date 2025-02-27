@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_consensus_grandpa
     
     
     /// <summary>
-    /// >> 135 - Composite[sp_consensus_grandpa.app.Signature]
+    /// >> 137 - Composite[sp_consensus_grandpa.app.Signature]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Signature : BaseType

@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_affilia
     
     
     /// <summary>
-    /// >> 347 - Composite[pallet_ajuna_affiliates.traits.AffiliatorState]
+    /// >> 349 - Composite[pallet_ajuna_affiliates.traits.AffiliatorState]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class AffiliatorState : BaseType

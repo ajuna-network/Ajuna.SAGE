@@ -34,8 +34,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // Test LastActionBlock (2 bytes, stored at offset 20)
             ushort lastActionBlock = 999;
-            seatAsset.LastActionBlock = lastActionBlock;
-            Assert.That(seatAsset.LastActionBlock, Is.EqualTo(lastActionBlock));
+            seatAsset.LastActionBlockOffset = lastActionBlock;
+            Assert.That(seatAsset.LastActionBlockOffset, Is.EqualTo(lastActionBlock));
 
             // Test PlayerActionCount (2 bytes, stored at offset 22)
             ushort actionCount = 10;

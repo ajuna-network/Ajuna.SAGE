@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config.p
     
     
     /// <summary>
-    /// >> 374 - Composite[pallet_sage.config.player.PlayerStats]
+    /// >> 376 - Composite[pallet_sage.config.player.PlayerStats]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class PlayerStats : BaseType

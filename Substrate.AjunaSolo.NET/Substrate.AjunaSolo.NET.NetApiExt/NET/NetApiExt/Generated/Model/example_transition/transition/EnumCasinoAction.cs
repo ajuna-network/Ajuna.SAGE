@@ -60,6 +60,11 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.t
         /// >> Kick
         /// </summary>
         Kick = 7,
+        
+        /// <summary>
+        /// >> Return
+        /// </summary>
+        Return = 8,
     }
     
     /// <summary>
@@ -77,10 +82,11 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.t
 				AddTypeDecoder<BaseTuple<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.EnumAssetType, Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumTokenType>>(CasinoAction.Deposit);
 				AddTypeDecoder<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumMultiplierType>(CasinoAction.Gamble);
 				AddTypeDecoder<BaseTuple<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.EnumAssetType, Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumTokenType>>(CasinoAction.Withdraw);
-				AddTypeDecoder<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumMultiplierType>(CasinoAction.Rent);
-				AddTypeDecoder<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumMultiplierType>(CasinoAction.Reserve);
+				AddTypeDecoder<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumRentDuration>(CasinoAction.Rent);
+				AddTypeDecoder<Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums.EnumReservationDuration>(CasinoAction.Reserve);
 				AddTypeDecoder<BaseVoid>(CasinoAction.Release);
 				AddTypeDecoder<BaseVoid>(CasinoAction.Kick);
+				AddTypeDecoder<BaseVoid>(CasinoAction.Return);
         }
     }
 }

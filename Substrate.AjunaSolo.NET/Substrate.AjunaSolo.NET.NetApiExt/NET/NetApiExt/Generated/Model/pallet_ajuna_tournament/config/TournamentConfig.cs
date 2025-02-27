@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     
     
     /// <summary>
-    /// >> 257 - Composite[pallet_ajuna_tournament.config.TournamentConfig]
+    /// >> 259 - Composite[pallet_ajuna_tournament.config.TournamentConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class TournamentConfig : BaseType
@@ -63,7 +63,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
         /// <summary>
         /// >> ranker
         /// </summary>
-        public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker Ranker { get; set; }
+        public Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker Ranker { get; set; }
         
         /// <inheritdoc/>
         public override string TypeName()
@@ -110,7 +110,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
             GoldenDuckConfig.Decode(byteArray, ref p);
             MaxPlayers = new Substrate.NetApi.Model.Types.Primitive.U32();
             MaxPlayers.Decode(byteArray, ref p);
-            Ranker = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.CasinoJamEntityRanker();
+            Ranker = new Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker();
             Ranker.Decode(byteArray, ref p);
             var bytesLength = p - start;
             TypeSize = bytesLength;

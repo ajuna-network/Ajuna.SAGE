@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_balances.type
     
     
     /// <summary>
-    /// >> 148 - Composite[pallet_balances.types.ReserveData]
+    /// >> 150 - Composite[pallet_balances.types.ReserveData]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class ReserveData : BaseType

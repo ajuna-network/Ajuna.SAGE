@@ -53,7 +53,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config.p
     }
     
     /// <summary>
-    /// >> 94 - Variant[pallet_sage.config.player.InventoryTier]
+    /// >> 96 - Variant[pallet_sage.config.player.InventoryTier]
     /// </summary>
     public sealed class EnumInventoryTier : BaseEnum<InventoryTier>
     {

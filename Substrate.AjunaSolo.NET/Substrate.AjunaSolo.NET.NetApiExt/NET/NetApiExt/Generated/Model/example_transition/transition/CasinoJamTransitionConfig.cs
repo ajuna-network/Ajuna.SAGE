@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.t
     
     
     /// <summary>
-    /// >> 91 - Composite[example_transition.transition.CasinoJamTransitionConfig]
+    /// >> 93 - Composite[example_transition.transition.CasinoJamTransitionConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class CasinoJamTransitionConfig : BaseType

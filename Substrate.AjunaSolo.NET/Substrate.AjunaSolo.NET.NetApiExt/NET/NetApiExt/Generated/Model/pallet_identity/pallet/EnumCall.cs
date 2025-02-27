@@ -292,7 +292,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_identity.pall
     }
     
     /// <summary>
-    /// >> 193 - Variant[pallet_identity.pallet.Call]
+    /// >> 195 - Variant[pallet_identity.pallet.Call]
     /// Identity pallet declaration.
     /// </summary>
     public sealed class EnumCall : BaseEnumRust<Call>

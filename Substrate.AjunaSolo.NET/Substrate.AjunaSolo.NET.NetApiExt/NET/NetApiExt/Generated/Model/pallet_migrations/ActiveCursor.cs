@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_migrations
     
     
     /// <summary>
-    /// >> 249 - Composite[pallet_migrations.ActiveCursor]
+    /// >> 251 - Composite[pallet_migrations.ActiveCursor]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class ActiveCursor : BaseType

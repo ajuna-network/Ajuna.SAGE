@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     }
     
     /// <summary>
-    /// >> 268 - Variant[pallet_sage.config.AssetFilter]
+    /// >> 270 - Variant[pallet_sage.config.AssetFilter]
     /// </summary>
     public sealed class EnumAssetFilter : BaseEnumRust<AssetFilter>
     {

@@ -54,7 +54,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_seasons
     }
     
     /// <summary>
-    /// >> 76 - Variant[pallet_ajuna_seasons.pallet.Event]
+    /// >> 78 - Variant[pallet_ajuna_seasons.pallet.Event]
     /// The `Event` enum of this pallet
     /// </summary>
     public sealed class EnumEvent : BaseEnumRust<Event>

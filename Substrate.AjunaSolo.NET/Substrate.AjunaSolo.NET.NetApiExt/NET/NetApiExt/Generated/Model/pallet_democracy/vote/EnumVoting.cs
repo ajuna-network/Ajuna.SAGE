@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_democracy.vot
     }
     
     /// <summary>
-    /// >> 289 - Variant[pallet_democracy.vote.Voting]
+    /// >> 291 - Variant[pallet_democracy.vote.Voting]
     /// </summary>
     public sealed class EnumVoting : BaseEnumRust<Voting>
     {

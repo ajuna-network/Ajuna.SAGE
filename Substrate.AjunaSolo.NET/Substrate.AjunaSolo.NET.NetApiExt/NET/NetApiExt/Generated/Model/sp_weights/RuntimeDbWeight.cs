@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_weights
     
     
     /// <summary>
-    /// >> 116 - Composite[sp_weights.RuntimeDbWeight]
+    /// >> 118 - Composite[sp_weights.RuntimeDbWeight]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class RuntimeDbWeight : BaseType

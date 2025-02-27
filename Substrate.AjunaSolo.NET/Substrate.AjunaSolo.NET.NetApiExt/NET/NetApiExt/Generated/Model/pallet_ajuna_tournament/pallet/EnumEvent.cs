@@ -69,7 +69,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 75 - Variant[pallet_ajuna_tournament.pallet.Event]
+    /// >> 77 - Variant[pallet_ajuna_tournament.pallet.Event]
     /// The `Event` enum of this pallet
     /// </summary>
     public sealed class EnumEvent : BaseEnumRust<Event>

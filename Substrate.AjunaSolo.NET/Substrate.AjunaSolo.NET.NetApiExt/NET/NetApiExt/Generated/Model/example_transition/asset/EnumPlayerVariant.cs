@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     }
     
     /// <summary>
-    /// >> 356 - Variant[example_transition.asset.PlayerVariant]
+    /// >> 358 - Variant[example_transition.asset.PlayerVariant]
     /// </summary>
     public sealed class EnumPlayerVariant : BaseEnumRust<PlayerVariant>
     {

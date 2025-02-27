@@ -13,12 +13,12 @@ using Substrate.NetApi.Model.Types.Metadata.Base;
 using System.Collections.Generic;
 
 
-namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime
+namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_solo_runtime.sage.casino_jam
 {
     
     
     /// <summary>
-    /// >> 258 - Composite[ajuna_solo_runtime.CasinoJamEntityRanker]
+    /// >> 260 - Composite[ajuna_solo_runtime.sage.casino_jam.CasinoJamEntityRanker]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class CasinoJamEntityRanker : BaseType

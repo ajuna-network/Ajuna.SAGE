@@ -153,7 +153,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_assets.pallet
     }
     
     /// <summary>
-    /// >> 174 - Variant[pallet_assets.pallet.Error]
+    /// >> 176 - Variant[pallet_assets.pallet.Error]
     /// The `Error` enum of this pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

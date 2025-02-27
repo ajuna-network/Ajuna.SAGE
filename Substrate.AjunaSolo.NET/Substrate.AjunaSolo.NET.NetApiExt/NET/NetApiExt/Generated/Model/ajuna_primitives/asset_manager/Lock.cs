@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_primitives.ass
     
     
     /// <summary>
-    /// >> 97 - Composite[ajuna_primitives.asset_manager.Lock]
+    /// >> 99 - Composite[ajuna_primitives.asset_manager.Lock]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Lock : BaseType

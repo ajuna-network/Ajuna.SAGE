@@ -91,7 +91,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_treasury.pall
     }
     
     /// <summary>
-    /// >> 280 - Variant[pallet_treasury.pallet.Error]
+    /// >> 282 - Variant[pallet_treasury.pallet.Error]
     /// Error for the treasury pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

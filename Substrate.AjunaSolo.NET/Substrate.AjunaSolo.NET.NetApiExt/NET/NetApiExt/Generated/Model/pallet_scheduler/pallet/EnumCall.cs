@@ -106,7 +106,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_scheduler.pal
     }
     
     /// <summary>
-    /// >> 191 - Variant[pallet_scheduler.pallet.Call]
+    /// >> 193 - Variant[pallet_scheduler.pallet.Call]
     /// Contains a variant per dispatchable extrinsic that this pallet has.
     /// </summary>
     public sealed class EnumCall : BaseEnumRust<Call>

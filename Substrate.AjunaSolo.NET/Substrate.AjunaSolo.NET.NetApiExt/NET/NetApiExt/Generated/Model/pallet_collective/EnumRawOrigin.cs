@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_collective
     }
     
     /// <summary>
-    /// >> 243 - Variant[pallet_collective.RawOrigin]
+    /// >> 245 - Variant[pallet_collective.RawOrigin]
     /// </summary>
     public sealed class EnumRawOrigin : BaseEnumRust<RawOrigin>
     {

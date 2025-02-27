@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     
     
     /// <summary>
-    /// >> 88 - Composite[pallet_sage.config.GeneralConfig]
+    /// >> 90 - Composite[pallet_sage.config.GeneralConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class GeneralConfig : BaseType

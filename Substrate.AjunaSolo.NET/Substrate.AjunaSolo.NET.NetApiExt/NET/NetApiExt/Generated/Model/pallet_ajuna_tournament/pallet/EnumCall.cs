@@ -44,7 +44,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 256 - Variant[pallet_ajuna_tournament.pallet.Call]
+    /// >> 258 - Variant[pallet_ajuna_tournament.pallet.Call]
     /// Contains a variant per dispatchable extrinsic that this pallet has.
     /// </summary>
     public sealed class EnumCall : BaseEnumRust<Call>

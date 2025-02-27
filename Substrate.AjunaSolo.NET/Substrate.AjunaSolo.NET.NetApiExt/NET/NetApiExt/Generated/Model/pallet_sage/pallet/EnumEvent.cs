@@ -114,7 +114,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.pallet
     }
     
     /// <summary>
-    /// >> 87 - Variant[pallet_sage.pallet.Event]
+    /// >> 89 - Variant[pallet_sage.pallet.Event]
     /// The `Event` enum of this pallet
     /// </summary>
     public sealed class EnumEvent : BaseEnumRust<Event>

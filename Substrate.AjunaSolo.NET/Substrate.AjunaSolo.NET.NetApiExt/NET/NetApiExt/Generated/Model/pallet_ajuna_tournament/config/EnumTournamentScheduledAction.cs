@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 350 - Variant[pallet_ajuna_tournament.config.TournamentScheduledAction]
+    /// >> 352 - Variant[pallet_ajuna_tournament.config.TournamentScheduledAction]
     /// </summary>
     public sealed class EnumTournamentScheduledAction : BaseEnumRust<TournamentScheduledAction>
     {

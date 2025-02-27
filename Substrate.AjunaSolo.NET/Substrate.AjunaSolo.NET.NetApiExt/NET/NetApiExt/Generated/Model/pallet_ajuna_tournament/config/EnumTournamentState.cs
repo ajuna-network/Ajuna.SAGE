@@ -43,7 +43,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 351 - Variant[pallet_ajuna_tournament.config.TournamentState]
+    /// >> 353 - Variant[pallet_ajuna_tournament.config.TournamentState]
     /// </summary>
     public sealed class EnumTournamentState : BaseEnumRust<TournamentState>
     {

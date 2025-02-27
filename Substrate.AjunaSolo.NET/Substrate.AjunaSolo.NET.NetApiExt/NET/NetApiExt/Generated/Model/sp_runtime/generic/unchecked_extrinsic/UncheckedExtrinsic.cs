@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_runtime.generic.u
     
     
     /// <summary>
-    /// >> 379 - Composite[sp_runtime.generic.unchecked_extrinsic.UncheckedExtrinsic]
+    /// >> 382 - Composite[sp_runtime.generic.unchecked_extrinsic.UncheckedExtrinsic]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class UncheckedExtrinsic : BaseType

@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config.p
     
     
     /// <summary>
-    /// >> 373 - Composite[pallet_sage.config.player.Locks]
+    /// >> 375 - Composite[pallet_sage.config.player.Locks]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Locks : BaseType

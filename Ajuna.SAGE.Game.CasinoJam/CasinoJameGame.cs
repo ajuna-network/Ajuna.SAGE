@@ -143,6 +143,44 @@ namespace Ajuna.SAGE.Game.CasinoJam
                             return true;
                         }
 
+                    case CasinoRuleType.HasCooldownOf:
+                        {
+                            if (r.CasinoRuleOp != CasinoRuleOp.Composite)
+                            {
+                                return false;
+                            }
+
+                            byte i = r.RuleValue[0];
+                            byte assetType = r.RuleValue[1];
+                            byte cooldown = r.RuleValue[2];
+
+                            if (a.Length <= i)
+                            {
+                                return false;
+                            }
+                            uint validBlocknumber;
+                            switch ((AssetType)(assetType >> 4))
+                            {
+                                case AssetType.Seat:
+                                    if (a[i] is not SeatAsset seat)
+                                    {
+                                        return false;
+                                    }
+                                    validBlocknumber = 
+                                        seat.ReservationStartBlock 
+                                        + seat.LastActionBlockOffset 
+                                        + cooldown;
+
+                                    break;
+
+                                default:
+                                    throw new NotImplementedException($"HasCooldownOf not implemented for {assetType}");
+                            }
+
+
+                            return validBlocknumber <= b;
+                        }
+
                     case CasinoRuleType.BalanceOf:
                         {
                             if (a.Length == 0)
@@ -350,7 +388,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                     PlayerGracePeriod = 30,
                     ReservationStartBlock = 0,
                     ReservationDuration = ReservationDuration.None,
-                    LastActionBlock = 0,
+                    LastActionBlockOffset = 0,
                     PlayerActionCount = 0,
                     PlayerId = 0,
                     MachineId = machine.Id
@@ -493,7 +531,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 seat.PlayerId = human.Id;
                 seat.ReservationStartBlock = b;
                 seat.ReservationDuration = reservationDuration;
-                seat.LastActionBlock = 0;
+                seat.LastActionBlockOffset = 0;
                 seat.PlayerActionCount = 0;
 
                 return result;
@@ -605,7 +643,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
                 }
 
                 var isReservationValid = (seat.ReservationStartBlock + CasinoJamUtil.GetReservationDurationBlocks(seat.ReservationDuration)) >= b;
-                var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlock + seat.PlayerGracePeriod) >= b;
+                var isGracePeriod = (seat.ReservationStartBlock + seat.LastActionBlockOffset + seat.PlayerGracePeriod) >= b;
 
                 if (isReservationValid && isGracePeriod)
                 {
@@ -648,6 +686,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
             CasinoJamRule[] rules = [
                 new CasinoJamRule(CasinoRuleType.AssetCount, CasinoRuleOp.EQ, 4),
                 new CasinoJamRule(CasinoRuleType.AssetTypesAt, CasinoRuleOp.Composite, playerAt, trackerAt, seatAt, banditAt),
+                new CasinoJamRule(CasinoRuleType.HasCooldownOf, CasinoRuleOp.Composite, 0x02, seatAt, 0x01),
                 new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 0), // own Player
                 new CasinoJamRule(CasinoRuleType.IsOwnerOf, CasinoRuleOp.Index, 1), // own Tracker
                 // TODO: (verify) we currently check if the player owns the seat and it's the correct machine only in the transition 
@@ -732,7 +771,7 @@ namespace Ajuna.SAGE.Game.CasinoJam
 
                 // action count increase on the seat
                 seat.PlayerActionCount++;
-                seat.LastActionBlock = (ushort) (b - seat.ReservationStartBlock);
+                seat.LastActionBlockOffset = (ushort) (b - seat.ReservationStartBlock);
 
                 return result;
             };

@@ -28,7 +28,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     }
     
     /// <summary>
-    /// >> 360 - Variant[example_transition.asset.MachineSubVariant]
+    /// >> 362 - Variant[example_transition.asset.MachineSubVariant]
     /// </summary>
     public sealed class EnumMachineSubVariant : BaseEnumRust<MachineSubVariant>
     {

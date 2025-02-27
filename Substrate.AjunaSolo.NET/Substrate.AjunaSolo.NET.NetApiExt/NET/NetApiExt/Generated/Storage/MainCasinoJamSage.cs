@@ -883,6 +883,36 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Storage
         TransitionRuleNotSatisfied,
         
         /// <summary>
+        /// >> TransferError
+        /// A transfer error occurred inside the transition.
+        /// </summary>
+        TransferError,
+        
+        /// <summary>
+        /// >> FeeError
+        /// An error occurred during the fee payment of the ransition.
+        /// </summary>
+        FeeError,
+        
+        /// <summary>
+        /// >> AssetLength
+        /// Invalid number of assets for this transition.
+        /// </summary>
+        AssetLength,
+        
+        /// <summary>
+        /// >> AssetOwnership
+        /// Asset Ownership error.
+        /// </summary>
+        AssetOwnership,
+        
+        /// <summary>
+        /// >> VoucherNotAllowed
+        /// Voucher is not allowed for that transition.
+        /// </summary>
+        VoucherNotAllowed,
+        
+        /// <summary>
         /// >> Transition
         /// An error occurred during the state transition.
         /// </summary>

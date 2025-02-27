@@ -1,4 +1,5 @@
 ﻿using Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.asset;
+using Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.transition.enums;
 using Substrate.NetApi.Model.Types.Primitive;
 
 namespace Ajuna.SAGE.SDK.Model.CasinoJamSage
@@ -14,7 +15,7 @@ namespace Ajuna.SAGE.SDK.Model.CasinoJamSage
         /// <param name="value2"></param>
         public SeatVariantSharp(SeatVariant value2)
         {
-            SeatValidityPeriod = value2.SeatValidityPeriod.Value;
+            RentDuration = value2.RentDuration.Value;
             PlayerFee = value2.PlayerFee.Value;
             PlayerGracePeriod = value2.PlayerGracePeriod.Value;
             ReservationStartBlock = value2.ReservationStartBlock.Value;
@@ -31,7 +32,7 @@ namespace Ajuna.SAGE.SDK.Model.CasinoJamSage
         /// <summary>
         /// SeatValidityPeriod
         /// </summary>
-        public ushort SeatValidityPeriod { get; set; }
+        public RentDuration RentDuration { get; set; }
 
         /// <summary>
         /// PlayerFee
@@ -51,7 +52,7 @@ namespace Ajuna.SAGE.SDK.Model.CasinoJamSage
         /// <summary>
         /// ReservationDuration
         /// </summary>
-        public ushort ReservationDuration { get; set; }
+        public ReservationDuration ReservationDuration { get; set; }
 
         /// <summary>
         /// LastActionBlock

@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_balances.type
     
     
     /// <summary>
-    /// >> 144 - Composite[pallet_balances.types.BalanceLock]
+    /// >> 146 - Composite[pallet_balances.types.BalanceLock]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class BalanceLock : BaseType

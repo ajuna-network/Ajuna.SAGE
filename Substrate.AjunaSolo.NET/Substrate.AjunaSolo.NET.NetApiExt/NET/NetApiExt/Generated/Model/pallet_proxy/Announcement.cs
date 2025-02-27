@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_proxy
     
     
     /// <summary>
-    /// >> 327 - Composite[pallet_proxy.Announcement]
+    /// >> 329 - Composite[pallet_proxy.Announcement]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Announcement : BaseType

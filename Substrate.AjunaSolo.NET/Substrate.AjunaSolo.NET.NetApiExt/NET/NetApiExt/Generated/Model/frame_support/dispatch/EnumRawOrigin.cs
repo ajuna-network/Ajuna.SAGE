@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support.dispat
     }
     
     /// <summary>
-    /// >> 241 - Variant[frame_support.dispatch.RawOrigin]
+    /// >> 243 - Variant[frame_support.dispatch.RawOrigin]
     /// </summary>
     public sealed class EnumRawOrigin : BaseEnumRust<RawOrigin>
     {

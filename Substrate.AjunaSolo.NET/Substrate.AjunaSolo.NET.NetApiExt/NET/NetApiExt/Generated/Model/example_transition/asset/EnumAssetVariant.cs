@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     }
     
     /// <summary>
-    /// >> 355 - Variant[example_transition.asset.AssetVariant]
+    /// >> 357 - Variant[example_transition.asset.AssetVariant]
     /// </summary>
     public sealed class EnumAssetVariant : BaseEnumRust<AssetVariant>
     {

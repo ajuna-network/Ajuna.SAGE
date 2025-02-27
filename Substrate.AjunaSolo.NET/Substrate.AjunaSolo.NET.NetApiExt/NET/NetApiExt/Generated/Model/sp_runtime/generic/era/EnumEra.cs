@@ -1303,7 +1303,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_runtime.generic.e
     }
     
     /// <summary>
-    /// >> 386 - Variant[sp_runtime.generic.era.Era]
+    /// >> 389 - Variant[sp_runtime.generic.era.Era]
     /// </summary>
     public sealed class EnumEra : BaseEnumRust<Era>
     {

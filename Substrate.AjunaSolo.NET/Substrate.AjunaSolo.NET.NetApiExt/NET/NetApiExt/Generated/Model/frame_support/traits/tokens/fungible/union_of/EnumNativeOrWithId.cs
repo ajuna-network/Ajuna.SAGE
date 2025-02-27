@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support.traits
     }
     
     /// <summary>
-    /// >> 267 - Variant[frame_support.traits.tokens.fungible.union_of.NativeOrWithId]
+    /// >> 269 - Variant[frame_support.traits.tokens.fungible.union_of.NativeOrWithId]
     /// </summary>
     public sealed class EnumNativeOrWithId : BaseEnumRust<NativeOrWithId>
     {

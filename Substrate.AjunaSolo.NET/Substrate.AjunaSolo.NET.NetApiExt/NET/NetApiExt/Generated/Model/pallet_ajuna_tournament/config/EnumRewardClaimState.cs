@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 365 - Variant[pallet_ajuna_tournament.config.RewardClaimState]
+    /// >> 367 - Variant[pallet_ajuna_tournament.config.RewardClaimState]
     /// </summary>
     public sealed class EnumRewardClaimState : BaseEnumRust<RewardClaimState>
     {

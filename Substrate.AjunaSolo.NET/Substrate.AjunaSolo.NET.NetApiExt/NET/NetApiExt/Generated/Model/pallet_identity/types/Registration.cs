@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_identity.type
     
     
     /// <summary>
-    /// >> 306 - Composite[pallet_identity.types.Registration]
+    /// >> 308 - Composite[pallet_identity.types.Registration]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Registration : BaseType

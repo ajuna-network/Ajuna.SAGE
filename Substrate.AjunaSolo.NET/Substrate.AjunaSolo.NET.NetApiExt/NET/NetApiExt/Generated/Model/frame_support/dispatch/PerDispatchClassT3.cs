@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support.dispat
     
     
     /// <summary>
-    /// >> 115 - Composite[frame_support.dispatch.PerDispatchClassT3]
+    /// >> 117 - Composite[frame_support.dispatch.PerDispatchClassT3]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class PerDispatchClassT3 : BaseType

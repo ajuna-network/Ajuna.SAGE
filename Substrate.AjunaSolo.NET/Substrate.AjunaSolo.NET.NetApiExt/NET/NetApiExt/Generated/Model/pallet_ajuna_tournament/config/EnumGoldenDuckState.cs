@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 366 - Variant[pallet_ajuna_tournament.config.GoldenDuckState]
+    /// >> 368 - Variant[pallet_ajuna_tournament.config.GoldenDuckState]
     /// </summary>
     public sealed class EnumGoldenDuckState : BaseEnumRust<GoldenDuckState>
     {

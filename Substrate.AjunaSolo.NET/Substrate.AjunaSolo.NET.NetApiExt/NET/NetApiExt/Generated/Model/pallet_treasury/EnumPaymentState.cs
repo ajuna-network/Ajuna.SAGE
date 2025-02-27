@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_treasury
     }
     
     /// <summary>
-    /// >> 277 - Variant[pallet_treasury.PaymentState]
+    /// >> 279 - Variant[pallet_treasury.PaymentState]
     /// </summary>
     public sealed class EnumPaymentState : BaseEnumRust<PaymentState>
     {

@@ -168,14 +168,44 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.pallet
         TransitionRuleNotSatisfied = 23,
         
         /// <summary>
+        /// >> TransferError
+        /// A transfer error occurred inside the transition.
+        /// </summary>
+        TransferError = 24,
+        
+        /// <summary>
+        /// >> FeeError
+        /// An error occurred during the fee payment of the ransition.
+        /// </summary>
+        FeeError = 25,
+        
+        /// <summary>
+        /// >> AssetLength
+        /// Invalid number of assets for this transition.
+        /// </summary>
+        AssetLength = 26,
+        
+        /// <summary>
+        /// >> AssetOwnership
+        /// Asset Ownership error.
+        /// </summary>
+        AssetOwnership = 27,
+        
+        /// <summary>
+        /// >> VoucherNotAllowed
+        /// Voucher is not allowed for that transition.
+        /// </summary>
+        VoucherNotAllowed = 28,
+        
+        /// <summary>
         /// >> Transition
         /// An error occurred during the state transition.
         /// </summary>
-        Transition = 24,
+        Transition = 29,
     }
     
     /// <summary>
-    /// >> 378 - Variant[pallet_sage.pallet.Error]
+    /// >> 380 - Variant[pallet_sage.pallet.Error]
     /// Error for the pallet-sage.
     /// </summary>
     public sealed class EnumError : BaseEnumRust<Error>
@@ -210,6 +240,11 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.pallet
 				AddTypeDecoder<BaseVoid>(Error.UnlockCriteriaNotFulfilled);
 				AddTypeDecoder<BaseVoid>(Error.TooManyAssetsInTransition);
 				AddTypeDecoder<BaseVoid>(Error.TransitionRuleNotSatisfied);
+				AddTypeDecoder<BaseVoid>(Error.TransferError);
+				AddTypeDecoder<BaseVoid>(Error.FeeError);
+				AddTypeDecoder<BaseVoid>(Error.AssetLength);
+				AddTypeDecoder<BaseVoid>(Error.AssetOwnership);
+				AddTypeDecoder<BaseVoid>(Error.VoucherNotAllowed);
 				AddTypeDecoder<Substrate.NetApi.Model.Types.Primitive.U8>(Error.Transition);
         }
     }

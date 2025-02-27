@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_migrations
     }
     
     /// <summary>
-    /// >> 247 - Variant[pallet_migrations.MigrationCursor]
+    /// >> 249 - Variant[pallet_migrations.MigrationCursor]
     /// </summary>
     public sealed class EnumMigrationCursor : BaseEnumRust<MigrationCursor>
     {

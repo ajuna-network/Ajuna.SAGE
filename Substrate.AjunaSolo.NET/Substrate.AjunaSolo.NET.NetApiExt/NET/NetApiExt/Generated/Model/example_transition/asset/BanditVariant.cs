@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     
     
     /// <summary>
-    /// >> 361 - Composite[example_transition.asset.BanditVariant]
+    /// >> 363 - Composite[example_transition.asset.BanditVariant]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class BanditVariant : BaseType

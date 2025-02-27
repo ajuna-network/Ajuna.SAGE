@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_collective
     
     
     /// <summary>
-    /// >> 271 - Composite[pallet_collective.Votes]
+    /// >> 273 - Composite[pallet_collective.Votes]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Votes : BaseType

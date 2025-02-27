@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.sp_consensus_grandpa
     
     
     /// <summary>
-    /// >> 131 - Composite[sp_consensus_grandpa.EquivocationProof]
+    /// >> 133 - Composite[sp_consensus_grandpa.EquivocationProof]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class EquivocationProof : BaseType

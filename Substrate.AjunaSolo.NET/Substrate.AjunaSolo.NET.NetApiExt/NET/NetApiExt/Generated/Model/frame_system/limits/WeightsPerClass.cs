@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_system.limits
     
     
     /// <summary>
-    /// >> 112 - Composite[frame_system.limits.WeightsPerClass]
+    /// >> 114 - Composite[frame_system.limits.WeightsPerClass]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class WeightsPerClass : BaseType

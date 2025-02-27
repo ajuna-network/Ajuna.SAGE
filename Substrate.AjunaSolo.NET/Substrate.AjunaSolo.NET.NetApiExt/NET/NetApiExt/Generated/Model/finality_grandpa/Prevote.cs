@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.finality_grandpa
     
     
     /// <summary>
-    /// >> 134 - Composite[finality_grandpa.Prevote]
+    /// >> 136 - Composite[finality_grandpa.Prevote]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class Prevote : BaseType

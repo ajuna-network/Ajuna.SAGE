@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_identity.lega
     
     
     /// <summary>
-    /// >> 194 - Composite[pallet_identity.legacy.IdentityInfo]
+    /// >> 196 - Composite[pallet_identity.legacy.IdentityInfo]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class IdentityInfo : BaseType

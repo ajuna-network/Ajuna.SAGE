@@ -44,7 +44,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.orml_vesting.module
     }
     
     /// <summary>
-    /// >> 177 - Variant[orml_vesting.module.Call]
+    /// >> 179 - Variant[orml_vesting.module.Call]
     /// Contains a variant per dispatchable extrinsic that this pallet has.
     /// </summary>
     public sealed class EnumCall : BaseEnumRust<Call>

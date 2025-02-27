@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_system.limits
     
     
     /// <summary>
-    /// >> 110 - Composite[frame_system.limits.BlockWeights]
+    /// >> 112 - Composite[frame_system.limits.BlockWeights]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class BlockWeights : BaseType

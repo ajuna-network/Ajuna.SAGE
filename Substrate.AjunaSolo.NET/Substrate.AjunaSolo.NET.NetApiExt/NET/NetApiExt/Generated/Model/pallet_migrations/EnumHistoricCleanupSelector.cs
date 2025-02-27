@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_migrations
     }
     
     /// <summary>
-    /// >> 251 - Variant[pallet_migrations.HistoricCleanupSelector]
+    /// >> 253 - Variant[pallet_migrations.HistoricCleanupSelector]
     /// </summary>
     public sealed class EnumHistoricCleanupSelector : BaseEnumRust<HistoricCleanupSelector>
     {

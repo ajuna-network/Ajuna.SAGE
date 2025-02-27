@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_assets.types
     
     
     /// <summary>
-    /// >> 163 - Composite[pallet_assets.types.AssetDetails]
+    /// >> 165 - Composite[pallet_assets.types.AssetDetails]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class AssetDetails : BaseType

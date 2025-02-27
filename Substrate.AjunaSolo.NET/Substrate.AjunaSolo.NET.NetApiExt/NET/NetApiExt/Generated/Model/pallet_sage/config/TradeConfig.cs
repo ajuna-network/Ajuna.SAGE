@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     
     
     /// <summary>
-    /// >> 90 - Composite[pallet_sage.config.TradeConfig]
+    /// >> 92 - Composite[pallet_sage.config.TradeConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class TradeConfig : BaseType

@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     }
     
     /// <summary>
-    /// >> 92 - Variant[pallet_sage.config.LockableFeature]
+    /// >> 94 - Variant[pallet_sage.config.LockableFeature]
     /// </summary>
     public sealed class EnumLockableFeature : BaseEnum<LockableFeature>
     {

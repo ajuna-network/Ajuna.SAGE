@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.example_transition.a
     
     
     /// <summary>
-    /// >> 359 - Composite[example_transition.asset.MachineVariant]
+    /// >> 361 - Composite[example_transition.asset.MachineVariant]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class MachineVariant : BaseType

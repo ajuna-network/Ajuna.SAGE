@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.bounded_collections.
     
     
     /// <summary>
-    /// >> 195 - Composite[bounded_collections.bounded_vec.BoundedVecT12]
+    /// >> 197 - Composite[bounded_collections.bounded_vec.BoundedVecT12]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class BoundedVecT12 : BaseType

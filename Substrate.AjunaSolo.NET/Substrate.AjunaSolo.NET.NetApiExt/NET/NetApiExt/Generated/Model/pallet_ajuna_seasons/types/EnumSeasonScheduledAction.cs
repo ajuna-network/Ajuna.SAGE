@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_seasons
     }
     
     /// <summary>
-    /// >> 369 - Variant[pallet_ajuna_seasons.types.SeasonScheduledAction]
+    /// >> 371 - Variant[pallet_ajuna_seasons.types.SeasonScheduledAction]
     /// </summary>
     public sealed class EnumSeasonScheduledAction : BaseEnumRust<SeasonScheduledAction>
     {

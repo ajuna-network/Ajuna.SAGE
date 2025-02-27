@@ -65,6 +65,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(Engine.AssetBalance(human.Id), Is.Null);
 
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(2));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(2)]
@@ -95,6 +97,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var assets = Engine.AssetManager.AssetOf(_user).Select(p => p as BaseAsset);
             Assert.That(assets.Count, Is.EqualTo(3));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(3)]
@@ -104,7 +108,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(1_002_000));
 
-            var machine = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var machine = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             // Player creation transition expects no input assets.
             var identifier = CasinoJamIdentifier.Deposit(AssetType.Machine, TokenType.T_1000000);
@@ -128,6 +132,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(2_000));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(4)]
@@ -137,7 +143,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(2_000));
 
-            var machine = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var machine = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             Assert.That((machine as MachineAsset)?.SeatLinked, Is.EqualTo(0));
 
@@ -165,6 +171,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             Assert.That(_user.Balance.Value, Is.EqualTo(1_900));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(5)]
@@ -174,7 +182,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(1_900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             // Player creation transition expects no input assets.
             var identifier = CasinoJamIdentifier.Deposit(AssetType.Player, TokenType.T_1000);
@@ -197,6 +205,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(6)]
@@ -206,10 +216,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevSeatBalance = Engine.AssetBalance(seat.Id);
@@ -238,19 +248,22 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedSeat.PlayerId, Is.EqualTo(human.Id));
             Assert.That(Engine.AssetBalance(updatedSeat.Id), Is.EqualTo(1));
 
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(9)]
         public void Test_GambleTransition_Once()
         {
+            Assert.That(Engine.BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(7));
+
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevBanditBalance = Engine.AssetBalance(bandit.Id);
@@ -291,26 +304,30 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Cast to SeatAsset and check the properties
             SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
             Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(1));
-            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.LastActionBlockOffset, Is.EqualTo(1));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(Engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 1));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(10)]
         public void Test_GambleTransition_Twice()
         {
+            Assert.That(Engine.BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(8));
+
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevBanditBalance = Engine.AssetBalance(bandit.Id);
@@ -349,26 +366,30 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Cast to SeatAsset and check the properties
             SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
             Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(2));
-            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.LastActionBlockOffset, Is.EqualTo(2));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(Engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 2));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(11)]
         public void Test_GambleTransition_Three()
         {
+            Assert.That(Engine.BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(9));
+
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevBanditBalance = Engine.AssetBalance(bandit.Id);
@@ -407,26 +428,30 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Cast to SeatAsset and check the properties
             SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
             Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(3));
-            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.LastActionBlockOffset, Is.EqualTo(3));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(Engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 3 - 4));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(12)]
         public void Test_GambleTransition_Four()
         {
+            Assert.That(Engine.BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(10));
+
             Assert.That(Engine.AssetManager.AssetOf(_user).Count, Is.EqualTo(4));
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(900));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevBanditBalance = Engine.AssetBalance(bandit.Id);
@@ -465,13 +490,15 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // Cast to SeatAsset and check the properties
             SeatAsset updatedSeat = new SeatAsset(outputAssets[2]);
             Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(4));
-            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.LastActionBlockOffset, Is.EqualTo(4));
 
             // Cast to MachineAsset and check the properties
             BanditAsset updatedBandit = new BanditAsset(outputAssets[3]);
 
             Assert.That(updatedBandit, Is.Not.Null);
             Assert.That(Engine.AssetBalance(updatedBandit.Id), Is.EqualTo(prevBanditBalance + 4 - 0));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(13)]
@@ -483,7 +510,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var prevUserBalance = _user.Balance.Value;
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
 
@@ -503,6 +530,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(Engine.AssetBalance(updatedPlayer.Id), Is.EqualTo(prevHumanBalance - 100));
 
             Assert.That(_user.Balance.Value, Is.EqualTo(prevUserBalance + 100));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(14)]
@@ -514,7 +543,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var prevUserBalance = _user.Balance.Value;
 
-            var machine = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var machine = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             var prevMachineBalance = Engine.AssetBalance(machine.Id);
 
@@ -534,6 +563,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(Engine.AssetBalance(updatedMachine.Id), Is.EqualTo(prevMachineBalance));
 
             Assert.That(_user.Balance.Value, Is.EqualTo(prevUserBalance));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(15)]
@@ -543,10 +574,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             // initial balance
             Assert.That(_user.Balance.Value, Is.EqualTo(1000));
 
-            var human = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
-            var tracker = GetAsset(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
+            var human = GetAsset<HumanAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Human);
+            var tracker = GetAsset<TrackerAsset>(_user, AssetType.Player, (AssetSubType)PlayerSubType.Tracker);
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None);
 
             var prevHumanBalance = Engine.AssetBalance(human.Id);
             var prevBanditBalance = Engine.AssetBalance(bandit.Id);
@@ -573,9 +604,11 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedSeat.PlayerId, Is.EqualTo(0));
             Assert.That(updatedSeat.ReservationStartBlock, Is.EqualTo(0));
             Assert.That(updatedSeat.ReservationDuration, Is.EqualTo(ReservationDuration.None));
-            Assert.That(updatedSeat.LastActionBlock, Is.EqualTo(0));
+            Assert.That(updatedSeat.LastActionBlockOffset, Is.EqualTo(0));
             Assert.That(updatedSeat.PlayerActionCount, Is.EqualTo(0));
             Assert.That(Engine.AssetBalance(updatedSeat.Id), Is.EqualTo(prevSeatBalance - 1));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(16)]
@@ -587,8 +620,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var prevUserBalance = _user.Balance.Value;
 
-            var bandit = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit) as MachineAsset;
-            var seat = GetAsset(_user, AssetType.Seat, (AssetSubType)SeatSubType.None) as SeatAsset;
+            var bandit = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit) as MachineAsset;
+            var seat = GetAsset<SeatAsset>(_user, AssetType.Seat, (AssetSubType)SeatSubType.None) as SeatAsset;
 
             Assert.That(bandit.SeatLinked, Is.EqualTo(1));
             Assert.That(seat.MachineId, Is.EqualTo(bandit.Id));
@@ -611,6 +644,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(updatedBandit.SeatLinked, Is.EqualTo(0));
 
             Assert.That(_user.Balance.Value, Is.EqualTo(prevUserBalance));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
 
         [Test, Order(17)]
@@ -622,7 +657,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
 
             var prevUserBalance = _user.Balance.Value;
 
-            var machine = GetAsset(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
+            var machine = GetAsset<BanditAsset>(_user, AssetType.Machine, (AssetSubType)MachineSubType.Bandit);
 
             var prevMachineBalance = Engine.AssetBalance(machine.Id);
 
@@ -642,6 +677,8 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Assert.That(Engine.AssetBalance(updatedMachine.Id), Is.EqualTo(prevMachineBalance - 1000));
 
             Assert.That(_user.Balance.Value, Is.EqualTo(prevUserBalance + 1000));
+
+            Engine.BlockchainInfoProvider.CurrentBlockNumber++;
         }
     }
 
@@ -656,7 +693,7 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
             Engine = CasinoJameGame.Create(BlockchainInfoProvider);
         }
 
-        internal BaseAsset GetAsset(IAccount user, AssetType type, AssetSubType subType)
+        public T GetAsset<T>(IAccount user, AssetType type, AssetSubType subType) where T : BaseAsset
         {
             BaseAsset? result = Engine.AssetManager
                 .AssetOf(user)
@@ -664,7 +701,10 @@ namespace Ajuna.SAGE.Game.HeroJam.Test
                 .Where(p => p.AssetType == type && p.AssetSubType == subType)
                 .FirstOrDefault();
             Assert.That(result, Is.Not.Null);
-            return result;
+            Assert.That(result, Is.InstanceOf<T>());
+            var typedResult = result as T;
+            Assert.That(typedResult, Is.Not.Null);
+            return typedResult;
         }
     }
 }

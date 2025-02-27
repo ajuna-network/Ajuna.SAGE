@@ -98,7 +98,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_seasons
     }
     
     /// <summary>
-    /// >> 370 - Variant[pallet_ajuna_seasons.pallet.Error]
+    /// >> 372 - Variant[pallet_ajuna_seasons.pallet.Error]
     /// The `Error` enum of this pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_transaction_p
     }
     
     /// <summary>
-    /// >> 162 - Variant[pallet_transaction_payment.Releases]
+    /// >> 164 - Variant[pallet_transaction_payment.Releases]
     /// </summary>
     public sealed class EnumReleases : BaseEnum<Releases>
     {

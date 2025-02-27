@@ -48,7 +48,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_assets.types
     }
     
     /// <summary>
-    /// >> 168 - Variant[pallet_assets.types.ExistenceReason]
+    /// >> 170 - Variant[pallet_assets.types.ExistenceReason]
     /// </summary>
     public sealed class EnumExistenceReason : BaseEnumRust<ExistenceReason>
     {

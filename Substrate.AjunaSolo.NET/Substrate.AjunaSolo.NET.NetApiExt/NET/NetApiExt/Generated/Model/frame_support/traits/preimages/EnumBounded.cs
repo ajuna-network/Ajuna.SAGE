@@ -38,7 +38,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support.traits
     }
     
     /// <summary>
-    /// >> 185 - Variant[frame_support.traits.preimages.Bounded]
+    /// >> 187 - Variant[frame_support.traits.preimages.Bounded]
     /// </summary>
     public sealed class EnumBounded : BaseEnumRust<Bounded>
     {

@@ -110,7 +110,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_ajuna_tournam
     }
     
     /// <summary>
-    /// >> 367 - Variant[pallet_ajuna_tournament.pallet.Error]
+    /// >> 369 - Variant[pallet_ajuna_tournament.pallet.Error]
     /// The `Error` enum of this pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

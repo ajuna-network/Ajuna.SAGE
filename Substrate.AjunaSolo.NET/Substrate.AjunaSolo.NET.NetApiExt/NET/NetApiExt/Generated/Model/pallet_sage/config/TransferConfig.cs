@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_sage.config
     
     
     /// <summary>
-    /// >> 89 - Composite[pallet_sage.config.TransferConfig]
+    /// >> 91 - Composite[pallet_sage.config.TransferConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class TransferConfig : BaseType

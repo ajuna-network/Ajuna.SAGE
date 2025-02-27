@@ -23,6 +23,7 @@ namespace Substrate.AjunaSolo.NET.RestClient
       public IAuraControllerClient AuraControllerClient;
       public IBalancesControllerClient BalancesControllerClient;
       public ICasinoJamAffiliatesControllerClient CasinoJamAffiliatesControllerClient;
+      public ICasinoJamRandomControllerClient CasinoJamRandomControllerClient;
       public ICasinoJamSageControllerClient CasinoJamSageControllerClient;
       public ICasinoJamSeasonsControllerClient CasinoJamSeasonsControllerClient;
       public ICasinoJamTournamentControllerClient CasinoJamTournamentControllerClient;
@@ -50,6 +51,7 @@ namespace Substrate.AjunaSolo.NET.RestClient
          AuraControllerClient = new AuraControllerClient(_httpClient, _subscriptionClient);
          BalancesControllerClient = new BalancesControllerClient(_httpClient, _subscriptionClient);
          CasinoJamAffiliatesControllerClient = new CasinoJamAffiliatesControllerClient(_httpClient, _subscriptionClient);
+         CasinoJamRandomControllerClient = new CasinoJamRandomControllerClient(_httpClient, _subscriptionClient);
          CasinoJamSageControllerClient = new CasinoJamSageControllerClient(_httpClient, _subscriptionClient);
          CasinoJamSeasonsControllerClient = new CasinoJamSeasonsControllerClient(_httpClient, _subscriptionClient);
          CasinoJamTournamentControllerClient = new CasinoJamTournamentControllerClient(_httpClient, _subscriptionClient);

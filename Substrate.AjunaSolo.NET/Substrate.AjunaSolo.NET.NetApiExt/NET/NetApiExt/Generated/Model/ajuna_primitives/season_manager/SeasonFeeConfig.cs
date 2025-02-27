@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_primitives.sea
     
     
     /// <summary>
-    /// >> 79 - Composite[ajuna_primitives.season_manager.SeasonFeeConfig]
+    /// >> 81 - Composite[ajuna_primitives.season_manager.SeasonFeeConfig]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class SeasonFeeConfig : BaseType

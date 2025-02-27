@@ -58,7 +58,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_identity.type
     }
     
     /// <summary>
-    /// >> 230 - Variant[pallet_identity.types.Judgement]
+    /// >> 232 - Variant[pallet_identity.types.Judgement]
     /// </summary>
     public sealed class EnumJudgement : BaseEnumRust<Judgement>
     {

@@ -149,6 +149,11 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated
         /// </summary>
         public CasinoJamSageStorage CasinoJamSageStorage;
         
+        /// <summary>
+        /// CasinoJamRandomStorage storage calls.
+        /// </summary>
+        public CasinoJamRandomStorage CasinoJamRandomStorage;
+        
         public SubstrateClientExt(System.Uri uri, Substrate.NetApi.Model.Extrinsics.ChargeType chargeType) : 
                 base(uri, chargeType)
         {
@@ -177,6 +182,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated
             this.CasinoJamTournamentStorage = new CasinoJamTournamentStorage(this);
             this.CasinoJamSeasonsStorage = new CasinoJamSeasonsStorage(this);
             this.CasinoJamSageStorage = new CasinoJamSageStorage(this);
+            this.CasinoJamRandomStorage = new CasinoJamRandomStorage(this);
         }
     }
 }

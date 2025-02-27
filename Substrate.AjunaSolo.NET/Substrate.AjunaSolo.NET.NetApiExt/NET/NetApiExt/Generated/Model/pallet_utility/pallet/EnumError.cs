@@ -30,7 +30,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_utility.palle
     }
     
     /// <summary>
-    /// >> 334 - Variant[pallet_utility.pallet.Error]
+    /// >> 336 - Variant[pallet_utility.pallet.Error]
     /// The `Error` enum of this pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

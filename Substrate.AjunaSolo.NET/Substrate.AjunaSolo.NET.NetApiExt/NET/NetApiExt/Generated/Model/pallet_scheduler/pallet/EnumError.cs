@@ -54,7 +54,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_scheduler.pal
     }
     
     /// <summary>
-    /// >> 304 - Variant[pallet_scheduler.pallet.Error]
+    /// >> 306 - Variant[pallet_scheduler.pallet.Error]
     /// The `Error` enum of this pallet.
     /// </summary>
     public sealed class EnumError : BaseEnum<Error>

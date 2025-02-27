@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.pallet_balances.type
     }
     
     /// <summary>
-    /// >> 159 - Variant[pallet_balances.types.AdjustmentDirection]
+    /// >> 161 - Variant[pallet_balances.types.AdjustmentDirection]
     /// </summary>
     public sealed class EnumAdjustmentDirection : BaseEnum<AdjustmentDirection>
     {

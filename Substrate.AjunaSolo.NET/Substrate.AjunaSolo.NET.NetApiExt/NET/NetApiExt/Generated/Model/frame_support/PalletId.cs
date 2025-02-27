@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support
     
     
     /// <summary>
-    /// >> 279 - Composite[frame_support.PalletId]
+    /// >> 281 - Composite[frame_support.PalletId]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class PalletId : BaseType

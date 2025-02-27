@@ -2,7 +2,7 @@
 
 namespace Ajuna.SAGE.Game.CasinoJam.Model
 {
-    public class SeatAsset : BaseAsset
+    public partial class SeatAsset : BaseAsset
     {
         public SeatAsset(uint ownerId, uint genesis)
             : base(ownerId, 0, genesis)
@@ -23,7 +23,7 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             PlayerId = 0;
             ReservationStartBlock = 0;
             ReservationDuration = ReservationDuration.None;
-            LastActionBlock = 0;
+            LastActionBlockOffset = 0;
             PlayerActionCount = 0;
         }
 
@@ -98,7 +98,7 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
         /// 01234567 89012345 67890123 45678901
         /// ........ ........ ....XX.. ........
         /// </summary>
-        public ushort LastActionBlock
+        public ushort LastActionBlockOffset
         {
             get => Data.ReadValue<ushort>(20);
             set => Data.SetValue<ushort>(20, value);
@@ -141,5 +141,9 @@ namespace Ajuna.SAGE.Game.CasinoJam.Model
             get => Data.ReadValue<uint>(28);
             set => Data.SetValue<uint>(28, value);
         }
+    }
+
+    public partial class SeatAsset
+    {
     }
 }

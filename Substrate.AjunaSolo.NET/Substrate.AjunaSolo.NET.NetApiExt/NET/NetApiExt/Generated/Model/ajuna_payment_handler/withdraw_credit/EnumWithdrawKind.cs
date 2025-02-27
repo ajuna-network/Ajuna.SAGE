@@ -33,7 +33,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.ajuna_payment_handle
     }
     
     /// <summary>
-    /// >> 266 - Variant[ajuna_payment_handler.withdraw_credit.WithdrawKind]
+    /// >> 268 - Variant[ajuna_payment_handler.withdraw_credit.WithdrawKind]
     /// </summary>
     public sealed class EnumWithdrawKind : BaseEnumRust<WithdrawKind>
     {

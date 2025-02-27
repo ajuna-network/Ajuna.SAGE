@@ -22,6 +22,7 @@ namespace Substrate.AjunaSolo.NET.RestClient.Mockup
       public IAuraControllerMockupClient AuraControllerClient;
       public IBalancesControllerMockupClient BalancesControllerClient;
       public ICasinoJamAffiliatesControllerMockupClient CasinoJamAffiliatesControllerClient;
+      public ICasinoJamRandomControllerMockupClient CasinoJamRandomControllerClient;
       public ICasinoJamSageControllerMockupClient CasinoJamSageControllerClient;
       public ICasinoJamSeasonsControllerMockupClient CasinoJamSeasonsControllerClient;
       public ICasinoJamTournamentControllerMockupClient CasinoJamTournamentControllerClient;
@@ -48,6 +49,7 @@ namespace Substrate.AjunaSolo.NET.RestClient.Mockup
          AuraControllerClient = new AuraControllerMockupClient(_httpClient);
          BalancesControllerClient = new BalancesControllerMockupClient(_httpClient);
          CasinoJamAffiliatesControllerClient = new CasinoJamAffiliatesControllerMockupClient(_httpClient);
+         CasinoJamRandomControllerClient = new CasinoJamRandomControllerMockupClient(_httpClient);
          CasinoJamSageControllerClient = new CasinoJamSageControllerMockupClient(_httpClient);
          CasinoJamSeasonsControllerClient = new CasinoJamSeasonsControllerMockupClient(_httpClient);
          CasinoJamTournamentControllerClient = new CasinoJamTournamentControllerMockupClient(_httpClient);

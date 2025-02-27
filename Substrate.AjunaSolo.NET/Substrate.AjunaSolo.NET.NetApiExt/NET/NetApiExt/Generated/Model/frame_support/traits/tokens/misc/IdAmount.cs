@@ -18,7 +18,7 @@ namespace Substrate.AjunaSolo.NET.NetApiExt.Generated.Model.frame_support.traits
     
     
     /// <summary>
-    /// >> 151 - Composite[frame_support.traits.tokens.misc.IdAmount]
+    /// >> 153 - Composite[frame_support.traits.tokens.misc.IdAmount]
     /// </summary>
     [SubstrateNodeType(TypeDefEnum.Composite)]
     public sealed class IdAmount : BaseType
