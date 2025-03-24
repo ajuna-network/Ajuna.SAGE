@@ -19,7 +19,7 @@ In CasinoJam, every game entity is represented as an asset:
 
 ### Game Flow
 
-´´´´plantuml
+```plantuml
 @startuml
 |User|
 start
@@ -64,7 +64,7 @@ endif
 
 stop
 @enduml
-´´´
+```
 
 ## Key Transitions and Mechanics
 
@@ -87,7 +87,7 @@ stop
 
  ### Sequence Diagram
 
-´´´´plantuml
+```plantuml
 @startuml
 actor User
 participant "GameEngine" as Engine
@@ -141,7 +141,7 @@ Engine -> BalanceMgr: Process Withdrawal Transition
 Engine --> User: Return final updated state
 
 @enduml
-´´´
+```
 
 ## Asset Relationship Overview
 
