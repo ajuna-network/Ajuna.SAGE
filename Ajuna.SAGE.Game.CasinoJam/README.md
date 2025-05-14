@@ -19,6 +19,8 @@ In CasinoJam, every game entity is represented as an asset:
 
 ### Game Flow
 
+![image](https://github.com/user-attachments/assets/a9f5f8f6-97ca-49f0-93e7-ebccb8c6b7b5)
+
 ```plantuml
 @startuml
 |User|
